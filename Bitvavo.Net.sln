@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37314.3 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bitvavo.Net", "Bitvavo.Net\Bitvavo.Net.csproj", "{B31C897D-F457-DCCA-C292-774AE8B9F1FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bitvavo.Net.Tests", "Bitvavo.Net.Tests\Bitvavo.Net.Tests.csproj", "{10747451-EDD0-A61F-2A22-4CD712CF4668}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B31C897D-F457-DCCA-C292-774AE8B9F1FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B31C897D-F457-DCCA-C292-774AE8B9F1FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B31C897D-F457-DCCA-C292-774AE8B9F1FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B31C897D-F457-DCCA-C292-774AE8B9F1FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10747451-EDD0-A61F-2A22-4CD712CF4668}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10747451-EDD0-A61F-2A22-4CD712CF4668}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10747451-EDD0-A61F-2A22-4CD712CF4668}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10747451-EDD0-A61F-2A22-4CD712CF4668}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {014589F7-CD4B-48D2-AC06-93692F8B5B93}
+	EndGlobalSection
+EndGlobal
