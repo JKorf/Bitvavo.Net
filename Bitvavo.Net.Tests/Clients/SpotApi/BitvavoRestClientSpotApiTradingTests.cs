@@ -49,7 +49,7 @@ public class BitvavoRestClientSpotApiTradingTests
     {
         var trading = TradingClientReturning("""{"orderId":"abc","market":"ETH-EUR","status":"new","side":"buy","orderType":"limit","created":1714132800000,"updated":1714132800000}""", out var handler);
 
-        await trading.PlaceOrderAsync(new BitvavoPlaceOrderRequest("ETH-EUR", OrderSide.Buy, OrderType.Limit, OperatorId: 1, Amount: 0.5m, Price: 1500m), ct: TestContext.Current.CancellationToken);
+        await trading.PlaceOrderAsync("ETH-EUR", OrderSide.Buy, OrderType.Limit, operatorId: 1, amount: 0.5m, price: 1500m, ct: TestContext.Current.CancellationToken);
 
         handler.Requests[0].Method.ShouldBe(HttpMethod.Post);
         handler.Requests[0].RequestUri!.AbsolutePath.ShouldBe("/v2/order");
@@ -61,7 +61,7 @@ public class BitvavoRestClientSpotApiTradingTests
     {
         var trading = TradingClientReturning("""{"orderId":"x","market":"ETH-EUR","status":"new","side":"buy","orderType":"limit","created":0,"updated":0}""", out var handler);
 
-        await trading.PlaceOrderAsync(new BitvavoPlaceOrderRequest("ETH-EUR", OrderSide.Buy, OrderType.Limit, OperatorId: 42, Amount: 0.5m, Price: 1500m, TimeInForce: TimeInForce.GoodTillCanceled, PostOnly: true), ct: TestContext.Current.CancellationToken);
+        await trading.PlaceOrderAsync("ETH-EUR", OrderSide.Buy, OrderType.Limit, operatorId: 42, amount: 0.5m, price: 1500m, timeInForce: TimeInForce.GoodTillCanceled, postOnly: true, ct: TestContext.Current.CancellationToken);
 
         handler.Requests[0].Content!.Headers.ContentType!.MediaType.ShouldBe("application/json");
         var body = await handler.Requests[0].Content!.ReadAsStringAsync(cancellationToken: TestContext.Current.CancellationToken);
@@ -80,7 +80,7 @@ public class BitvavoRestClientSpotApiTradingTests
     {
         var trading = TradingClientReturning("""{"orderId":"x","market":"ETH-EUR","status":"new","side":"buy","orderType":"limit","created":0,"updated":0}""", out var handler);
 
-        await trading.PlaceOrderAsync(new BitvavoPlaceOrderRequest("ETH-EUR", OrderSide.Sell, OrderType.Limit, OperatorId: 7, Amount: 1m, Price: 1234m), ct: TestContext.Current.CancellationToken);
+        await trading.PlaceOrderAsync("ETH-EUR", OrderSide.Sell, OrderType.Limit, operatorId: 7, amount: 1m, price: 1234m, ct: TestContext.Current.CancellationToken);
 
         var capturedBody = await handler.Requests[0].Content!.ReadAsStringAsync(cancellationToken: TestContext.Current.CancellationToken);
         var ts = handler.Requests[0].Headers.GetValues("Bitvavo-Access-Timestamp").Single();
@@ -111,7 +111,7 @@ public class BitvavoRestClientSpotApiTradingTests
         """;
         var trading = TradingClientReturning(json, out _);
 
-        var result = await trading.PlaceOrderAsync(new BitvavoPlaceOrderRequest("ETH-EUR", OrderSide.Buy, OrderType.Limit, OperatorId: 1, Amount: 0.5m, Price: 1500m), ct: TestContext.Current.CancellationToken);
+        var result = await trading.PlaceOrderAsync("ETH-EUR", OrderSide.Buy, OrderType.Limit, operatorId: 1, amount: 0.5m, price: 1500m, ct: TestContext.Current.CancellationToken);
 
         result.Success.ShouldBeTrue();
         result.Data.OrderId.ShouldBe("abc-123");
@@ -140,7 +140,7 @@ public class BitvavoRestClientSpotApiTradingTests
             out _);
 
         var result = await trading.PlaceOrderAsync(
-            new BitvavoPlaceOrderRequest("ETH-EUR", OrderSide.Buy, OrderType.Market, OperatorId: 1, AmountQuote: 5m),
+            "ETH-EUR", OrderSide.Buy, OrderType.Market, operatorId: 1, amountQuote: 5m,
             ct: TestContext.Current.CancellationToken);
 
         result.Success.ShouldBeTrue();
@@ -406,7 +406,7 @@ public class BitvavoRestClientSpotApiTradingTests
     {
         var trading = TradingClientReturning("""{"orderId":"abc","market":"ETH-EUR","status":"new","side":"buy","orderType":"limit","created":0,"updated":0}""", out var handler);
 
-        await trading.UpdateOrderAsync(new BitvavoUpdateOrderRequest("ETH-EUR", OperatorId: 5, OrderId: "abc-123", Amount: 0.6m, Price: 1600m), ct: TestContext.Current.CancellationToken);
+        await trading.UpdateOrderAsync("ETH-EUR", operatorId: 5, orderId: "abc-123", amount: 0.6m, price: 1600m, ct: TestContext.Current.CancellationToken);
 
         handler.Requests[0].Method.ShouldBe(HttpMethod.Put);
         handler.Requests[0].RequestUri!.AbsolutePath.ShouldBe("/v2/order");
@@ -425,7 +425,7 @@ public class BitvavoRestClientSpotApiTradingTests
     {
         var trading = TradingClientReturning("""{"orderId":"abc","market":"ETH-EUR","status":"new","side":"buy","orderType":"limit","created":0,"updated":0}""", out var handler);
 
-        await trading.UpdateOrderAsync(new BitvavoUpdateOrderRequest("ETH-EUR", OperatorId: 1, ClientOrderId: "client-1", Price: 1234m), ct: TestContext.Current.CancellationToken);
+        await trading.UpdateOrderAsync("ETH-EUR", operatorId: 1, clientOrderId: "client-1", price: 1234m, ct: TestContext.Current.CancellationToken);
 
         var capturedBody = await handler.Requests[0].Content!.ReadAsStringAsync(cancellationToken: TestContext.Current.CancellationToken);
         var ts = handler.Requests[0].Headers.GetValues("Bitvavo-Access-Timestamp").Single();
@@ -443,3 +443,4 @@ public class BitvavoRestClientSpotApiTradingTests
         return Convert.ToHexStringLower(h.ComputeHash(Encoding.UTF8.GetBytes(payload)));
     }
 }
+

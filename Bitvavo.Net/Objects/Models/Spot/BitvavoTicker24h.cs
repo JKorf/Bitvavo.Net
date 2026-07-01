@@ -13,7 +13,7 @@ public record BitvavoTicker24h
     /// Market identifier.
     /// </summary>
     [JsonPropertyName("market")]
-    public string Market { get; init; } = string.Empty;
+    public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
     /// Beginning of the 24h window (UTC).

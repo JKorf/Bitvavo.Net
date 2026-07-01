@@ -4,17 +4,15 @@ using CryptoExchange.Net.Converters.SystemTextJson;
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Balance entry for a single asset as returned by <c>GET /v2/balance</c>. Bitvavo
-/// emits monetary fields as JSON strings â€” the <see cref="DecimalConverter"/> lifts
-/// them into <see cref="decimal"/> for callers.
+/// Balance entry for a single asset
 /// </summary>
 public record BitvavoBalance
 {
     /// <summary>
-    /// Asset symbol â€” e.g. <c>"EUR"</c>, <c>"BTC"</c>, <c>"ETH"</c>.
+    /// Asset symbol
     /// </summary>
     [JsonPropertyName("symbol")]
-    public string Symbol { get; init; } = string.Empty;
+    public string Asset { get; init; } = string.Empty;
 
     /// <summary>
     /// Amount that's free to trade or withdraw.

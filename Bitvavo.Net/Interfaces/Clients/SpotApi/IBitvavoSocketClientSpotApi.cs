@@ -3,9 +3,7 @@ using CryptoExchange.Net.Interfaces.Clients;
 namespace Bitvavo.Net.Interfaces.Clients.SpotApi;
 
 /// <summary>
-/// Bitvavo Spot WebSocket API client surface. Public-stream endpoints sit on
-/// <see cref="ExchangeData"/>; signed private-stream endpoints sit on
-/// <see cref="Account"/> (mirroring KrakenSocketClientSpotApi.Account).
+/// Bitvavo Spot WebSocket API client surface
 /// </summary>
 public interface IBitvavoSocketClientSpotApi : ISocketApiClient
 {
@@ -15,14 +13,12 @@ public interface IBitvavoSocketClientSpotApi : ISocketApiClient
     IBitvavoSocketClientSpotApiExchangeData ExchangeData { get; }
 
     /// <summary>
-    /// Signed private-stream subscriptions on the <c>account</c> channel â€” order-state + fill events.
+    /// Private-stream subscriptions on the <c>account</c> channel
     /// </summary>
     IBitvavoSocketClientSpotApiAccount Account { get; }
 
     /// <summary>
-    /// The exchange-agnostic CryptoExchange.Net Shared-API surface for Bitvavo Spot
-    /// WebSocket. Use this to program against the Shared abstractions common to every
-    /// CryptoExchange.Net client library (mirrors <c>IKrakenSocketClientSpotApi.SharedClient</c>).
+    /// Get the shared socket client. This interface is shared with other exchanges to allow for a common implementation for different exchanges.
     /// </summary>
     IBitvavoSocketClientSpotApiShared SharedClient { get; }
 }

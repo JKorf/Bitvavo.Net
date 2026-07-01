@@ -18,15 +18,9 @@ public interface IBitvavoSocketClientSpotApiAccount
     /// configure credentials on <see cref="Bitvavo.Net.Objects.Options.BitvavoSocketOptions"/>.
     /// <para><a href="https://docs.bitvavo.com/docs/websocket-api/track-your-orders">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="markets">
-    /// Markets to subscribe to (e.g. <c>["ETH-EUR"]</c>).
-    /// </param>
-    /// <param name="onMessage">
-    /// Per-event callback.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="markets">Markets to subscribe to (e.g. <c>["ETH-EUR"]</c>).</param>
+    /// <param name="onMessage">Per-event callback.</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<WebSocketResult<UpdateSubscription>> SubscribeToOrderUpdatesAsync(
         string[] markets,
         Action<DataEvent<BitvavoStreamOrderUpdate>> onMessage,
@@ -38,15 +32,9 @@ public interface IBitvavoSocketClientSpotApiAccount
     /// events on the single private <c>account</c> stream.
     /// <para><a href="https://docs.bitvavo.com/docs/websocket-api/track-your-orders">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="markets">
-    /// Markets to subscribe to.
-    /// </param>
-    /// <param name="onMessage">
-    /// Per-fill callback.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="markets">Markets to subscribe to.</param>
+    /// <param name="onMessage">Per-fill callback.</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<WebSocketResult<UpdateSubscription>> SubscribeToFillUpdatesAsync(
         string[] markets,
         Action<DataEvent<BitvavoStreamFillEvent>> onMessage,

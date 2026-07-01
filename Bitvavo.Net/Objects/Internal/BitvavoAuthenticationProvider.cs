@@ -71,10 +71,7 @@ internal sealed class BitvavoAuthenticationProvider : AuthenticationProvider<Bit
     /// Signature = HMAC-SHA256-hex(secret, timestamp + "GET" + "/v2/websocket"). Per
     /// Bitvavo's WebSocket Introduction docs.
     /// </summary>
-    /// <param name="receiveWindowMs">
-    /// Optional override for the per-request receive window. Defaults to the value passed
-    /// to this provider's constructor (typically <see cref="Options.BitvavoSocketOptions.ReceiveWindowMs"/>).
-    /// </param>
+    /// <param name="receiveWindowMs">Optional override for the per-request receive window. Defaults to the value passed to this provider's constructor (typically <see cref="Options.BitvavoSocketOptions.ReceiveWindowMs"/>).</param>
     public Dictionary<string, object> BuildSocketAuth(int? receiveWindowMs = null)
     {
         var window = receiveWindowMs ?? _receiveWindowMs;

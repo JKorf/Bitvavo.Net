@@ -74,7 +74,7 @@ public class RateLimitGateCoverageTests
         var api = ApiReturning("[]");
         var data = new BitvavoRestClientSpotApiExchangeData(api);
 
-        var result = await data.GetTickerPricesAsync(ct: TestContext.Current.CancellationToken);
+        var result = await data.GetPricesAsync(ct: TestContext.Current.CancellationToken);
 
         result.Success.ShouldBeTrue();
     }
@@ -85,7 +85,7 @@ public class RateLimitGateCoverageTests
         var api = ApiReturning("[]");
         var data = new BitvavoRestClientSpotApiExchangeData(api);
 
-        var result = await data.GetTickerBookAsync(ct: TestContext.Current.CancellationToken);
+        var result = await data.GetBookTickerAsync(ct: TestContext.Current.CancellationToken);
 
         result.Success.ShouldBeTrue();
     }
@@ -107,7 +107,7 @@ public class RateLimitGateCoverageTests
         var api = ApiReturning("[]");
         var data = new BitvavoRestClientSpotApiExchangeData(api);
 
-        var result = await data.GetPublicTradesAsync("ETH-EUR", ct: TestContext.Current.CancellationToken);
+        var result = await data.GetTradeHistoryAsync("ETH-EUR", ct: TestContext.Current.CancellationToken);
 
         result.Success.ShouldBeTrue();
     }
@@ -184,8 +184,11 @@ public class RateLimitGateCoverageTests
         var trading = new BitvavoRestClientSpotApiTrading(api);
 
         var result = await trading.UpdateOrderAsync(
-            new BitvavoUpdateOrderRequest("ETH-EUR", OperatorId: 1, OrderId: "x", Price: 1500m),
-            TestContext.Current.CancellationToken);
+            "ETH-EUR",
+            operatorId: 1,
+            orderId: "x",
+            price: 1500m,
+            ct: TestContext.Current.CancellationToken);
 
         result.Success.ShouldBeTrue();
     }
@@ -304,7 +307,7 @@ public class RateLimitGateCoverageTests
         var funding = new BitvavoRestClientSpotApiFunding(api);
 
         var result = await funding.WithdrawAsync(
-            new BitvavoWithdrawRequest("BTC", 0.001m, "bc1q..."), TestContext.Current.CancellationToken);
+            "BTC", 0.001m, "bc1q...", ct: TestContext.Current.CancellationToken);
 
         result.Success.ShouldBeTrue();
     }
@@ -369,8 +372,11 @@ public class RateLimitGateCoverageTests
         var inst = new BitvavoRestClientSpotApiInstitutional(api);
 
         var result = await inst.CreateTransferAsync(
-            new BitvavoCreateTransferRequest("sub-1", SubaccountTransferDirection.MasterToSub, "EUR", 100m),
-            TestContext.Current.CancellationToken);
+            "sub-1",
+            SubaccountTransferDirection.MasterToSub,
+            "EUR",
+            100m,
+            ct: TestContext.Current.CancellationToken);
 
         result.Success.ShouldBeTrue();
     }
@@ -439,8 +445,11 @@ public class RateLimitGateCoverageTests
         var inst = new BitvavoRestClientSpotApiInstitutional(api);
 
         var result = await inst.CancelSubaccountOrderAsync(
-            new BitvavoSubaccountCancelOrderRequest("ETH-EUR", "o-1", OperatorId: 1, SubaccountId: "sub-1"),
-            TestContext.Current.CancellationToken);
+            "ETH-EUR",
+            "o-1",
+            operatorId: 1,
+            subaccountId: "sub-1",
+            ct: TestContext.Current.CancellationToken);
 
         result.Success.ShouldBeTrue();
     }
@@ -459,3 +468,4 @@ public class RateLimitGateCoverageTests
         result.Success.ShouldBeTrue();
     }
 }
+

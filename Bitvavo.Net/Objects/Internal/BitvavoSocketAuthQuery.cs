@@ -38,9 +38,7 @@ internal sealed class BitvavoSocketAuthQuery : Query<BitvavoSocketAuthResponse>
     /// carrying a <see cref="ServerError"/> of <see cref="ErrorType.Unauthorized"/> so the
     /// socket surfaces the rejection instead of proceeding unauthenticated.
     /// </summary>
-    /// <param name="message">
-    /// The deserialised <c>{ "event": "authenticate", "authenticated": &lt;bool&gt; }</c> reply.
-    /// </param>
+    /// <param name="message">The deserialised <c>{ "event": "authenticate", "authenticated": &lt;bool&gt; }</c> reply.</param>
     /// <returns>
     /// A successful <see cref="CallResult{T}"/> when <paramref name="message"/> reports
     /// <see cref="BitvavoSocketAuthResponse.Authenticated"/> = <see langword="true"/>;

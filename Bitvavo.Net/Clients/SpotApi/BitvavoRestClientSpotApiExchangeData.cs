@@ -17,10 +17,10 @@ internal sealed class BitvavoRestClientSpotApiExchangeData : IBitvavoRestClientS
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<IEnumerable<BitvavoMarket>>> GetMarketsAsync(CancellationToken ct = default)
+    public Task<HttpResult<IEnumerable<BitvavoSymbol>>> GetSymbolsAsync(CancellationToken ct = default)
     {
         var request = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "v2/markets", BitvavoExchange.RateLimiter.Bitvavo, weight: 1, authenticated: false);
-        return _baseClient.SendAsync<IEnumerable<BitvavoMarket>>(request, parameters: null, ct);
+        return _baseClient.SendAsync<IEnumerable<BitvavoSymbol>>(request, parameters: null, ct);
     }
 
     /// <inheritdoc />
@@ -61,7 +61,7 @@ internal sealed class BitvavoRestClientSpotApiExchangeData : IBitvavoRestClientS
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<IEnumerable<BitvavoTickerPrice>>> GetTickerPricesAsync(string? market = null, CancellationToken ct = default)
+    public Task<HttpResult<IEnumerable<BitvavoTickerPrice>>> GetPricesAsync(string? market = null, CancellationToken ct = default)
     {
         var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
         parameters.Add("market", market);
@@ -71,7 +71,7 @@ internal sealed class BitvavoRestClientSpotApiExchangeData : IBitvavoRestClientS
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<IEnumerable<BitvavoTickerBook>>> GetTickerBookAsync(string? market = null, CancellationToken ct = default)
+    public Task<HttpResult<IEnumerable<BitvavoTickerBook>>> GetBookTickerAsync(string? market = null, CancellationToken ct = default)
     {
         var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
         parameters.Add("market", market);
@@ -81,7 +81,7 @@ internal sealed class BitvavoRestClientSpotApiExchangeData : IBitvavoRestClientS
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<IEnumerable<BitvavoTicker24h>>> GetTicker24hAsync(string? market = null, CancellationToken ct = default)
+    public Task<HttpResult<IEnumerable<BitvavoTicker24h>>> GetTickersAsync(string? market = null, CancellationToken ct = default)
     {
         var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
         parameters.Add("market", market);
@@ -102,7 +102,7 @@ internal sealed class BitvavoRestClientSpotApiExchangeData : IBitvavoRestClientS
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<IEnumerable<BitvavoPublicTrade>>> GetPublicTradesAsync(
+    public Task<HttpResult<IEnumerable<BitvavoPublicTrade>>> GetTradeHistoryAsync(
         string market,
         int? limit = null,
         DateTime? startTime = null,

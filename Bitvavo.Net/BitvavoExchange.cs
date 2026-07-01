@@ -82,18 +82,10 @@ namespace Bitvavo.Net
         /// <summary>
         /// Format a base and quote asset to a Bitvavo recognized symbol 
         /// </summary>
-        /// <param name="baseAsset">
-        /// Base asset
-        /// </param>
-        /// <param name="quoteAsset">
-        /// Quote asset
-        /// </param>
-        /// <param name="tradingMode">
-        /// Trading mode
-        /// </param>
-        /// <param name="deliverTime">
-        /// Delivery time for delivery futures
-        /// </param>
+        /// <param name="baseAsset">Base asset</param>
+        /// <param name="quoteAsset">Quote asset</param>
+        /// <param name="tradingMode">Trading mode</param>
+        /// <param name="deliverTime">Delivery time for delivery futures</param>
         /// <returns>
         /// </returns>
         public static string FormatSymbol(string baseAsset, string quoteAsset, TradingMode tradingMode, DateTime? deliverTime = null)

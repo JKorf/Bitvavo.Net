@@ -1,3 +1,4 @@
+using Bitvavo.Net.Enums;
 using Bitvavo.Net.Interfaces.Clients.SpotApi;
 using Bitvavo.Net.Objects.Models.Spot;
 using CryptoExchange.Net.Objects;
@@ -37,14 +38,20 @@ internal sealed class BitvavoRestClientSpotApiInstitutional : IBitvavoRestClient
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<BitvavoSubaccountTransfer>> CreateTransferAsync(BitvavoCreateTransferRequest request, CancellationToken ct = default)
+    public Task<HttpResult<BitvavoSubaccountTransfer>> CreateTransferAsync(
+        string subaccountId,
+        SubaccountTransferDirection direction,
+        string symbol,
+        decimal amount,
+        string? clientRequestId = null,
+        CancellationToken ct = default)
     {
         var body = new Parameters(BitvavoExchange._parameterSerializationSettings);
-        body.Add("subaccountId", request.SubaccountId);
-        body.Add("direction", request.Direction);
-        body.Add("symbol", request.Symbol);
-        body.Add("amount", request.Amount);
-        body.Add("clientRequestId", request.ClientRequestId);
+        body.Add("subaccountId", subaccountId);
+        body.Add("direction", direction);
+        body.Add("symbol", symbol);
+        body.Add("amount", amount);
+        body.Add("clientRequestId", clientRequestId);
 
         var def = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "v2/subaccounts/transfers", BitvavoExchange.RateLimiter.Bitvavo, weight: 5, authenticated: true);
         return _baseClient.SendAsync<BitvavoSubaccountTransfer>(def, queryParameters: null, bodyParameters: body, ct);
@@ -131,14 +138,20 @@ internal sealed class BitvavoRestClientSpotApiInstitutional : IBitvavoRestClient
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<BitvavoOrderId>> CancelSubaccountOrderAsync(BitvavoSubaccountCancelOrderRequest request, CancellationToken ct = default)
+    public Task<HttpResult<BitvavoOrderId>> CancelSubaccountOrderAsync(
+        string market,
+        string orderId,
+        long operatorId,
+        string? subaccountId = null,
+        string? clientOrderId = null,
+        CancellationToken ct = default)
     {
         var body = new Parameters(BitvavoExchange._parameterSerializationSettings);
-        body.Add("subaccountId", request.SubaccountId);
-        body.Add("market", request.Market);
-        body.Add("orderId", request.OrderId);
-        body.Add("clientOrderId", request.ClientOrderId);
-        body.Add("operatorId", request.OperatorId);
+        body.Add("subaccountId", subaccountId);
+        body.Add("market", market);
+        body.Add("orderId", orderId);
+        body.Add("clientOrderId", clientOrderId);
+        body.Add("operatorId", operatorId);
 
         var def = _definitions.GetOrCreate(HttpMethod.Delete, _baseClient.BaseAddress, "v2/institutional/subaccounts/order", BitvavoExchange.RateLimiter.Bitvavo, weight: 1, authenticated: true);
         return _baseClient.SendAsync<BitvavoOrderId>(def, queryParameters: null, bodyParameters: body, ct);

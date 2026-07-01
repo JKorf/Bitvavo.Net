@@ -22,9 +22,7 @@ namespace Bitvavo.Net.Clients
         /// <summary>
         /// ctor
         /// </summary>
-        /// <param name="optionsDelegate">
-        /// Options to use for created clients
-        /// </param>
+        /// <param name="optionsDelegate">Options to use for created clients</param>
         public BitvavoUserClientProvider(Action<BitvavoOptions>? optionsDelegate = null)
             : this(null, null, Options.Create(ApplyOptionsDelegate(optionsDelegate).Rest), Options.Create(ApplyOptionsDelegate(optionsDelegate).Socket))
         {

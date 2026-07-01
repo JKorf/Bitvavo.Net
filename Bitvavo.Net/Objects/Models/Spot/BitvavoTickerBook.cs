@@ -12,7 +12,7 @@ public record BitvavoTickerBook
     /// Market identifier.
     /// </summary>
     [JsonPropertyName("market")]
-    public string Market { get; init; } = string.Empty;
+    public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
     /// Best bid (highest buy) price, in the quote currency.

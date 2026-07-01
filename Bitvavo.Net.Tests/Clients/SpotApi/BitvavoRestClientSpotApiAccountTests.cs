@@ -114,10 +114,10 @@ public class BitvavoRestClientSpotApiAccountTests
         result.Success.ShouldBeTrue();
         var list = result.Data.ToList();
         list.Count.ShouldBe(2);
-        list[0].Symbol.ShouldBe("EUR");
+        list[0].Asset.ShouldBe("EUR");
         list[0].Available.ShouldBe(1234.5m);
         list[0].InOrder.ShouldBe(0m);
-        list[1].Symbol.ShouldBe("BTC");
+        list[1].Asset.ShouldBe("BTC");
         list[1].Available.ShouldBe(0.05m);
         list[1].InOrder.ShouldBe(0.01m);
     }

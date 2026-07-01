@@ -14,12 +14,6 @@ using Microsoft.Extensions.Logging;
 namespace Bitvavo.Net.Clients.SpotApi;
 
 /// <inheritdoc cref="IBitvavoRestClientSpotApi" />
-/// <remarks>
-/// The CryptoExchange.Net Shared-API surface is implemented in the facade-hosted partial
-/// <c>BitvavoRestClientSpotApi.Shared.cs</c> â€” <c>sealed</c> is dropped here only so the
-/// partial can be split across files (the type is still non-extensible: <c>internal</c>
-/// with no derived types). Mirrors <c>KrakenRestClientSpotApi</c>.
-/// </remarks>
 internal partial class BitvavoRestClientSpotApi : RestApiClient<BitvavoEnvironment, BitvavoAuthenticationProvider, BitvavoCredentials>, IBitvavoRestClientSpotApi
 {
     /// <inheritdoc />
@@ -52,11 +46,6 @@ internal partial class BitvavoRestClientSpotApi : RestApiClient<BitvavoEnvironme
 
     /// <inheritdoc />
     public IBitvavoRestClientSpotApiShared SharedClient => this;
-
-    /// <summary>
-    /// Display name of the exchange â€” used by CryptoExchange.Net diagnostics.
-    /// </summary>
-    public string ExchangeName => BitvavoExchange.ExchangeName;
 
     internal BitvavoRestClientSpotApi(ILoggerFactory? loggerFactory, HttpClient? httpClient, BitvavoRestOptions options)
         : base(loggerFactory, BitvavoExchange.Metadata.Id, httpClient, options.Environment.SpotRestBaseAddress, options, options.SpotOptions)

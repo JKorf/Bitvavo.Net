@@ -1,3 +1,4 @@
+using Bitvavo.Net.Enums;
 using Bitvavo.Net.Objects.Models.Spot;
 using CryptoExchange.Net.Objects;
 
@@ -17,75 +18,55 @@ public interface IBitvavoRestClientSpotApiInstitutional
     /// Create a new subaccount under the main account.
     /// <para><a href="https://docs.bitvavo.com/docs/institutional-api/create-subaccount">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="label">
-    /// Optional description of the subaccount (up to 100 characters).
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="label">Optional description of the subaccount (up to 100 characters).</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<HttpResult<BitvavoSubaccount>> CreateSubaccountAsync(string? label = null, CancellationToken ct = default);
 
     /// <summary>
     /// List the subaccounts under the main account, paginated by page number.
     /// <para><a href="https://docs.bitvavo.com/docs/institutional-api/get-subaccounts">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="page">
-    /// One-based page number to return.
-    /// </param>
-    /// <param name="maxItems">
-    /// Maximum number of subaccounts per page.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="page">One-based page number to return.</param>
+    /// <param name="maxItems">Maximum number of subaccounts per page.</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<HttpResult<BitvavoSubaccountList>> GetSubaccountsAsync(int? page = null, int? maxItems = null, CancellationToken ct = default);
 
     /// <summary>
     /// Transfer an asset between the main account and a subaccount.
     /// <para><a href="https://docs.bitvavo.com/docs/institutional-api/create-transfer">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="request">
-    /// Transfer parameters (subaccount, direction, asset, amount).
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
-    Task<HttpResult<BitvavoSubaccountTransfer>> CreateTransferAsync(BitvavoCreateTransferRequest request, CancellationToken ct = default);
+    /// <param name="subaccountId">Identifier (UUID) of the subaccount involved in the transfer. Required.</param>
+    /// <param name="direction">Whether assets move from main to sub or sub to main. Required.</param>
+    /// <param name="asset">Asset symbol to transfer (e.g. <c>"EUR"</c>, <c>"BTC"</c>). Required.</param>
+    /// <param name="amount">Quantity of the asset to transfer. Required.</param>
+    /// <param name="clientRequestId">Caller-supplied idempotency identifier (UUID). Optional.</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task<HttpResult<BitvavoSubaccountTransfer>> CreateTransferAsync(
+        string subaccountId,
+        SubaccountTransferDirection direction,
+        string asset,
+        decimal amount,
+        string? clientRequestId = null,
+        CancellationToken ct = default);
 
     /// <summary>
     /// Get a single subaccount transfer by its Bitvavo transfer identifier.
     /// <para><a href="https://docs.bitvavo.com/docs/institutional-api/get-transfer">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="transferId">
-    /// Bitvavo-assigned transfer identifier (UUID). Required.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="transferId">Bitvavo-assigned transfer identifier (UUID). Required.</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<HttpResult<BitvavoSubaccountTransfer>> GetTransferAsync(string transferId, CancellationToken ct = default);
 
     /// <summary>
     /// List subaccount transfers for a single subaccount, optionally filtered by time window.
     /// <para><a href="https://docs.bitvavo.com/docs/institutional-api/get-transfers">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="subaccountId">
-    /// Identifier (UUID) of the subaccount. Required.
-    /// </param>
-    /// <param name="clientRequestId">
-    /// Optional caller-supplied transfer identifier filter.
-    /// </param>
-    /// <param name="startTime">
-    /// Inclusive UTC lower bound.
-    /// </param>
-    /// <param name="endTime">
-    /// Inclusive UTC upper bound.
-    /// </param>
-    /// <param name="limit">
-    /// Maximum entries (1â€“1000, default 25).
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="subaccountId">Identifier (UUID) of the subaccount. Required.</param>
+    /// <param name="clientRequestId">Optional caller-supplied transfer identifier filter.</param>
+    /// <param name="startTime">Inclusive UTC lower bound.</param>
+    /// <param name="endTime">Inclusive UTC upper bound.</param>
+    /// <param name="limit">Maximum entries (1â€“1000, default 25).</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<HttpResult<BitvavoSubaccountTransferList>> GetTransfersAsync(
         string subaccountId,
         string? clientRequestId = null,
@@ -99,45 +80,25 @@ public interface IBitvavoRestClientSpotApiInstitutional
     /// <paramref name="subaccountId"/> is null.
     /// <para><a href="https://docs.bitvavo.com/docs/institutional-api/get-balance">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="subaccountId">
-    /// Identifier (UUID) of the subaccount. Null returns the main account balance.
-    /// </param>
-    /// <param name="symbol">
-    /// Optional asset filter. Null returns every asset with a balance &gt; 0.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="subaccountId">Identifier (UUID) of the subaccount. Null returns the main account balance.</param>
+    /// <param name="asset">Optional asset filter. Null returns every asset with a balance &gt; 0.</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<HttpResult<BitvavoSubaccountBalances>> GetSubaccountBalancesAsync(
         string? subaccountId = null,
-        string? symbol = null,
+        string? asset = null,
         CancellationToken ct = default);
 
     /// <summary>
     /// Get the transaction history of a subaccount, paginated by page number.
     /// <para><a href="https://docs.bitvavo.com/docs/institutional-api/get-transaction-history">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="subaccountId">
-    /// Identifier (UUID) of the subaccount.
-    /// </param>
-    /// <param name="fromDate">
-    /// Inclusive UTC lower bound.
-    /// </param>
-    /// <param name="toDate">
-    /// Inclusive UTC upper bound.
-    /// </param>
-    /// <param name="page">
-    /// One-based page number to return.
-    /// </param>
-    /// <param name="maxItems">
-    /// Maximum number of items per page (1â€“100).
-    /// </param>
-    /// <param name="type">
-    /// Optional transaction-type filter (e.g. <c>"buy"</c>, <c>"deposit"</c>).
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="subaccountId">Identifier (UUID) of the subaccount.</param>
+    /// <param name="fromDate">Inclusive UTC lower bound.</param>
+    /// <param name="toDate">Inclusive UTC upper bound.</param>
+    /// <param name="page">One-based page number to return.</param>
+    /// <param name="maxItems">Maximum number of items per page (1â€“100).</param>
+    /// <param name="type">Optional transaction-type filter (e.g. <c>"buy"</c>, <c>"deposit"</c>).</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<HttpResult<BitvavoTransactionHistory>> GetSubaccountTransactionHistoryAsync(
         string? subaccountId = null,
         DateTime? fromDate = null,
@@ -152,21 +113,13 @@ public interface IBitvavoRestClientSpotApiInstitutional
     /// <paramref name="subaccountId"/> is null.
     /// <para><a href="https://docs.bitvavo.com/docs/institutional-api/get-open-orders">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="subaccountId">
-    /// Identifier (UUID) of the subaccount. Null returns main-account open orders.
-    /// </param>
-    /// <param name="market">
-    /// Optional market filter (e.g. <c>"BTC-EUR"</c>).
-    /// </param>
-    /// <param name="baseAsset">
-    /// Optional base-asset filter (e.g. <c>"BTC"</c>).
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="subaccountId">Identifier (UUID) of the subaccount. Null returns main-account open orders.</param>
+    /// <param name="symbol">Symbol name, for example `ETH-EUR`</param>
+    /// <param name="baseAsset">Optional base-asset filter (e.g. <c>"BTC"</c>).</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<HttpResult<IEnumerable<BitvavoOrder>>> GetSubaccountOpenOrdersAsync(
         string? subaccountId = null,
-        string? market = null,
+        string? symbol = null,
         string? baseAsset = null,
         CancellationToken ct = default);
 
@@ -174,34 +127,32 @@ public interface IBitvavoRestClientSpotApiInstitutional
     /// Cancel a single order on a subaccount (or the main account).
     /// <para><a href="https://docs.bitvavo.com/docs/institutional-api/cancel-order">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="request">
-    /// Cancel parameters (market, order id, operator id, optional subaccount).
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
-    Task<HttpResult<BitvavoOrderId>> CancelSubaccountOrderAsync(BitvavoSubaccountCancelOrderRequest request, CancellationToken ct = default);
+    /// <param name="symbol">Symbol name, for example `ETH-EUR`</param>
+    /// <param name="orderId">Bitvavo's order identifier (UUID). Required.</param>
+    /// <param name="operatorId">Account-scoped integer identifying the request originator. Required.</param>
+    /// <param name="subaccountId">Identifier (UUID) of the subaccount. Null cancels on the main account.</param>
+    /// <param name="clientOrderId">Caller-assigned order identifier (UUID). Takes precedence over <paramref name="orderId"/> if both are supplied.</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task<HttpResult<BitvavoOrderId>> CancelSubaccountOrderAsync(
+        string symbol,
+        string orderId,
+        long operatorId,
+        string? subaccountId = null,
+        string? clientOrderId = null,
+        CancellationToken ct = default);
 
     /// <summary>
     /// Cancel all open orders on a subaccount (or the main account), optionally scoped to a
     /// single market.
     /// <para><a href="https://docs.bitvavo.com/docs/institutional-api/cancel-orders">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="operatorId">
-    /// Account-scoped integer identifying the request originator. Required by Bitvavo.
-    /// </param>
-    /// <param name="subaccountId">
-    /// Identifier (UUID) of the subaccount. Null cancels on the main account.
-    /// </param>
-    /// <param name="market">
-    /// Optional market to scope the cancellation.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="operatorId">Account-scoped integer identifying the request originator. Required by Bitvavo.</param>
+    /// <param name="subaccountId">Identifier (UUID) of the subaccount. Null cancels on the main account.</param>
+    /// <param name="symbol">Symbol name, for example `ETH-EUR`</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<HttpResult<IEnumerable<BitvavoOrderId>>> CancelSubaccountOrdersAsync(
         long operatorId,
         string? subaccountId = null,
-        string? market = null,
+        string? symbol = null,
         CancellationToken ct = default);
 }

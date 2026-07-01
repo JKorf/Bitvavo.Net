@@ -1,20 +1,15 @@
 using System.Text.Json.Serialization;
 using CryptoExchange.Net.Converters;
 using CryptoExchange.Net.Converters.SystemTextJson;
+using CryptoExchange.Net.Interfaces;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Single bid or ask in the order book â€” Bitvavo emits these as positional 2-element
-/// arrays <c>[price, size]</c>, so we decode via <see cref="ArrayConverter{T}"/>.
+/// Order book entry
 /// </summary>
-/// <remarks>
-/// Mutable setters are required by <see cref="ArrayConverter{T}"/>: the converter assigns
-/// each <see cref="ArrayPropertyAttribute"/>-tagged property by index after constructing
-/// the record. Init-only properties would break decoding.
-/// </remarks>
 [JsonConverter(typeof(ArrayConverter<BitvavoOrderBookEntry>))]
-public record BitvavoOrderBookEntry
+public record BitvavoOrderBookEntry : ISymbolOrderBookEntry
 {
     /// <summary>
     /// Price level (quote-asset units).
@@ -26,5 +21,5 @@ public record BitvavoOrderBookEntry
     /// Aggregate size at the price level (base-asset units).
     /// </summary>
     [ArrayProperty(1)]
-    public decimal Size { get; set; }
+    public decimal Quantity { get; set; }
 }

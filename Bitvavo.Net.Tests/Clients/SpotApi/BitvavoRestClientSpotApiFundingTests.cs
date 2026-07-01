@@ -176,8 +176,7 @@ public class BitvavoRestClientSpotApiFundingTests
     {
         var funding = FundingClientReturning("""{"success":true,"symbol":"BTC","amount":"0.001"}""", out var handler);
 
-        await funding.WithdrawAsync(new Bitvavo.Net.Objects.Models.Spot.BitvavoWithdrawRequest(
-            Symbol: "BTC", Amount: 0.001m, Address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"), ct: TestContext.Current.CancellationToken);
+        await funding.WithdrawAsync("BTC", 0.001m, "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh", ct: TestContext.Current.CancellationToken);
 
         handler.Requests[0].Method.ShouldBe(HttpMethod.Post);
         handler.Requests[0].RequestUri!.AbsolutePath.ShouldBe("/v2/withdrawal");
@@ -194,8 +193,7 @@ public class BitvavoRestClientSpotApiFundingTests
     {
         var funding = FundingClientReturning("""{"success":true,"symbol":"XRP","amount":"50"}""", out var handler);
 
-        await funding.WithdrawAsync(new Bitvavo.Net.Objects.Models.Spot.BitvavoWithdrawRequest(
-            Symbol: "XRP", Amount: 50m, Address: "rXY...", PaymentId: "12345", AddWithdrawalFee: true), ct: TestContext.Current.CancellationToken);
+        await funding.WithdrawAsync("XRP", 50m, "rXY...", paymentId: "12345", addWithdrawalFee: true, ct: TestContext.Current.CancellationToken);
 
         var body = await handler.Requests[0].Content!.ReadAsStringAsync(cancellationToken: TestContext.Current.CancellationToken);
         body.ShouldContain("\"paymentId\":\"12345\"");
@@ -207,8 +205,7 @@ public class BitvavoRestClientSpotApiFundingTests
     {
         var funding = FundingClientReturning("""{"success":true,"symbol":"BTC","amount":"0.0012"}""", out _);
 
-        var result = await funding.WithdrawAsync(new Bitvavo.Net.Objects.Models.Spot.BitvavoWithdrawRequest(
-            Symbol: "BTC", Amount: 0.001m, Address: "bc1q..."), ct: TestContext.Current.CancellationToken);
+        var result = await funding.WithdrawAsync("BTC", 0.001m, "bc1q...", ct: TestContext.Current.CancellationToken);
 
         result.Success.ShouldBeTrue();
         result.Data.Success.ShouldBeTrue();
@@ -216,3 +213,4 @@ public class BitvavoRestClientSpotApiFundingTests
         result.Data.Amount.ShouldBe(0.0012m);
     }
 }
+

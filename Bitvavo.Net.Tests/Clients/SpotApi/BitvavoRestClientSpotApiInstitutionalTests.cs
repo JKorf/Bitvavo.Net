@@ -115,8 +115,7 @@ public class BitvavoRestClientSpotApiInstitutionalTests
     {
         var inst = InstitutionalClientReturning("""{"transferId":"t-1","subaccountId":"sub-1","direction":"masterToSub","symbol":"EUR","amount":"100","status":"pending","createdAt":1717200000000}""", out var handler);
 
-        await inst.CreateTransferAsync(new BitvavoCreateTransferRequest(
-            SubaccountId: "sub-1", Direction: SubaccountTransferDirection.MasterToSub, Symbol: "EUR", Amount: 100m), ct: TestContext.Current.CancellationToken);
+        await inst.CreateTransferAsync("sub-1", SubaccountTransferDirection.MasterToSub, "EUR", 100m, ct: TestContext.Current.CancellationToken);
 
         handler.Requests[0].Method.ShouldBe(HttpMethod.Post);
         handler.Requests[0].RequestUri!.AbsolutePath.ShouldBe("/v2/subaccounts/transfers");
@@ -134,8 +133,7 @@ public class BitvavoRestClientSpotApiInstitutionalTests
     {
         var inst = InstitutionalClientReturning("""{"transferId":"t-9","clientRequestId":"c-9","subaccountId":"sub-2","direction":"subToMaster","symbol":"BTC","amount":"0.5","status":"completed","createdAt":1717200000000}""", out _);
 
-        var result = await inst.CreateTransferAsync(new BitvavoCreateTransferRequest(
-            SubaccountId: "sub-2", Direction: SubaccountTransferDirection.SubToMaster, Symbol: "BTC", Amount: 0.5m, ClientRequestId: "c-9"), ct: TestContext.Current.CancellationToken);
+        var result = await inst.CreateTransferAsync("sub-2", SubaccountTransferDirection.SubToMaster, "BTC", 0.5m, clientRequestId: "c-9", ct: TestContext.Current.CancellationToken);
 
         result.Success.ShouldBeTrue();
         result.Data.TransferId.ShouldBe("t-9");
@@ -253,9 +251,9 @@ public class BitvavoRestClientSpotApiInstitutionalTests
 
         result.Success.ShouldBeTrue();
         result.Data.Balances.Count.ShouldBe(2);
-        result.Data.Balances[0].Symbol.ShouldBe("EUR");
+        result.Data.Balances[0].Asset.ShouldBe("EUR");
         result.Data.Balances[0].Available.ShouldBe(1000.0m);
-        result.Data.Balances[1].Symbol.ShouldBe("BTC");
+        result.Data.Balances[1].Asset.ShouldBe("BTC");
         result.Data.Balances[1].InOrder.ShouldBe(0.1m);
     }
 
@@ -344,8 +342,7 @@ public class BitvavoRestClientSpotApiInstitutionalTests
     {
         var inst = InstitutionalClientReturning("""{"orderId":"o-1"}""", out var handler);
 
-        await inst.CancelSubaccountOrderAsync(new BitvavoSubaccountCancelOrderRequest(
-            Market: "BTC-EUR", OrderId: "o-1", OperatorId: 5, SubaccountId: "sub-1"), ct: TestContext.Current.CancellationToken);
+        await inst.CancelSubaccountOrderAsync("BTC-EUR", "o-1", operatorId: 5, subaccountId: "sub-1", ct: TestContext.Current.CancellationToken);
 
         handler.Requests[0].Method.ShouldBe(HttpMethod.Delete);
         handler.Requests[0].RequestUri!.AbsolutePath.ShouldBe("/v2/institutional/subaccounts/order");
@@ -363,8 +360,7 @@ public class BitvavoRestClientSpotApiInstitutionalTests
     {
         var inst = InstitutionalClientReturning("""{"orderId":"o-99","market":"BTC-EUR"}""", out _);
 
-        var result = await inst.CancelSubaccountOrderAsync(new BitvavoSubaccountCancelOrderRequest(
-            Market: "BTC-EUR", OrderId: "o-99", OperatorId: 1), ct: TestContext.Current.CancellationToken);
+        var result = await inst.CancelSubaccountOrderAsync("BTC-EUR", "o-99", operatorId: 1, ct: TestContext.Current.CancellationToken);
 
         result.Success.ShouldBeTrue();
         result.Data.OrderId.ShouldBe("o-99");
@@ -403,3 +399,4 @@ public class BitvavoRestClientSpotApiInstitutionalTests
         ids[1].OrderId.ShouldBe("b");
     }
 }
+

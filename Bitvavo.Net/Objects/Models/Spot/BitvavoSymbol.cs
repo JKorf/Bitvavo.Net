@@ -3,68 +3,67 @@ using System.Text.Json.Serialization;
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Bitvavo market (trading pair) descriptor as returned by the public
-/// <c>GET /v2/markets</c> endpoint. One entry per spot pair.
+/// Bitvavo symbol
 /// </summary>
-public record BitvavoMarket
+public record BitvavoSymbol
 {
     /// <summary>
-    /// Market identifier â€” Bitvavo uses dash-separated pair, e.g. <c>"ETH-EUR"</c>.
+    /// Symbol identifier
     /// </summary>
     [JsonPropertyName("market")]
-    public string Market { get; init; } = string.Empty;
+    public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
-    /// Trading status â€” typical values: <c>"trading"</c>, <c>"halted"</c>, <c>"auction"</c>.
+    /// Trading status
     /// </summary>
     [JsonPropertyName("status")]
     public string Status { get; init; } = string.Empty;
 
     /// <summary>
-    /// Base asset symbol (e.g. <c>"ETH"</c>).
+    /// Base asset
     /// </summary>
     [JsonPropertyName("base")]
     public string BaseAsset { get; init; } = string.Empty;
 
     /// <summary>
-    /// Quote asset symbol (e.g. <c>"EUR"</c>).
+    /// Quote asset
     /// </summary>
     [JsonPropertyName("quote")]
     public string QuoteAsset { get; init; } = string.Empty;
 
     /// <summary>
-    /// Significant digits used by Bitvavo when displaying prices for this market. Bitvavo returns this as a string in the JSON envelope.
+    /// Significant digits used by Bitvavo when displaying prices for this market
     /// </summary>
     [JsonPropertyName("pricePrecision")]
-    public string PricePrecision { get; init; } = string.Empty;
+    public int PricePrecision { get; init; }
 
     /// <summary>
     /// Minimum order size, expressed in the base asset.
     /// </summary>
     [JsonPropertyName("minOrderInBaseAsset")]
-    public string MinOrderInBaseAsset { get; init; } = string.Empty;
+    public decimal MinOrderInBaseAsset { get; init; }
 
     /// <summary>
     /// Minimum order size, expressed in the quote asset.
     /// </summary>
     [JsonPropertyName("minOrderInQuoteAsset")]
-    public string MinOrderInQuoteAsset { get; init; } = string.Empty;
+    public decimal MinOrderInQuoteAsset { get; init; }
 
     /// <summary>
     /// Maximum order size, expressed in the base asset.
     /// </summary>
     [JsonPropertyName("maxOrderInBaseAsset")]
-    public string MaxOrderInBaseAsset { get; init; } = string.Empty;
+    public decimal MaxOrderInBaseAsset { get; init; }
 
     /// <summary>
     /// Maximum order size, expressed in the quote asset.
     /// </summary>
     [JsonPropertyName("maxOrderInQuoteAsset")]
-    public string MaxOrderInQuoteAsset { get; init; } = string.Empty;
+    public decimal MaxOrderInQuoteAsset { get; init; }
 
     /// <summary>
-    /// Order types supported on this market (e.g. <c>["market", "limit", "stopLoss"]</c>).
+    /// Order types supported on this symbol
     /// </summary>
     [JsonPropertyName("orderTypes")]
-    public IReadOnlyList<string> OrderTypes { get; init; } = new List<string>();
+    public string[] SupportedOrderTypes { get; init; } = [];
 }

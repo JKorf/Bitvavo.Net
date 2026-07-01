@@ -1,81 +1,52 @@
-using System.Globalization;
 using Bitvavo.Net.Enums;
 using Bitvavo.Net.Interfaces.Clients.SpotApi;
 using Bitvavo.Net.Objects.Models.Spot;
+using CryptoExchange.Net;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Objects.Errors;
 using CryptoExchange.Net.SharedApis;
+using System.Globalization;
 
 namespace Bitvavo.Net.Clients.SpotApi;
 
-/// <summary>
-/// CryptoExchange.Net Shared-API implementation for the Bitvavo Spot REST client.
-/// <para>
-/// This is a facade-hosted partial on <see cref="BitvavoRestClientSpotApi"/> itself
-/// (mirroring <c>KrakenRestClientSpotApi.Shared.cs</c>): the Shared interfaces are
-/// implemented here and delegate to the typed <see cref="BitvavoRestClientSpotApi.ExchangeData"/>,
-/// <see cref="BitvavoRestClientSpotApi.Account"/>, <see cref="BitvavoRestClientSpotApi.Trading"/>,
-/// and <see cref="BitvavoRestClientSpotApi.Funding"/> sub-clients. The Shared layer is the
-/// exchange-agnostic surface other CryptoExchange.Net consumers program against.
-/// </para>
-/// <para>
-/// Bitvavo is spot-only, so every endpoint reports <see cref="TradingMode.Spot"/> as the
-/// single supported trading mode. Symbol translation goes through
-/// <see cref="BitvavoExchange.FormatSymbol(string, string, TradingMode, DateTime?)"/>
-/// (uppercase <c>BASE-QUOTE</c>).
-/// </para>
-/// </summary>
-internal partial class BitvavoRestClientSpotApi :
-    IAssetsRestClient,
-    IKlineRestClient,
-    IRecentTradeRestClient,
-    IOrderBookRestClient,
-    ISpotSymbolRestClient,
-    ISpotTickerRestClient,
-    IBookTickerRestClient,
-    IBalanceRestClient,
-    ISpotOrderRestClient,
-    ISpotOrderClientIdRestClient,
-    IFeeRestClient,
-    IDepositRestClient,
-    IWithdrawalRestClient,
-    IWithdrawRestClient,
-    IBitvavoRestClientSpotApiShared
+internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShared
 {
     private const string _exchangeName = "Bitvavo";
-    private static readonly TradingMode[] _spotOnly = [TradingMode.Spot];
+    private const string _topicId = "Bitvavo";
+
+    #region Shared client
 
     /// <inheritdoc />
-    public new string Exchange => BitvavoExchange.ExchangeName;
+    string ISharedClient.Exchange => BitvavoExchange.ExchangeName;
 
     /// <inheritdoc />
-    public TradingMode[] SupportedTradingModes => _spotOnly;
-
-    // ISharedClient.Authenticated is satisfied by the inherited RestApiClient.Authenticated.
+    TradingMode[] ISharedClient.SupportedTradingModes => [TradingMode.Spot];
 
     /// <inheritdoc />
-    public void SetDefaultExchangeParameter(string name, object value)
-        => ExchangeParameters.SetStaticParameter(Exchange, name, value);
+    void ISharedClient.SetDefaultExchangeParameter(string name, object value)
+        => ExchangeParameters.SetStaticParameter(BitvavoExchange.ExchangeName, name, value);
 
     /// <inheritdoc />
-    public void ResetDefaultExchangeParameters()
+    void ISharedClient.ResetDefaultExchangeParameters()
         => ExchangeParameters.ResetStaticParameters();
 
     /// <inheritdoc />
-    public SharedClientInfo Discover() => SharedUtils.GetClientInfo(BitvavoExchange.Metadata, this);
+    SharedClientInfo ISharedClient.Discover() => SharedUtils.GetClientInfo(BitvavoExchange.Metadata, this);
 
-    // â”€â”€ IAssetsRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Assets client
 
     /// <inheritdoc />
-    public GetAssetOptions GetAssetOptions { get; } = new(_exchangeName, false);
+    GetAssetOptions IAssetsRestClient.GetAssetOptions { get; } = new(_exchangeName, false);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedAsset>> GetAssetAsync(GetAssetRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedAsset>> IAssetsRestClient.GetAssetAsync(GetAssetRequest request, CancellationToken ct)
     {
-        var validationError = GetAssetOptions.ValidateRequest(request, this);
+        var validationError = ((IAssetsRestClient)this).GetAssetOptions.ValidateRequest(request, this);
         if (validationError != null)
-            return HttpResult.Fail<SharedAsset>(Exchange, validationError);
+            return HttpResult.Fail<SharedAsset>(BitvavoExchange.ExchangeName, validationError);
 
         var result = await ExchangeData.GetAssetsAsync(request.Asset, ct).ConfigureAwait(false);
         if (!result.Success)
@@ -83,22 +54,22 @@ internal partial class BitvavoRestClientSpotApi :
 
         var asset = result.Data!.SingleOrDefault();
         if (asset == null)
-            return HttpResult.Fail<SharedAsset>(Exchange, new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Asset not found")));
+            return HttpResult.Fail<SharedAsset>(BitvavoExchange.ExchangeName, new ServerError(new ErrorInfo(ErrorType.UnknownSymbol, "Asset not found")));
 
         return HttpResult.Ok(result, ToSharedAsset(asset));
     }
 
     /// <inheritdoc />
-    public GetAssetsOptions GetAssetsOptions { get; } = new(_exchangeName, false);
+    GetAssetsOptions IAssetsRestClient.GetAssetsOptions { get; } = new(_exchangeName, false);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedAsset[]>> GetAssetsAsync(GetAssetsRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedAsset[]>> IAssetsRestClient.GetAssetsAsync(GetAssetsRequest request, CancellationToken ct)
     {
-        var validationError = GetAssetsOptions.ValidateRequest(request, this);
+        var validationError = ((IAssetsRestClient)this).GetAssetsOptions.ValidateRequest(request, this);
         if (validationError != null)
-            return HttpResult.Fail<SharedAsset[]>(Exchange, validationError);
+            return HttpResult.Fail<SharedAsset[]>(BitvavoExchange.ExchangeName, validationError);
 
-        var result = await ExchangeData.GetAssetsAsync(symbol: null, ct).ConfigureAwait(false);
+        var result = await ExchangeData.GetAssetsAsync(asset: null, ct).ConfigureAwait(false);
         if (!result.Success)
             return HttpResult.Fail<SharedAsset[]>(result);
 
@@ -120,7 +91,9 @@ internal partial class BitvavoRestClientSpotApi :
             .ToArray(),
     };
 
-    // â”€â”€ IKlineRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Kline client
 
     private static readonly SharedKlineInterval[] _supportedKlineIntervals =
     [
@@ -140,7 +113,7 @@ internal partial class BitvavoRestClientSpotApi :
     ];
 
     /// <inheritdoc />
-    public GetKlinesOptions GetKlinesOptions { get; } = new(_exchangeName,  true,
+    GetKlinesOptions IKlineRestClient.GetKlinesOptions { get; } = new(_exchangeName,  true,
         supportsDescending: true,
         timeFilterSupported: true,
         maxLimit: 1440,
@@ -151,16 +124,13 @@ internal partial class BitvavoRestClientSpotApi :
     };
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedKline[]>> GetKlinesAsync(GetKlinesRequest request, PageRequest? nextPageToken = null, CancellationToken ct = default)
+    async Task<HttpResult<SharedKline[]>> IKlineRestClient.GetKlinesAsync(GetKlinesRequest request, PageRequest? nextPageToken, CancellationToken ct)
     {
-        // ValidateRequest rejects intervals outside _supportedKlineIntervals (e.g.
-        // SharedKlineInterval.ThreeMinutes â€” Bitvavo has no 3m bucket) before the
-        // ToBitvavoKlineInterval mapper is reached, so the mapper only sees supported values.
-        var validationError = GetKlinesOptions.ValidateRequest(request, this);
+        var validationError = ((IKlineRestClient)this).GetKlinesOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedKline[]>(Exchange, validationError);
 
-        var interval = ToBitvavoKlineInterval(request.Interval);
+        var interval = (KlineInterval)request.Interval;
         var symbol = request.Symbol!.GetSymbol(FormatSymbol);
         var result = await ExchangeData.GetKlinesAsync(
             symbol,
@@ -185,20 +155,22 @@ internal partial class BitvavoRestClientSpotApi :
             .ToArray());
     }
 
-    // â”€â”€ IRecentTradeRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Recent Trade client
 
     /// <inheritdoc />
-    public GetRecentTradesOptions GetRecentTradesOptions { get; } = new(_exchangeName, 1000, false);
+    GetRecentTradesOptions IRecentTradeRestClient.GetRecentTradesOptions { get; } = new(_exchangeName, 1000, false);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedTrade[]>> GetRecentTradesAsync(GetRecentTradesRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedTrade[]>> IRecentTradeRestClient.GetRecentTradesAsync(GetRecentTradesRequest request, CancellationToken ct)
     {
-        var validationError = GetRecentTradesOptions.ValidateRequest(request, this);
+        var validationError = ((IRecentTradeRestClient)this).GetRecentTradesOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedTrade[]>(Exchange, validationError);
 
         var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-        var result = await ExchangeData.GetPublicTradesAsync(symbol, request.Limit, ct: ct).ConfigureAwait(false);
+        var result = await ExchangeData.GetTradeHistoryAsync(symbol, request.Limit, ct: ct).ConfigureAwait(false);
         if (!result.Success)
             return HttpResult.Fail<SharedTrade[]>(result);
 
@@ -215,15 +187,17 @@ internal partial class BitvavoRestClientSpotApi :
             .ToArray());
     }
 
-    // â”€â”€ IOrderBookRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Order Book client
 
     /// <inheritdoc />
-    public GetOrderBookOptions GetOrderBookOptions { get; } = new(_exchangeName, 1, 1000, false);
+    GetOrderBookOptions IOrderBookRestClient.GetOrderBookOptions { get; } = new(_exchangeName, 1, 1000, false);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedOrderBook>> GetOrderBookAsync(GetOrderBookRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedOrderBook>> IOrderBookRestClient.GetOrderBookAsync(GetOrderBookRequest request, CancellationToken ct)
     {
-        var validationError = GetOrderBookOptions.ValidateRequest(request, this);
+        var validationError = ((IOrderBookRestClient)this).GetOrderBookOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedOrderBook>(Exchange, validationError);
 
@@ -233,23 +207,25 @@ internal partial class BitvavoRestClientSpotApi :
             return HttpResult.Fail<SharedOrderBook>(result);
 
         return HttpResult.Ok(result, new SharedOrderBook(
-            result.Data!.Asks.Select(entry => (ISymbolOrderBookEntry)new BitvavoSharedOrderBookEntry { Price = entry.Price, Quantity = entry.Size }).ToArray(),
-            result.Data!.Bids.Select(entry => (ISymbolOrderBookEntry)new BitvavoSharedOrderBookEntry { Price = entry.Price, Quantity = entry.Size }).ToArray()));
+            result.Data!.Asks,
+            result.Data!.Bids));
     }
 
-    // â”€â”€ ISpotSymbolRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Spot Symbol client
 
     /// <inheritdoc />
-    public GetSpotSymbolsOptions GetSpotSymbolsOptions { get; } = new(_exchangeName, false);
+    GetSpotSymbolsOptions ISpotSymbolRestClient.GetSpotSymbolsOptions { get; } = new(_exchangeName, false);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedSpotSymbol[]>> GetSpotSymbolsAsync(GetSymbolsRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedSpotSymbol[]>> ISpotSymbolRestClient.GetSpotSymbolsAsync(GetSymbolsRequest request, CancellationToken ct)
     {
-        var validationError = GetSpotSymbolsOptions.ValidateRequest(request, this);
+        var validationError = ((ISpotSymbolRestClient)this).GetSpotSymbolsOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedSpotSymbol[]>(Exchange, validationError);
 
-        var result = await ExchangeData.GetMarketsAsync(ct).ConfigureAwait(false);
+        var result = await ExchangeData.GetSymbolsAsync(ct).ConfigureAwait(false);
         if (!result.Success)
             return HttpResult.Fail<SharedSpotSymbol[]>(result);
 
@@ -257,60 +233,73 @@ internal partial class BitvavoRestClientSpotApi :
             .Select(market => new SharedSpotSymbol(
                 market.BaseAsset,
                 market.QuoteAsset,
-                market.Market,
+                market.Symbol,
                 string.Equals(market.Status, "trading", StringComparison.OrdinalIgnoreCase))
             {
-                MinTradeQuantity = ParseDecimal(market.MinOrderInBaseAsset),
-                MaxTradeQuantity = ParseDecimal(market.MaxOrderInBaseAsset),
-                MinNotionalValue = ParseDecimal(market.MinOrderInQuoteAsset),
-                PriceSignificantFigures = ParseInt(market.PricePrecision),
+                MinTradeQuantity = market.MinOrderInBaseAsset,
+                MaxTradeQuantity = market.MaxOrderInBaseAsset,
+                MinNotionalValue = market.MinOrderInQuoteAsset,
+                PriceSignificantFigures = market.PricePrecision,
             })
             .ToArray());
     }
 
     /// <inheritdoc />
-    public async Task<ExchangeCallResult<SharedSymbol[]>> GetSpotSymbolsForBaseAssetAsync(string baseAsset)
+    async Task<ExchangeCallResult<SharedSymbol[]>> ISpotSymbolRestClient.GetSpotSymbolsForBaseAssetAsync(string baseAsset)
     {
-        var result = await GetSpotSymbolsAsync(new GetSymbolsRequest(TradingMode.Spot)).ConfigureAwait(false);
-        if (!result.Success)
-            return ExchangeCallResult<SharedSymbol[]>.Fail(Exchange, result.Error!);
+        if (!ExchangeSymbolCache.HasCached(_topicId, EnvironmentName, null))
+        {
+            var symbols = await ((ISpotSymbolRestClient)this).GetSpotSymbolsAsync(new GetSymbolsRequest()).ConfigureAwait(false);
+            if (!symbols.Success)
+                return ExchangeCallResult<SharedSymbol[]>.Fail(Exchange, symbols.Error!);
+        }
 
-        var matches = result.Data!
-            .Where(symbol => string.Equals(symbol.BaseAsset, baseAsset, StringComparison.OrdinalIgnoreCase))
-            .Select(symbol => symbol.SharedSymbol)
-            .ToArray();
-        return ExchangeCallResult<SharedSymbol[]>.Ok(Exchange, matches);
+        return ExchangeCallResult<SharedSymbol[]>.Ok(Exchange, ExchangeSymbolCache.GetSymbolsForBaseAsset(_topicId, EnvironmentName, null, baseAsset));
     }
 
-    /// <inheritdoc />
-    public Task<ExchangeCallResult<bool>> SupportsSpotSymbolAsync(SharedSymbol symbol)
-        => SupportsSpotSymbolAsync(symbol.GetSymbol(FormatSymbol));
-
-    /// <inheritdoc />
-    public async Task<ExchangeCallResult<bool>> SupportsSpotSymbolAsync(string symbolName)
+    async Task<ExchangeCallResult<bool>> ISpotSymbolRestClient.SupportsSpotSymbolAsync(SharedSymbol symbol)
     {
-        var result = await GetSpotSymbolsAsync(new GetSymbolsRequest(TradingMode.Spot)).ConfigureAwait(false);
-        if (!result.Success)
-            return ExchangeCallResult<bool>.Fail(Exchange, result.Error!);
+        if (symbol.TradingMode != TradingMode.Spot)
+            throw new ArgumentException(nameof(symbol), "Only Spot symbols allowed");
 
-        var supported = result.Data!.Any(symbol => string.Equals(symbol.Name, symbolName, StringComparison.OrdinalIgnoreCase));
-        return ExchangeCallResult<bool>.Ok(Exchange, supported);
+        if (!ExchangeSymbolCache.HasCached(_topicId, EnvironmentName, null))
+        {
+            var symbols = await ((ISpotSymbolRestClient)this).GetSpotSymbolsAsync(new GetSymbolsRequest()).ConfigureAwait(false);
+            if (!symbols.Success)
+                return ExchangeCallResult<bool>.Fail(Exchange, symbols.Error!);
+        }
+
+        return ExchangeCallResult<bool>.Ok(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, EnvironmentName, null, symbol));
     }
 
-    // â”€â”€ ISpotTickerRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-    /// <inheritdoc />
-    public GetSpotTickerOptions GetSpotTickerOptions { get; } = new(_exchangeName, SharedTickerType.Day24H);
-
-    /// <inheritdoc />
-    public async Task<HttpResult<SharedSpotTicker>> GetSpotTickerAsync(GetTickerRequest request, CancellationToken ct = default)
+    async Task<ExchangeCallResult<bool>> ISpotSymbolRestClient.SupportsSpotSymbolAsync(string symbolName)
     {
-        var validationError = GetSpotTickerOptions.ValidateRequest(request, this);
+        if (!ExchangeSymbolCache.HasCached(_topicId, EnvironmentName, null))
+        {
+            var symbols = await ((ISpotSymbolRestClient)this).GetSpotSymbolsAsync(new GetSymbolsRequest()).ConfigureAwait(false);
+            if (!symbols.Success)
+                return ExchangeCallResult<bool>.Fail(Exchange, symbols.Error!);
+        }
+
+        return ExchangeCallResult<bool>.Ok(Exchange, ExchangeSymbolCache.SupportsSymbol(_topicId, EnvironmentName, null, symbolName));
+    }
+
+    #endregion
+
+    #region Spot Ticker client
+
+    /// <inheritdoc />
+    GetSpotTickerOptions ISpotTickerRestClient.GetSpotTickerOptions { get; } = new(_exchangeName, SharedTickerType.Day24H);
+
+    /// <inheritdoc />
+    async Task<HttpResult<SharedSpotTicker>> ISpotTickerRestClient.GetSpotTickerAsync(GetTickerRequest request, CancellationToken ct)
+    {
+        var validationError = ((ISpotTickerRestClient)this).GetSpotTickerOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedSpotTicker>(Exchange, validationError);
 
         var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-        var result = await ExchangeData.GetTicker24hAsync(symbol, ct).ConfigureAwait(false);
+        var result = await ExchangeData.GetTickersAsync(symbol, ct).ConfigureAwait(false);
         if (!result.Success)
             return HttpResult.Fail<SharedSpotTicker>(result);
 
@@ -322,25 +311,25 @@ internal partial class BitvavoRestClientSpotApi :
     }
 
     /// <inheritdoc />
-    public GetSpotTickersOptions GetSpotTickersOptions { get; } = new(_exchangeName, SharedTickerType.Day24H);
+    GetSpotTickersOptions ISpotTickerRestClient.GetSpotTickersOptions { get; } = new(_exchangeName, SharedTickerType.Day24H);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedSpotTicker[]>> GetSpotTickersAsync(GetTickersRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedSpotTicker[]>> ISpotTickerRestClient.GetSpotTickersAsync(GetTickersRequest request, CancellationToken ct)
     {
-        var validationError = GetSpotTickersOptions.ValidateRequest(request, this);
+        var validationError = ((ISpotTickerRestClient)this).GetSpotTickersOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedSpotTicker[]>(Exchange, validationError);
 
-        var result = await ExchangeData.GetTicker24hAsync(market: null, ct).ConfigureAwait(false);
+        var result = await ExchangeData.GetTickersAsync(symbol: null, ct).ConfigureAwait(false);
         if (!result.Success)
             return HttpResult.Fail<SharedSpotTicker[]>(result);
 
         return HttpResult.Ok(result, result.Data!
-            .Select(ticker => ToSharedSpotTicker(ParseSharedSymbol(ticker.Market), ticker))
+            .Select(ticker => ToSharedSpotTicker(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, ticker.Symbol), ticker))
             .ToArray());
     }
 
-    private static SharedSpotTicker ToSharedSpotTicker(SharedSymbol sharedSymbol, BitvavoTicker24h ticker)
+    private static SharedSpotTicker ToSharedSpotTicker(SharedSymbol? sharedSymbol, BitvavoTicker24h ticker)
     {
         var changePercentage = ticker.Open is > 0m && ticker.Last != null
             ? Math.Round((ticker.Last.Value - ticker.Open.Value) / ticker.Open.Value * 100m, 6)
@@ -348,7 +337,7 @@ internal partial class BitvavoRestClientSpotApi :
 
         return new SharedSpotTicker(
             sharedSymbol,
-            ticker.Market,
+            ticker.Symbol,
             ticker.Last,
             ticker.High,
             ticker.Low,
@@ -359,20 +348,22 @@ internal partial class BitvavoRestClientSpotApi :
         };
     }
 
-    // â”€â”€ IBookTickerRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Book Ticker client
 
     /// <inheritdoc />
-    public GetBookTickerOptions GetBookTickerOptions { get; } = new(_exchangeName, false);
+    GetBookTickerOptions IBookTickerRestClient.GetBookTickerOptions { get; } = new(_exchangeName, false);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedBookTicker>> GetBookTickerAsync(GetBookTickerRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedBookTicker>> IBookTickerRestClient.GetBookTickerAsync(GetBookTickerRequest request, CancellationToken ct)
     {
-        var validationError = GetBookTickerOptions.ValidateRequest(request, this);
+        var validationError = ((IBookTickerRestClient)this).GetBookTickerOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedBookTicker>(Exchange, validationError);
 
         var symbol = request.Symbol!.GetSymbol(FormatSymbol);
-        var result = await ExchangeData.GetTickerBookAsync(symbol, ct).ConfigureAwait(false);
+        var result = await ExchangeData.GetBookTickerAsync(symbol, ct).ConfigureAwait(false);
         if (!result.Success)
             return HttpResult.Fail<SharedBookTicker>(result);
 
@@ -382,39 +373,43 @@ internal partial class BitvavoRestClientSpotApi :
 
         return HttpResult.Ok(result, new SharedBookTicker(
             request.Symbol,
-            book.Market,
+            book.Symbol,
             book.Ask ?? 0m,
             book.AskSize ?? 0m,
             book.Bid ?? 0m,
             book.BidSize ?? 0m));
     }
 
-    // â”€â”€ IBalanceRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Balance client
 
     /// <inheritdoc />
-    public GetBalancesOptions GetBalancesOptions { get; } = new(_exchangeName, [AccountTypeFilter.Spot]);
+    GetBalancesOptions IBalanceRestClient.GetBalancesOptions { get; } = new(_exchangeName, [AccountTypeFilter.Spot]);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedBalance[]>> GetBalancesAsync(GetBalancesRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedBalance[]>> IBalanceRestClient.GetBalancesAsync(GetBalancesRequest request, CancellationToken ct)
     {
-        var validationError = GetBalancesOptions.ValidateRequest(request, this);
+        var validationError = ((IBalanceRestClient)this).GetBalancesOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedBalance[]>(Exchange, validationError);
 
-        var result = await Account.GetBalancesAsync(symbol: null, ct).ConfigureAwait(false);
+        var result = await Account.GetBalancesAsync(asset: null, ct).ConfigureAwait(false);
         if (!result.Success)
             return HttpResult.Fail<SharedBalance[]>(result);
 
         return HttpResult.Ok(result, result.Data!
             .Select(balance => new SharedBalance(
                 TradingMode.Spot,
-                balance.Symbol,
+                balance.Asset,
                 balance.Available ?? 0m,
                 (balance.Available ?? 0m) + (balance.InOrder ?? 0m)))
             .ToArray());
     }
 
-    // â”€â”€ ISpotOrderRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Spot Order client
 
     /// <inheritdoc />
     public SharedFeeDeductionType SpotFeeDeductionType => SharedFeeDeductionType.DeductFromOutput;
@@ -437,15 +432,15 @@ internal partial class BitvavoRestClientSpotApi :
         SharedQuantityType.BaseAndQuoteAsset);
 
     /// <inheritdoc />
-    public string GenerateClientOrderId() => Guid.NewGuid().ToString();
+    string ISpotOrderRestClient.GenerateClientOrderId() => Guid.NewGuid().ToString();
 
     /// <inheritdoc />
-    public PlaceSpotOrderOptions PlaceSpotOrderOptions { get; } = new(_exchangeName)
+    PlaceSpotOrderOptions ISpotOrderRestClient.PlaceSpotOrderOptions { get; } = new(_exchangeName)
     {
         RequiredExchangeParameters =
         [
             new ParameterDescription(
-                nameof(BitvavoPlaceOrderRequest.OperatorId),
+                "OperatorId",
                 typeof(long),
                 "Account-scoped integer identifying the originator of the order request",
                 1L),
@@ -453,28 +448,25 @@ internal partial class BitvavoRestClientSpotApi :
     };
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedId>> PlaceSpotOrderAsync(PlaceSpotOrderRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedId>> ISpotOrderRestClient.PlaceSpotOrderAsync(PlaceSpotOrderRequest request, CancellationToken ct)
     {
-        var validationError = PlaceSpotOrderOptions.ValidateRequest(request, this);
+        var validationError = ((ISpotOrderRestClient)this).PlaceSpotOrderOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-        var operatorId = ExchangeParameters.GetValue<long?>(request.ExchangeParameters, Exchange, nameof(BitvavoPlaceOrderRequest.OperatorId))
-            ?? throw new ArgumentException($"{nameof(BitvavoPlaceOrderRequest.OperatorId)} exchange parameter is required for Bitvavo orders", nameof(request));
-
-        var placeRequest = new BitvavoPlaceOrderRequest(
+        var operatorId = request.GetParamValue<long>("OperatorId");
+        var result = await Trading.PlaceOrderAsync(
             request.Symbol!.GetSymbol(FormatSymbol),
             ToBitvavoOrderSide(request.Side),
             ToBitvavoOrderType(request.OrderType),
             operatorId,
-            Amount: request.Quantity?.QuantityInBaseAsset,
-            AmountQuote: request.Quantity?.QuantityInQuoteAsset,
-            Price: request.Price,
-            TimeInForce: request.TimeInForce == null ? null : ToBitvavoTimeInForce(request.TimeInForce.Value),
-            PostOnly: request.OrderType == SharedOrderType.LimitMaker ? true : null,
-            ClientOrderId: request.ClientOrderId);
-
-        var result = await Trading.PlaceOrderAsync(placeRequest, ct).ConfigureAwait(false);
+            amount: request.Quantity?.QuantityInBaseAsset,
+            amountQuote: request.Quantity?.QuantityInQuoteAsset,
+            price: request.Price,
+            timeInForce: request.TimeInForce == null ? null : ToBitvavoTimeInForce(request.TimeInForce.Value),
+            postOnly: request.OrderType == SharedOrderType.LimitMaker ? true : null,
+            clientOrderId: request.ClientOrderId,
+            ct: ct).ConfigureAwait(false);
         if (!result.Success)
             return HttpResult.Fail<SharedId>(result);
 
@@ -482,12 +474,12 @@ internal partial class BitvavoRestClientSpotApi :
     }
 
     /// <inheritdoc />
-    public GetSpotOrderOptions GetSpotOrderOptions { get; } = new(_exchangeName, true);
+    GetSpotOrderOptions ISpotOrderRestClient.GetSpotOrderOptions { get; } = new(_exchangeName, true);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedSpotOrder>> GetSpotOrderAsync(GetOrderRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedSpotOrder>> ISpotOrderRestClient.GetSpotOrderAsync(GetOrderRequest request, CancellationToken ct)
     {
-        var validationError = GetSpotOrderOptions.ValidateRequest(request, this);
+        var validationError = ((ISpotOrderRestClient)this).GetSpotOrderOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedSpotOrder>(Exchange, validationError);
 
@@ -500,27 +492,27 @@ internal partial class BitvavoRestClientSpotApi :
     }
 
     /// <inheritdoc />
-    public GetOpenSpotOrdersOptions GetOpenSpotOrdersOptions { get; } = new(_exchangeName, true);
+    GetOpenSpotOrdersOptions ISpotOrderRestClient.GetOpenSpotOrdersOptions { get; } = new(_exchangeName, true);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedSpotOrder[]>> GetOpenSpotOrdersAsync(GetOpenOrdersRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedSpotOrder[]>> ISpotOrderRestClient.GetOpenSpotOrdersAsync(GetOpenOrdersRequest request, CancellationToken ct)
     {
-        var validationError = GetOpenSpotOrdersOptions.ValidateRequest(request, this);
+        var validationError = ((ISpotOrderRestClient)this).GetOpenSpotOrdersOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedSpotOrder[]>(Exchange, validationError);
 
         var symbol = request.Symbol?.GetSymbol(FormatSymbol);
-        var result = await Trading.GetOpenOrdersAsync(market: symbol, ct: ct).ConfigureAwait(false);
+        var result = await Trading.GetOpenOrdersAsync(symbol: symbol, ct: ct).ConfigureAwait(false);
         if (!result.Success)
             return HttpResult.Fail<SharedSpotOrder[]>(result);
 
         return HttpResult.Ok(result, result.Data!
-            .Select(order => ToSharedSpotOrder(ParseSharedSymbol(order.Market), order))
+            .Select(order => ToSharedSpotOrder(ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, order.Market)!, order))
             .ToArray());
     }
 
     /// <inheritdoc />
-    public GetSpotClosedOrdersOptions GetClosedSpotOrdersOptions { get; } = new(
+    GetSpotClosedOrdersOptions ISpotOrderRestClient.GetClosedSpotOrdersOptions { get; } = new(
         _exchangeName,
         supportsAscending: true,
         supportsDescending: true,
@@ -528,9 +520,9 @@ internal partial class BitvavoRestClientSpotApi :
         maxLimit: 1000);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedSpotOrder[]>> GetClosedSpotOrdersAsync(GetClosedOrdersRequest request, PageRequest? nextPageToken = null, CancellationToken ct = default)
+    async Task<HttpResult<SharedSpotOrder[]>> ISpotOrderRestClient.GetClosedSpotOrdersAsync(GetClosedOrdersRequest request, PageRequest? nextPageToken, CancellationToken ct)
     {
-        var validationError = GetClosedSpotOrdersOptions.ValidateRequest(request, this);
+        var validationError = ((ISpotOrderRestClient)this).GetClosedSpotOrdersOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedSpotOrder[]>(Exchange, validationError);
 
@@ -554,12 +546,12 @@ internal partial class BitvavoRestClientSpotApi :
     }
 
     /// <inheritdoc />
-    public GetSpotOrderTradesOptions GetSpotOrderTradesOptions { get; } = new(_exchangeName, true);
+    GetSpotOrderTradesOptions ISpotOrderRestClient.GetSpotOrderTradesOptions { get; } = new(_exchangeName, true);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedUserTrade[]>> GetSpotOrderTradesAsync(GetOrderTradesRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedUserTrade[]>> ISpotOrderRestClient.GetSpotOrderTradesAsync(GetOrderTradesRequest request, CancellationToken ct)
     {
-        var validationError = GetSpotOrderTradesOptions.ValidateRequest(request, this);
+        var validationError = ((ISpotOrderRestClient)this).GetSpotOrderTradesOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedUserTrade[]>(Exchange, validationError);
 
@@ -576,7 +568,7 @@ internal partial class BitvavoRestClientSpotApi :
     }
 
     /// <inheritdoc />
-    public GetSpotUserTradesOptions GetSpotUserTradesOptions { get; } = new(
+    GetSpotUserTradesOptions ISpotOrderRestClient.GetSpotUserTradesOptions { get; } = new(
         _exchangeName,
         supportsAscending: true,
         supportsDescending: true,
@@ -584,9 +576,9 @@ internal partial class BitvavoRestClientSpotApi :
         maxLimit: 1000);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedUserTrade[]>> GetSpotUserTradesAsync(GetUserTradesRequest request, PageRequest? nextPageToken = null, CancellationToken ct = default)
+    async Task<HttpResult<SharedUserTrade[]>> ISpotOrderRestClient.GetSpotUserTradesAsync(GetUserTradesRequest request, PageRequest? nextPageToken, CancellationToken ct)
     {
-        var validationError = GetSpotUserTradesOptions.ValidateRequest(request, this);
+        var validationError = ((ISpotOrderRestClient)this).GetSpotUserTradesOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedUserTrade[]>(Exchange, validationError);
 
@@ -606,13 +598,13 @@ internal partial class BitvavoRestClientSpotApi :
     }
 
     /// <inheritdoc />
-    public CancelSpotOrderOptions CancelSpotOrderOptions { get; } = new(_exchangeName, true)
+    CancelSpotOrderOptions ISpotOrderRestClient.CancelSpotOrderOptions { get; } = new(_exchangeName, true)
     {
         EndpointName = "CancelOrderRequest",
         RequiredExchangeParameters =
         [
             new ParameterDescription(
-                nameof(BitvavoPlaceOrderRequest.OperatorId),
+                "OperatorId",
                 typeof(long),
                 "Account-scoped integer identifying the originator of the cancel request",
                 1L),
@@ -620,14 +612,14 @@ internal partial class BitvavoRestClientSpotApi :
     };
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedId>> CancelSpotOrderAsync(CancelOrderRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedId>> ISpotOrderRestClient.CancelSpotOrderAsync(CancelOrderRequest request, CancellationToken ct)
     {
-        var validationError = CancelSpotOrderOptions.ValidateRequest(request, this);
+        var validationError = ((ISpotOrderRestClient)this).CancelSpotOrderOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-        var operatorId = ExchangeParameters.GetValue<long?>(request.ExchangeParameters, Exchange, nameof(BitvavoPlaceOrderRequest.OperatorId))
-            ?? throw new ArgumentException($"{nameof(BitvavoPlaceOrderRequest.OperatorId)} exchange parameter is required for Bitvavo order cancellation", nameof(request));
+        var operatorId = ExchangeParameters.GetValue<long?>(request.ExchangeParameters, Exchange, "OperatorId")
+            ?? throw new ArgumentException("OperatorId exchange parameter is required for Bitvavo order cancellation", nameof(request));
 
         var symbol = request.Symbol!.GetSymbol(FormatSymbol);
         var result = await Trading.CancelOrderAsync(symbol, operatorId, orderId: request.OrderId, ct: ct).ConfigureAwait(false);
@@ -637,15 +629,17 @@ internal partial class BitvavoRestClientSpotApi :
         return HttpResult.Ok(result, new SharedId(result.Data!.OrderId));
     }
 
-    // â”€â”€ ISpotOrderClientIdRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Spot Order Client Id client
 
     /// <inheritdoc />
-    public GetSpotOrderByClientOrderIdOptions GetSpotOrderByClientOrderIdOptions { get; } = new(_exchangeName, true);
+    GetSpotOrderByClientOrderIdOptions ISpotOrderClientIdRestClient.GetSpotOrderByClientOrderIdOptions { get; } = new(_exchangeName, true);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedSpotOrder>> GetSpotOrderByClientOrderIdAsync(GetOrderRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedSpotOrder>> ISpotOrderClientIdRestClient.GetSpotOrderByClientOrderIdAsync(GetOrderRequest request, CancellationToken ct)
     {
-        var validationError = GetSpotOrderByClientOrderIdOptions.ValidateRequest(request, this);
+        var validationError = ((ISpotOrderClientIdRestClient)this).GetSpotOrderByClientOrderIdOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedSpotOrder>(Exchange, validationError);
 
@@ -658,13 +652,13 @@ internal partial class BitvavoRestClientSpotApi :
     }
 
     /// <inheritdoc />
-    public CancelSpotOrderByClientOrderIdOptions CancelSpotOrderByClientOrderIdOptions { get; } = new(_exchangeName, true)
+    CancelSpotOrderByClientOrderIdOptions ISpotOrderClientIdRestClient.CancelSpotOrderByClientOrderIdOptions { get; } = new(_exchangeName, true)
     {
         EndpointName = "CancelOrderByClientOrderIdRequest",
         RequiredExchangeParameters =
         [
             new ParameterDescription(
-                nameof(BitvavoPlaceOrderRequest.OperatorId),
+                "OperatorId",
                 typeof(long),
                 "Account-scoped integer identifying the originator of the cancel request",
                 1L),
@@ -672,14 +666,14 @@ internal partial class BitvavoRestClientSpotApi :
     };
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedId>> CancelSpotOrderByClientOrderIdAsync(CancelOrderRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedId>> ISpotOrderClientIdRestClient.CancelSpotOrderByClientOrderIdAsync(CancelOrderRequest request, CancellationToken ct)
     {
-        var validationError = CancelSpotOrderByClientOrderIdOptions.ValidateRequest(request, this);
+        var validationError = ((ISpotOrderClientIdRestClient)this).CancelSpotOrderByClientOrderIdOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-        var operatorId = ExchangeParameters.GetValue<long?>(request.ExchangeParameters, Exchange, nameof(BitvavoPlaceOrderRequest.OperatorId))
-            ?? throw new ArgumentException($"{nameof(BitvavoPlaceOrderRequest.OperatorId)} exchange parameter is required for Bitvavo order cancellation", nameof(request));
+        var operatorId = ExchangeParameters.GetValue<long?>(request.ExchangeParameters, Exchange, "OperatorId")
+            ?? throw new ArgumentException("OperatorId exchange parameter is required for Bitvavo order cancellation", nameof(request));
 
         var symbol = request.Symbol!.GetSymbol(FormatSymbol);
         var result = await Trading.CancelOrderAsync(symbol, operatorId, clientOrderId: request.OrderId, ct: ct).ConfigureAwait(false);
@@ -740,15 +734,17 @@ internal partial class BitvavoRestClientSpotApi :
         };
     }
 
-    // â”€â”€ IFeeRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Fee client
 
     /// <inheritdoc />
-    public GetFeeOptions GetFeeOptions { get; } = new(_exchangeName, true);
+    GetFeeOptions IFeeRestClient.GetFeeOptions { get; } = new(_exchangeName, true);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedFee>> GetFeesAsync(GetFeeRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedFee>> IFeeRestClient.GetFeesAsync(GetFeeRequest request, CancellationToken ct)
     {
-        var validationError = GetFeeOptions.ValidateRequest(request, this);
+        var validationError = ((IFeeRestClient)this).GetFeeOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedFee>(Exchange, validationError);
 
@@ -762,15 +758,17 @@ internal partial class BitvavoRestClientSpotApi :
             (result.Data!.Taker ?? 0m) * 100m));
     }
 
-    // â”€â”€ IDepositRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Deposit client
 
     /// <inheritdoc />
-    public GetDepositAddressesOptions GetDepositAddressesOptions { get; } = new(_exchangeName, true);
+    GetDepositAddressesOptions IDepositRestClient.GetDepositAddressesOptions { get; } = new(_exchangeName, true);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedDepositAddress[]>> GetDepositAddressesAsync(GetDepositAddressesRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedDepositAddress[]>> IDepositRestClient.GetDepositAddressesAsync(GetDepositAddressesRequest request, CancellationToken ct)
     {
-        var validationError = GetDepositAddressesOptions.ValidateRequest(request, this);
+        var validationError = ((IDepositRestClient)this).GetDepositAddressesOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedDepositAddress[]>(Exchange, validationError);
 
@@ -793,15 +791,15 @@ internal partial class BitvavoRestClientSpotApi :
     }
 
     /// <inheritdoc />
-    public GetDepositsOptions GetDepositsOptions { get; } = new(_exchangeName,  true,
+    GetDepositsOptions IDepositRestClient.GetDepositsOptions { get; } = new(_exchangeName,  true,
         supportsDescending: true,
         timeFilterSupported: true,
         maxLimit: 1000);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedDeposit[]>> GetDepositsAsync(GetDepositsRequest request, PageRequest? nextPageToken = null, CancellationToken ct = default)
+    async Task<HttpResult<SharedDeposit[]>> IDepositRestClient.GetDepositsAsync(GetDepositsRequest request, PageRequest? nextPageToken, CancellationToken ct)
     {
-        var validationError = GetDepositsOptions.ValidateRequest(request, this);
+        var validationError = ((IDepositRestClient)this).GetDepositsOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedDeposit[]>(Exchange, validationError);
 
@@ -832,18 +830,20 @@ internal partial class BitvavoRestClientSpotApi :
             .ToArray());
     }
 
-    // â”€â”€ IWithdrawalRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Withdrawal client
 
     /// <inheritdoc />
-    public GetWithdrawalsOptions GetWithdrawalsOptions { get; } = new(_exchangeName,  true,
+    GetWithdrawalsOptions IWithdrawalRestClient.GetWithdrawalsOptions { get; } = new(_exchangeName,  true,
         supportsDescending: true,
         timeFilterSupported: true,
         maxLimit: 1000);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedWithdrawal[]>> GetWithdrawalsAsync(GetWithdrawalsRequest request, PageRequest? nextPageToken = null, CancellationToken ct = default)
+    async Task<HttpResult<SharedWithdrawal[]>> IWithdrawalRestClient.GetWithdrawalsAsync(GetWithdrawalsRequest request, PageRequest? nextPageToken, CancellationToken ct)
     {
-        var validationError = GetWithdrawalsOptions.ValidateRequest(request, this);
+        var validationError = ((IWithdrawalRestClient)this).GetWithdrawalsOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedWithdrawal[]>(Exchange, validationError);
 
@@ -872,25 +872,26 @@ internal partial class BitvavoRestClientSpotApi :
             .ToArray());
     }
 
-    // â”€â”€ IWithdrawRestClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Withdraw client
 
     /// <inheritdoc />
-    public WithdrawOptions WithdrawOptions { get; } = new(_exchangeName);
+    WithdrawOptions IWithdrawRestClient.WithdrawOptions { get; } = new(_exchangeName);
 
     /// <inheritdoc />
-    public async Task<HttpResult<SharedId>> WithdrawAsync(WithdrawRequest request, CancellationToken ct = default)
+    async Task<HttpResult<SharedId>> IWithdrawRestClient.WithdrawAsync(WithdrawRequest request, CancellationToken ct)
     {
-        var validationError = WithdrawOptions.ValidateRequest(request, this);
+        var validationError = ((IWithdrawRestClient)this).WithdrawOptions.ValidateRequest(request, this);
         if (validationError != null)
             return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-        var withdrawRequest = new BitvavoWithdrawRequest(
+        var result = await Funding.WithdrawAsync(
             request.Asset,
             request.Quantity,
             request.Address,
-            PaymentId: request.AddressTag);
-
-        var result = await Funding.WithdrawAsync(withdrawRequest, ct).ConfigureAwait(false);
+            paymentId: request.AddressTag,
+            ct: ct).ConfigureAwait(false);
         if (!result.Success)
             return HttpResult.Fail<SharedId>(result);
 
@@ -899,56 +900,9 @@ internal partial class BitvavoRestClientSpotApi :
         return HttpResult.Ok(result, new SharedId(result.Data!.Symbol));
     }
 
-    // â”€â”€ Shared helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
 
-    /// <summary>
-    /// Parse a Bitvavo wire symbol (<c>BASE-QUOTE</c>) back into a <see cref="SharedSymbol"/>.
-    /// Used when the typed DTO carries only the joined market string (ticker / order list
-    /// responses) and the Shared model needs the split base / quote.
-    /// </summary>
-    private static SharedSymbol ParseSharedSymbol(string market)
-    {
-        var dash = market.IndexOf('-');
-        return dash > 0
-            ? new SharedSymbol(TradingMode.Spot, market[..dash], market[(dash + 1)..], market)
-            : new SharedSymbol(TradingMode.Spot, market, string.Empty, market);
-    }
-
-    /// <summary>
-    /// Map a CryptoExchange.Net <see cref="SharedKlineInterval"/> onto Bitvavo's
-    /// <see cref="KlineInterval"/>. The two enums do not share underlying integer values
-    /// (<see cref="SharedKlineInterval"/> is interval-seconds, <see cref="KlineInterval"/>
-    /// is ordinal) so an explicit map is mandatory â€” a direct cast would silently corrupt.
-    /// <see cref="SharedKlineInterval.ThreeMinutes"/> has no Bitvavo equivalent; callers are
-    /// guarded by <see cref="GetKlinesOptions"/> validation before this mapper runs.
-    /// </summary>
-    private static KlineInterval ToBitvavoKlineInterval(SharedKlineInterval interval) => interval switch
-    {
-        SharedKlineInterval.OneMinute => KlineInterval.OneMinute,
-        SharedKlineInterval.FiveMinutes => KlineInterval.FiveMinutes,
-        SharedKlineInterval.FifteenMinutes => KlineInterval.FifteenMinutes,
-        SharedKlineInterval.ThirtyMinutes => KlineInterval.ThirtyMinutes,
-        SharedKlineInterval.OneHour => KlineInterval.OneHour,
-        SharedKlineInterval.TwoHours => KlineInterval.TwoHours,
-        SharedKlineInterval.FourHours => KlineInterval.FourHours,
-        SharedKlineInterval.SixHours => KlineInterval.SixHours,
-        SharedKlineInterval.EightHours => KlineInterval.EightHours,
-        SharedKlineInterval.TwelveHours => KlineInterval.TwelveHours,
-        SharedKlineInterval.OneDay => KlineInterval.OneDay,
-        SharedKlineInterval.OneWeek => KlineInterval.OneWeek,
-        SharedKlineInterval.OneMonth => KlineInterval.OneMonth,
-        _ => throw new ArgumentOutOfRangeException(nameof(interval), interval, "Interval not supported by Bitvavo"),
-    };
-
-    private static decimal? ParseDecimal(string value)
-        => decimal.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)
-            ? parsed
-            : null;
-
-    private static int? ParseInt(string value)
-        => int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed)
-            ? parsed
-            : null;
+    #region Shared helpers
 
     private static SharedOrderSide ToSharedOrderSide(OrderSide side) => side switch
     {
@@ -1032,4 +986,6 @@ internal partial class BitvavoRestClientSpotApi :
         "rejected" => SharedTransferStatus.Failed,
         _ => SharedTransferStatus.Unknown,
     };
+
+    #endregion
 }

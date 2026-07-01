@@ -16,10 +16,8 @@ public interface IBitvavoRestClientSpotApiExchangeData
     /// <a href="https://docs.bitvavo.com/docs/rest-api/get-markets">Bitvavo API docs</a>
     /// </para>
     /// </summary>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
-    Task<HttpResult<IEnumerable<BitvavoMarket>>> GetMarketsAsync(CancellationToken ct = default);
+    /// <param name="ct">Cancellation token.</param>
+    Task<HttpResult<IEnumerable<BitvavoSymbol>>> GetSymbolsAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Get historical candles (klines) for a given market and interval.
@@ -27,26 +25,14 @@ public interface IBitvavoRestClientSpotApiExchangeData
     /// <a href="https://docs.bitvavo.com/docs/rest-api/get-candles">Bitvavo API docs</a>
     /// </para>
     /// </summary>
-    /// <param name="market">
-    /// Market identifier, e.g. <c>"ETH-EUR"</c>.
-    /// </param>
-    /// <param name="interval">
-    /// Candle interval (1m, 5m, 1h, 1d, etc.).
-    /// </param>
-    /// <param name="limit">
-    /// Maximum candles to return (1-1440). Defaults to Bitvavo's server default if omitted.
-    /// </param>
-    /// <param name="startTime">
-    /// Inclusive UTC lower bound â€” fetches candles starting from this time.
-    /// </param>
-    /// <param name="endTime">
-    /// Inclusive UTC upper bound.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="symbol">Symbol name, for example `ETH-EUR`</param>
+    /// <param name="interval">Candle interval (1m, 5m, 1h, 1d, etc.).</param>
+    /// <param name="limit">Maximum candles to return (1-1440). Defaults to Bitvavo's server default if omitted.</param>
+    /// <param name="startTime">Inclusive UTC lower bound â€” fetches candles starting from this time.</param>
+    /// <param name="endTime">Inclusive UTC upper bound.</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<HttpResult<IEnumerable<BitvavoKline>>> GetKlinesAsync(
-        string market,
+        string symbol,
         KlineInterval interval,
         int? limit = null,
         DateTime? startTime = null,
@@ -58,102 +44,63 @@ public interface IBitvavoRestClientSpotApiExchangeData
     /// requests â€” <c>Bitvavo-Access-Window</c> rejects requests too far from the server's clock.
     /// <para><a href="https://docs.bitvavo.com/docs/rest-api/get-server-time">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="ct">Cancellation token.</param>
     Task<HttpResult<BitvavoServerTime>> GetServerTimeAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Get all Bitvavo-supported assets, optionally filtered to a single symbol.
     /// <para><a href="https://docs.bitvavo.com/docs/rest-api/get-asset-data">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="symbol">
-    /// Optional symbol filter (e.g. <c>"BTC"</c>).
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
-    Task<HttpResult<IEnumerable<BitvavoAsset>>> GetAssetsAsync(string? symbol = null, CancellationToken ct = default);
+    /// <param name="asset">Asset</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task<HttpResult<IEnumerable<BitvavoAsset>>> GetAssetsAsync(string? asset = null, CancellationToken ct = default);
 
     /// <summary>
-    /// Get the most-recent traded price for one or all markets.
+    /// Get the most-recent traded price for one or all symbols.
     /// <para><a href="https://docs.bitvavo.com/docs/rest-api/get-ticker-prices">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="market">
-    /// Optional market filter (e.g. <c>"ETH-EUR"</c>). Null returns every market.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
-    Task<HttpResult<IEnumerable<BitvavoTickerPrice>>> GetTickerPricesAsync(string? market = null, CancellationToken ct = default);
+    /// <param name="symbol">Symbol name, for example `ETH-EUR`</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task<HttpResult<IEnumerable<BitvavoTickerPrice>>> GetPricesAsync(string? symbol = null, CancellationToken ct = default);
 
     /// <summary>
-    /// Get the top-of-book quote (best bid + best ask) for one or all markets.
+    /// Get the top-of-book quote (best bid + best ask) for one or all symbols.
     /// <para><a href="https://docs.bitvavo.com/docs/rest-api/get-ticker-book">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="market">
-    /// Optional market filter.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
-    Task<HttpResult<IEnumerable<BitvavoTickerBook>>> GetTickerBookAsync(string? market = null, CancellationToken ct = default);
+    /// <param name="symbol">Symbol name, for example `ETH-EUR`</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task<HttpResult<IEnumerable<BitvavoTickerBook>>> GetBookTickerAsync(string? symbol = null, CancellationToken ct = default);
 
     /// <summary>
-    /// Get the 24-hour rolling OHLCV + best-quote stats for one or all markets.
+    /// Get the 24-hour rolling OHLCV + best-quote stats for one or all symbols.
     /// <para><a href="https://docs.bitvavo.com/docs/rest-api/get-candlestick-data-24-h">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="market">
-    /// Optional market filter.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
-    Task<HttpResult<IEnumerable<BitvavoTicker24h>>> GetTicker24hAsync(string? market = null, CancellationToken ct = default);
+    /// <param name="symbol">Symbol name, for example `ETH-EUR`</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task<HttpResult<IEnumerable<BitvavoTicker24h>>> GetTickersAsync(string? symbol = null, CancellationToken ct = default);
 
     /// <summary>
-    /// Get the order-book snapshot for a single market.
+    /// Get the order-book snapshot for a single symbol.
     /// <para><a href="https://docs.bitvavo.com/docs/rest-api/get-order-book">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="market">
-    /// Market identifier. Required.
-    /// </param>
-    /// <param name="depth">
-    /// Maximum entries per side (1â€“1000, default 1000).
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
-    Task<HttpResult<BitvavoOrderBook>> GetOrderBookAsync(string market, int? depth = null, CancellationToken ct = default);
+    /// <param name="symbol">Symbol name, for example `ETH-EUR`</param>
+    /// <param name="depth">Maximum entries per side (1â€“1000, default 1000).</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task<HttpResult<BitvavoOrderBook>> GetOrderBookAsync(string symbol, int? depth = null, CancellationToken ct = default);
 
     /// <summary>
-    /// Get the public trade tape for a single market â€” distinct from the user's own
-    /// trade fills returned by <c>Trading.GetUserTradesAsync</c>.
+    /// Get trade history
     /// <para><a href="https://docs.bitvavo.com/docs/rest-api/get-trades">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="market">
-    /// Market identifier. Required.
-    /// </param>
-    /// <param name="limit">
-    /// Maximum entries (1â€“1000, default 500).
-    /// </param>
-    /// <param name="startTime">
-    /// Inclusive UTC lower bound. Bitvavo limits the window to 24 hours.
-    /// </param>
-    /// <param name="endTime">
-    /// Inclusive UTC upper bound.
-    /// </param>
-    /// <param name="tradeIdFrom">
-    /// Pagination cursor â€” only return trades with id &gt;= this value.
-    /// </param>
-    /// <param name="tradeIdTo">
-    /// Pagination cursor â€” only return trades with id &lt;= this value.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
-    Task<HttpResult<IEnumerable<BitvavoPublicTrade>>> GetPublicTradesAsync(
-        string market,
+    /// <param name="symbol">Symbol name, for example `ETH-EUR`</param>
+    /// <param name="limit">Maximum entries (1â€“1000, default 500).</param>
+    /// <param name="startTime">Inclusive UTC lower bound. Bitvavo limits the window to 24 hours.</param>
+    /// <param name="endTime">Inclusive UTC upper bound.</param>
+    /// <param name="tradeIdFrom">Pagination cursor â€” only return trades with id &gt;= this value.</param>
+    /// <param name="tradeIdTo">Pagination cursor â€” only return trades with id &lt;= this value.</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task<HttpResult<IEnumerable<BitvavoPublicTrade>>> GetTradeHistoryAsync(
+        string symbol,
         int? limit = null,
         DateTime? startTime = null,
         DateTime? endTime = null,

@@ -6,34 +6,8 @@ using CryptoExchange.Net.SharedApis;
 
 namespace Bitvavo.Net.Clients.SpotApi;
 
-/// <summary>
-/// CryptoExchange.Net Shared-API implementation for the Bitvavo Spot WebSocket client.
-/// <para>
-/// Facade-hosted partial on <see cref="BitvavoSocketClientSpotApi"/> (mirroring
-/// <c>KrakenSocketClientSpotApi.Shared.cs</c>): the Shared socket interfaces are
-/// implemented here and delegate to the typed <see cref="BitvavoSocketClientSpotApi.ExchangeData"/>
-/// and <see cref="BitvavoSocketClientSpotApi.Account"/> sub-clients.
-/// </para>
-/// <para>
-/// <see cref="IBalanceSocketClient"/> is intentionally NOT implemented: Bitvavo's private
-/// <c>account</c> channel emits only <c>order</c> and <c>fill</c> events â€” it carries no
-/// balance snapshot or balance-delta stream â€” so there is no data source to back a balance
-/// subscription. That is a correct ISP-driven omission, not a stub.
-/// </para>
-/// <para>
-/// The Shared <see cref="ISpotOrderSocketClient"/> / <see cref="IUserTradeSocketClient"/>
-/// request types (<see cref="SubscribeSpotOrderRequest"/> / <see cref="SubscribeUserTradeRequest"/>)
-/// carry no symbol set, but Bitvavo's <c>account</c> channel is subscribed per-market. The
-/// market list is therefore supplied through the <see cref="ExchangeParameters"/> escape
-/// hatch under the <c>Markets</c> key (a <c>string[]</c>) â€” the canonical CryptoExchange.Net
-/// mechanism for exchange-specific subscription parameters.
-/// </para>
-/// </summary>
+/// <inheritdoc />
 internal sealed partial class BitvavoSocketClientSpotApi :
-    IKlineSocketClient,
-    ITradeSocketClient,
-    ISpotOrderSocketClient,
-    IUserTradeSocketClient,
     IBitvavoSocketClientSpotApiShared
 {
     private const string _exchangeName = "Bitvavo";
@@ -46,26 +20,30 @@ internal sealed partial class BitvavoSocketClientSpotApi :
 
     private static readonly TradingMode[] _spotOnlySocket = [TradingMode.Spot];
 
-    /// <inheritdoc />
-    public new string Exchange => BitvavoExchange.ExchangeName;
+    #region Shared client
 
     /// <inheritdoc />
-    public TradingMode[] SupportedTradingModes => _spotOnlySocket;
+    string ISharedClient.Exchange => BitvavoExchange.ExchangeName;
+
+    /// <inheritdoc />
+    TradingMode[] ISharedClient.SupportedTradingModes => _spotOnlySocket;
 
     // ISharedClient.Authenticated is satisfied by the inherited SocketApiClient.Authenticated.
 
     /// <inheritdoc />
-    public void SetDefaultExchangeParameter(string name, object value)
-        => ExchangeParameters.SetStaticParameter(Exchange, name, value);
+    void ISharedClient.SetDefaultExchangeParameter(string name, object value)
+        => ExchangeParameters.SetStaticParameter(BitvavoExchange.ExchangeName, name, value);
 
     /// <inheritdoc />
-    public void ResetDefaultExchangeParameters()
+    void ISharedClient.ResetDefaultExchangeParameters()
         => ExchangeParameters.ResetStaticParameters();
 
     /// <inheritdoc />
-    public SharedClientInfo Discover() => SharedUtils.GetClientInfo(BitvavoExchange.Metadata, this);
+    SharedClientInfo ISharedClient.Discover() => SharedUtils.GetClientInfo(BitvavoExchange.Metadata, this);
 
-    // â”€â”€ IKlineSocketClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Kline client
 
     private static readonly SharedKlineInterval[] _supportedSocketKlineIntervals =
     [
@@ -85,19 +63,19 @@ internal sealed partial class BitvavoSocketClientSpotApi :
     ];
 
     /// <inheritdoc />
-    public SubscribeKlineOptions SubscribeKlineOptions { get; } = new(_exchangeName, false, _supportedSocketKlineIntervals);
+    SubscribeKlineOptions IKlineSocketClient.SubscribeKlineOptions { get; } = new(_exchangeName, false, _supportedSocketKlineIntervals);
 
     /// <inheritdoc />
-    public async Task<WebSocketResult<UpdateSubscription>> SubscribeToKlineUpdatesAsync(
+    async Task<WebSocketResult<UpdateSubscription>> IKlineSocketClient.SubscribeToKlineUpdatesAsync(
         SubscribeKlineRequest request,
         Action<DataEvent<SharedKline>> handler,
-        CancellationToken ct = default)
+        CancellationToken ct)
     {
-        var validationError = SubscribeKlineOptions.ValidateRequest(request, this);
+        var validationError = ((IKlineSocketClient)this).SubscribeKlineOptions.ValidateRequest(request, this);
         if (validationError != null)
             return WebSocketResult.Fail<UpdateSubscription>(Exchange, validationError);
 
-        var interval = ToBitvavoSocketKlineInterval(request.Interval);
+        var interval = (KlineInterval)request.Interval;
         var sharedSymbol = request.Symbol!;
         var symbol = sharedSymbol.GetSymbol(FormatSymbol);
 
@@ -106,8 +84,6 @@ internal sealed partial class BitvavoSocketClientSpotApi :
             interval,
             update =>
             {
-                // Bitvavo's candle event carries an array of snapshots â€” surface each as
-                // a separate SharedKline update so the consumer sees one event per candle.
                 foreach (var candle in update.Data.Candle)
                 {
                     handler(update.ToType(new SharedKline(
@@ -126,18 +102,20 @@ internal sealed partial class BitvavoSocketClientSpotApi :
         return result;
     }
 
-    // â”€â”€ ITradeSocketClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Trade client
 
     /// <inheritdoc />
-    public SubscribeTradeOptions SubscribeTradeOptions { get; } = new(_exchangeName, false);
+    SubscribeTradeOptions ITradeSocketClient.SubscribeTradeOptions { get; } = new(_exchangeName, false);
 
     /// <inheritdoc />
-    public async Task<WebSocketResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(
+    async Task<WebSocketResult<UpdateSubscription>> ITradeSocketClient.SubscribeToTradeUpdatesAsync(
         SubscribeTradeRequest request,
         Action<DataEvent<SharedTrade[]>> handler,
-        CancellationToken ct = default)
+        CancellationToken ct)
     {
-        var validationError = SubscribeTradeOptions.ValidateRequest(request, this);
+        var validationError = ((ITradeSocketClient)this).SubscribeTradeOptions.ValidateRequest(request, this);
         if (validationError != null)
             return WebSocketResult.Fail<UpdateSubscription>(Exchange, validationError);
 
@@ -163,10 +141,12 @@ internal sealed partial class BitvavoSocketClientSpotApi :
         return result;
     }
 
-    // â”€â”€ ISpotOrderSocketClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region Spot Order client
 
     /// <inheritdoc />
-    public SubscribeSpotOrderOptions SubscribeSpotOrderOptions { get; } = new(_exchangeName, true)
+    SubscribeSpotOrderOptions ISpotOrderSocketClient.SubscribeSpotOrderOptions { get; } = new(_exchangeName, true)
     {
         EndpointName = "SubscribeSpotOrderRequest",
         RequiredExchangeParameters =
@@ -180,12 +160,12 @@ internal sealed partial class BitvavoSocketClientSpotApi :
     };
 
     /// <inheritdoc />
-    public async Task<WebSocketResult<UpdateSubscription>> SubscribeToSpotOrderUpdatesAsync(
+    async Task<WebSocketResult<UpdateSubscription>> ISpotOrderSocketClient.SubscribeToSpotOrderUpdatesAsync(
         SubscribeSpotOrderRequest request,
         Action<DataEvent<SharedSpotOrder[]>> handler,
-        CancellationToken ct = default)
+        CancellationToken ct)
     {
-        var validationError = SubscribeSpotOrderOptions.ValidateRequest(request, this);
+        var validationError = ((ISpotOrderSocketClient)this).SubscribeSpotOrderOptions.ValidateRequest(request, this);
         if (validationError != null)
             return WebSocketResult.Fail<UpdateSubscription>(Exchange, validationError);
 
@@ -225,10 +205,12 @@ internal sealed partial class BitvavoSocketClientSpotApi :
         return result;
     }
 
-    // â”€â”€ IUserTradeSocketClient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
+
+    #region User Trade client
 
     /// <inheritdoc />
-    public SubscribeUserTradeOptions SubscribeUserTradeOptions { get; } = new(_exchangeName, true)
+    SubscribeUserTradeOptions IUserTradeSocketClient.SubscribeUserTradeOptions { get; } = new(_exchangeName, true)
     {
         EndpointName = "SubscribeUserTradeRequest",
         RequiredExchangeParameters =
@@ -242,12 +224,12 @@ internal sealed partial class BitvavoSocketClientSpotApi :
     };
 
     /// <inheritdoc />
-    public async Task<WebSocketResult<UpdateSubscription>> SubscribeToUserTradeUpdatesAsync(
+    async Task<WebSocketResult<UpdateSubscription>> IUserTradeSocketClient.SubscribeToUserTradeUpdatesAsync(
         SubscribeUserTradeRequest request,
         Action<DataEvent<SharedUserTrade[]>> handler,
-        CancellationToken ct = default)
+        CancellationToken ct)
     {
-        var validationError = SubscribeUserTradeOptions.ValidateRequest(request, this);
+        var validationError = ((IUserTradeSocketClient)this).SubscribeUserTradeOptions.ValidateRequest(request, this);
         if (validationError != null)
             return WebSocketResult.Fail<UpdateSubscription>(Exchange, validationError);
 
@@ -285,33 +267,9 @@ internal sealed partial class BitvavoSocketClientSpotApi :
         return result;
     }
 
-    // â”€â”€ Shared socket helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    #endregion
 
-    private static SharedSymbol ParseSocketSharedSymbol(string market)
-    {
-        var dash = market.IndexOf('-');
-        return dash > 0
-            ? new SharedSymbol(TradingMode.Spot, market[..dash], market[(dash + 1)..], market)
-            : new SharedSymbol(TradingMode.Spot, market, string.Empty, market);
-    }
-
-    private static KlineInterval ToBitvavoSocketKlineInterval(SharedKlineInterval interval) => interval switch
-    {
-        SharedKlineInterval.OneMinute => KlineInterval.OneMinute,
-        SharedKlineInterval.FiveMinutes => KlineInterval.FiveMinutes,
-        SharedKlineInterval.FifteenMinutes => KlineInterval.FifteenMinutes,
-        SharedKlineInterval.ThirtyMinutes => KlineInterval.ThirtyMinutes,
-        SharedKlineInterval.OneHour => KlineInterval.OneHour,
-        SharedKlineInterval.TwoHours => KlineInterval.TwoHours,
-        SharedKlineInterval.FourHours => KlineInterval.FourHours,
-        SharedKlineInterval.SixHours => KlineInterval.SixHours,
-        SharedKlineInterval.EightHours => KlineInterval.EightHours,
-        SharedKlineInterval.TwelveHours => KlineInterval.TwelveHours,
-        SharedKlineInterval.OneDay => KlineInterval.OneDay,
-        SharedKlineInterval.OneWeek => KlineInterval.OneWeek,
-        SharedKlineInterval.OneMonth => KlineInterval.OneMonth,
-        _ => throw new ArgumentOutOfRangeException(nameof(interval), interval, "Interval not supported by Bitvavo"),
-    };
+    #region Shared socket helpers
 
     private static SharedOrderSide ToSharedSocketOrderSide(OrderSide side) => side switch
     {
@@ -356,4 +314,6 @@ internal sealed partial class BitvavoSocketClientSpotApi :
         TimeInForce.FillOrKill => SharedTimeInForce.FillOrKill,
         _ => throw new ArgumentOutOfRangeException(nameof(timeInForce), timeInForce, "Unmapped Bitvavo TimeInForce"),
     };
+
+    #endregion
 }

@@ -3,8 +3,7 @@ using System.Text.Json.Serialization;
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Snapshot of the order book for a single market as returned by
-/// <c>GET /v2/{market}/book</c>.
+/// Snapshot of the order book for a single market
 /// </summary>
 public record BitvavoOrderBook
 {
@@ -25,11 +24,11 @@ public record BitvavoOrderBook
     /// Buy orders, sorted by descending price (best bid first).
     /// </summary>
     [JsonPropertyName("bids")]
-    public IReadOnlyList<BitvavoOrderBookEntry> Bids { get; init; } = new List<BitvavoOrderBookEntry>();
+    public BitvavoOrderBookEntry[] Bids { get; init; } = [];
 
     /// <summary>
     /// Sell orders, sorted by ascending price (best ask first).
     /// </summary>
     [JsonPropertyName("asks")]
-    public IReadOnlyList<BitvavoOrderBookEntry> Asks { get; init; } = new List<BitvavoOrderBookEntry>();
+    public BitvavoOrderBookEntry[] Asks { get; init; } = [];
 }

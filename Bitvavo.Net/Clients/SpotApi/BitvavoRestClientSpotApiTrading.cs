@@ -1,3 +1,4 @@
+using Bitvavo.Net.Enums;
 using Bitvavo.Net.Interfaces.Clients.SpotApi;
 using Bitvavo.Net.Objects.Models.Spot;
 using CryptoExchange.Net.Objects;
@@ -16,46 +17,76 @@ internal sealed class BitvavoRestClientSpotApiTrading : IBitvavoRestClientSpotAp
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<BitvavoOrder>> PlaceOrderAsync(BitvavoPlaceOrderRequest request, CancellationToken ct = default)
+    public Task<HttpResult<BitvavoOrder>> PlaceOrderAsync(
+        string market,
+        OrderSide side,
+        OrderType orderType,
+        long operatorId,
+        decimal? amount = null,
+        decimal? amountQuote = null,
+        decimal? price = null,
+        decimal? triggerAmount = null,
+        TriggerType? triggerType = null,
+        TriggerReference? triggerReference = null,
+        TimeInForce? timeInForce = null,
+        bool? postOnly = null,
+        SelfTradePrevention? selfTradePrevention = null,
+        bool? responseRequired = null,
+        string? clientOrderId = null,
+        int? codGroupId = null,
+        CancellationToken ct = default)
     {
         var body = new Parameters(BitvavoExchange._parameterSerializationSettings);
-        body.Add("market", request.Market);
-        body.Add("side", request.Side);
-        body.Add("orderType", request.OrderType);
-        body.Add("operatorId", request.OperatorId);
-        body.Add("amount", request.Amount);
-        body.Add("amountQuote", request.AmountQuote);
-        body.Add("price", request.Price);
-        body.Add("triggerAmount", request.TriggerAmount);
-        body.Add("triggerType", request.TriggerType);
-        body.Add("triggerReference", request.TriggerReference);
-        body.Add("timeInForce", request.TimeInForce);
-        body.Add("postOnly", request.PostOnly);
-        body.Add("selfTradePrevention", request.SelfTradePrevention);
-        body.Add("responseRequired", request.ResponseRequired);
-        body.Add("clientOrderId", request.ClientOrderId);
-        body.Add("codGroupId", request.CodGroupId);
+        body.Add("market", market);
+        body.Add("side", side);
+        body.Add("orderType", orderType);
+        body.Add("operatorId", operatorId);
+        body.Add("amount", amount);
+        body.Add("amountQuote", amountQuote);
+        body.Add("price", price);
+        body.Add("triggerAmount", triggerAmount);
+        body.Add("triggerType", triggerType);
+        body.Add("triggerReference", triggerReference);
+        body.Add("timeInForce", timeInForce);
+        body.Add("postOnly", postOnly);
+        body.Add("selfTradePrevention", selfTradePrevention);
+        body.Add("responseRequired", responseRequired);
+        body.Add("clientOrderId", clientOrderId);
+        body.Add("codGroupId", codGroupId);
 
         var def = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "v2/order", BitvavoExchange.RateLimiter.Bitvavo, weight: 1, authenticated: true);
         return _baseClient.SendAsync<BitvavoOrder>(def, queryParameters: null, bodyParameters: body, ct);
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<BitvavoOrder>> UpdateOrderAsync(BitvavoUpdateOrderRequest request, CancellationToken ct = default)
+    public Task<HttpResult<BitvavoOrder>> UpdateOrderAsync(
+        string market,
+        long operatorId,
+        string? orderId = null,
+        string? clientOrderId = null,
+        decimal? amount = null,
+        decimal? amountQuote = null,
+        decimal? price = null,
+        decimal? triggerAmount = null,
+        TimeInForce? timeInForce = null,
+        SelfTradePrevention? selfTradePrevention = null,
+        bool? postOnly = null,
+        bool? responseRequired = null,
+        CancellationToken ct = default)
     {
         var body = new Parameters(BitvavoExchange._parameterSerializationSettings);
-        body.Add("market", request.Market);
-        body.Add("operatorId", request.OperatorId);
-        body.Add("orderId", request.OrderId);
-        body.Add("clientOrderId", request.ClientOrderId);
-        body.Add("amount", request.Amount);
-        body.Add("amountQuote", request.AmountQuote);
-        body.Add("price", request.Price);
-        body.Add("triggerAmount", request.TriggerAmount);
-        body.Add("timeInForce", request.TimeInForce);
-        body.Add("selfTradePrevention", request.SelfTradePrevention);
-        body.Add("postOnly", request.PostOnly);
-        body.Add("responseRequired", request.ResponseRequired);
+        body.Add("market", market);
+        body.Add("operatorId", operatorId);
+        body.Add("orderId", orderId);
+        body.Add("clientOrderId", clientOrderId);
+        body.Add("amount", amount);
+        body.Add("amountQuote", amountQuote);
+        body.Add("price", price);
+        body.Add("triggerAmount", triggerAmount);
+        body.Add("timeInForce", timeInForce);
+        body.Add("selfTradePrevention", selfTradePrevention);
+        body.Add("postOnly", postOnly);
+        body.Add("responseRequired", responseRequired);
 
         var def = _definitions.GetOrCreate(HttpMethod.Put, _baseClient.BaseAddress, "v2/order", BitvavoExchange.RateLimiter.Bitvavo, weight: 1, authenticated: true);
         return _baseClient.SendAsync<BitvavoOrder>(def, queryParameters: null, bodyParameters: body, ct);

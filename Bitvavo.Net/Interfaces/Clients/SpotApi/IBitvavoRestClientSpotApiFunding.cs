@@ -13,35 +13,21 @@ public interface IBitvavoRestClientSpotApiFunding
     /// Get the deposit address (or fiat banking instructions) for a given asset.
     /// <para><a href="https://docs.bitvavo.com/docs/rest-api/get-deposit-data">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="symbol">
-    /// Asset symbol (e.g. <c>"BTC"</c>, <c>"EUR"</c>). Required.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
-    Task<HttpResult<BitvavoDepositAddress>> GetDepositAddressAsync(string symbol, CancellationToken ct = default);
+    /// <param name="asset">Asset symbol (e.g. <c>"BTC"</c>, <c>"EUR"</c>). Required.</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task<HttpResult<BitvavoDepositAddress>> GetDepositAddressAsync(string asset, CancellationToken ct = default);
 
     /// <summary>
     /// Get the deposit history for the account, optionally filtered by asset and time range.
     /// <para><a href="https://docs.bitvavo.com/docs/rest-api/get-deposit-history">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="symbol">
-    /// Optional asset filter.
-    /// </param>
-    /// <param name="limit">
-    /// Maximum entries (1â€“1000, default 500).
-    /// </param>
-    /// <param name="startTime">
-    /// Inclusive UTC lower bound.
-    /// </param>
-    /// <param name="endTime">
-    /// Inclusive UTC upper bound.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="asset">Optional asset filter.</param>
+    /// <param name="limit">Maximum entries (1â€“1000, default 500).</param>
+    /// <param name="startTime">Inclusive UTC lower bound.</param>
+    /// <param name="endTime">Inclusive UTC upper bound.</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<HttpResult<IEnumerable<BitvavoDepositHistoryEntry>>> GetDepositHistoryAsync(
-        string? symbol = null,
+        string? asset = null,
         int? limit = null,
         DateTime? startTime = null,
         DateTime? endTime = null,
@@ -51,23 +37,13 @@ public interface IBitvavoRestClientSpotApiFunding
     /// Get the withdrawal history for the account, optionally filtered by asset and time range.
     /// <para><a href="https://docs.bitvavo.com/docs/rest-api/get-withdrawal-history">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="symbol">
-    /// Optional asset filter.
-    /// </param>
-    /// <param name="limit">
-    /// Maximum entries (1â€“1000, default 500).
-    /// </param>
-    /// <param name="startTime">
-    /// Inclusive UTC lower bound.
-    /// </param>
-    /// <param name="endTime">
-    /// Inclusive UTC upper bound.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
+    /// <param name="asset">Optional asset filter.</param>
+    /// <param name="limit">Maximum entries (1â€“1000, default 500).</param>
+    /// <param name="startTime">Inclusive UTC lower bound.</param>
+    /// <param name="endTime">Inclusive UTC upper bound.</param>
+    /// <param name="ct">Cancellation token.</param>
     Task<HttpResult<IEnumerable<BitvavoWithdrawalHistoryEntry>>> GetWithdrawalHistoryAsync(
-        string? symbol = null,
+        string? asset = null,
         int? limit = null,
         DateTime? startTime = null,
         DateTime? endTime = null,
@@ -84,11 +60,19 @@ public interface IBitvavoRestClientSpotApiFunding
     /// </para>
     /// <para><a href="https://docs.bitvavo.com/docs/rest-api/withdraw-assets">Bitvavo API docs</a></para>
     /// </summary>
-    /// <param name="request">
-    /// Withdrawal parameters (symbol, amount, destination, optional fee handling).
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token.
-    /// </param>
-    Task<HttpResult<BitvavoWithdrawalResult>> WithdrawAsync(BitvavoWithdrawRequest request, CancellationToken ct = default);
+    /// <param name="asset">Asset to withdraw (e.g. <c>"BTC"</c>, <c>"EUR"</c>). Required.</param>
+    /// <param name="quantity">Quantity of the asset to withdraw, in base-asset units. Required.</param>
+    /// <param name="address">Destination wallet address (crypto) or IBAN (fiat). Required.</param>
+    /// <param name="paymentId">Memo / payment reference for assets that require it.</param>
+    /// <param name="addWithdrawalFee">If true, fee is added on top of <paramref name="quantity"/>; otherwise fee is deducted from <paramref name="quantity"/>.</param>
+    /// <param name="internalTransfer">If true, transfer between Bitvavo accounts.</param>
+    /// <param name="ct">Cancellation token.</param>
+    Task<HttpResult<BitvavoWithdrawalResult>> WithdrawAsync(
+        string asset,
+        decimal quantity,
+        string address,
+        string? paymentId = null,
+        bool? addWithdrawalFee = null,
+        bool? internalTransfer = null,
+        CancellationToken ct = default);
 }

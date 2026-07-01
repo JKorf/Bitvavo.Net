@@ -60,15 +60,22 @@ internal sealed class BitvavoRestClientSpotApiFunding : IBitvavoRestClientSpotAp
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<BitvavoWithdrawalResult>> WithdrawAsync(BitvavoWithdrawRequest request, CancellationToken ct = default)
+    public Task<HttpResult<BitvavoWithdrawalResult>> WithdrawAsync(
+        string symbol,
+        decimal amount,
+        string address,
+        string? paymentId = null,
+        bool? addWithdrawalFee = null,
+        bool? internalTransfer = null,
+        CancellationToken ct = default)
     {
         var body = new Parameters(BitvavoExchange._parameterSerializationSettings);
-        body.Add("symbol", request.Symbol);
-        body.Add("amount", request.Amount);
-        body.Add("address", request.Address);
-        body.Add("paymentId", request.PaymentId);
-        body.Add("addWithdrawalFee", request.AddWithdrawalFee);
-        body.Add("internal", request.Internal);
+        body.Add("symbol", symbol);
+        body.Add("amount", amount);
+        body.Add("address", address);
+        body.Add("paymentId", paymentId);
+        body.Add("addWithdrawalFee", addWithdrawalFee);
+        body.Add("internal", internalTransfer);
 
         var def = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "v2/withdrawal", BitvavoExchange.RateLimiter.Bitvavo, weight: 1, authenticated: true);
         return _baseClient.SendAsync<BitvavoWithdrawalResult>(def, queryParameters: null, bodyParameters: body, ct);

@@ -18,18 +18,10 @@ public interface IBitvavoSocketClientSpotApiExchangeData
     /// <a href="https://docs.bitvavo.com/docs/websocket-overview/">Bitvavo WS docs</a>
     /// </para>
     /// </summary>
-    /// <param name="market">
-    /// Market identifier, e.g. <c>"ETH-EUR"</c>.
-    /// </param>
-    /// <param name="interval">
-    /// Candle interval (1m, 5m, 1h, 1d, etc.).
-    /// </param>
-    /// <param name="onMessage">
-    /// Handler invoked for each candle event.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token used to close this subscription.
-    /// </param>
+    /// <param name="market">Market identifier, e.g. <c>"ETH-EUR"</c>.</param>
+    /// <param name="interval">Candle interval (1m, 5m, 1h, 1d, etc.).</param>
+    /// <param name="onMessage">Handler invoked for each candle event.</param>
+    /// <param name="ct">Cancellation token used to close this subscription.</param>
     Task<WebSocketResult<UpdateSubscription>> SubscribeToKlineUpdatesAsync(
         string market,
         KlineInterval interval,
@@ -43,15 +35,9 @@ public interface IBitvavoSocketClientSpotApiExchangeData
     /// <a href="https://docs.bitvavo.com/docs/websocket-overview/">Bitvavo WS docs</a>
     /// </para>
     /// </summary>
-    /// <param name="market">
-    /// Market identifier, e.g. <c>"BTC-EUR"</c>.
-    /// </param>
-    /// <param name="onMessage">
-    /// Handler invoked for each public trade event.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token used to close this subscription.
-    /// </param>
+    /// <param name="market">Market identifier, e.g. <c>"BTC-EUR"</c>.</param>
+    /// <param name="onMessage">Handler invoked for each public trade event.</param>
+    /// <param name="ct">Cancellation token used to close this subscription.</param>
     Task<WebSocketResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(
         string market,
         Action<DataEvent<BitvavoStreamTrade>> onMessage,
@@ -66,15 +52,9 @@ public interface IBitvavoSocketClientSpotApiExchangeData
     /// <a href="https://docs.bitvavo.com/docs/websocket-overview/">Bitvavo WS docs</a>
     /// </para>
     /// </summary>
-    /// <param name="markets">
-    /// Market identifiers, e.g. <c>["BTC-EUR", "ETH-EUR"]</c>.
-    /// </param>
-    /// <param name="onMessage">
-    /// Handler invoked for each public trade event; dispatch by <c>Data.Market</c>.
-    /// </param>
-    /// <param name="ct">
-    /// Cancellation token used to close this subscription.
-    /// </param>
+    /// <param name="markets">Market identifiers, e.g. <c>["BTC-EUR", "ETH-EUR"]</c>.</param>
+    /// <param name="onMessage">Handler invoked for each public trade event; dispatch by <c>Data.Market</c>.</param>
+    /// <param name="ct">Cancellation token used to close this subscription.</param>
     Task<WebSocketResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(
         IEnumerable<string> markets,
         Action<DataEvent<BitvavoStreamTrade>> onMessage,
