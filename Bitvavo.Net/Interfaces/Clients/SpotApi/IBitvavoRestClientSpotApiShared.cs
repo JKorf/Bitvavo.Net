@@ -3,19 +3,7 @@ using CryptoExchange.Net.SharedApis;
 namespace Bitvavo.Net.Interfaces.Clients.SpotApi;
 
 /// <summary>
-/// Aggregate CryptoExchange.Net Shared-API surface for the Bitvavo Spot REST client.
-/// <para>
-/// This interface composes every Shared REST sub-interface Bitvavo implements into a
-/// single type so consumers can program against the exchange-agnostic Shared layer with
-/// one reference (mirroring <c>IKrakenRestClientSpotApiShared</c> /
-/// <c>IBinanceRestClientSpotApiShared</c>). It is reachable via
-/// <see cref="IBitvavoRestClientSpotApi.SharedClient"/>.
-/// </para>
-/// <para>
-/// Bitvavo is spot-only and its account channel exposes no isolated-margin or futures
-/// surface, so this composite intentionally omits the futures / margin / leverage Shared
-/// interfaces â€” that is a correct ISP-driven omission, not a gap.
-/// </para>
+/// Shared interface for Spot REST API usage
 /// </summary>
 public interface IBitvavoRestClientSpotApiShared :
     IAssetsRestClient,

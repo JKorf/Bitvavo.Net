@@ -6,12 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Bitvavo.Net.Objects.Internal;
 
-/// <summary>
-/// Generic Bitvavo WebSocket subscription. Holds the user's update handler, configures the
-/// <see cref="MessageRouter"/> by event type + topic key (extracted by
-/// <see cref="Clients.MessageHandlers.BitvavoSocketSpotMessageHandler"/>), and emits a
-/// fire-and-forget subscribe / unsubscribe query in the canonical Bitvavo wire envelope.
-/// </summary>
+
 internal sealed class BitvavoSubscription<T> : Subscription
 {
     private readonly Action<DateTime, string?, T> _handler;
@@ -32,11 +27,6 @@ internal sealed class BitvavoSubscription<T> : Subscription
         MessageRouter = MessageRouter.CreateForEvent<T>(typeIdentifier, topic, DoHandleMessage);
     }
 
-    /// <summary>
-    /// Multi-topic variant: routes events whose topic matches any value in
-    /// <paramref name="topics"/> to this subscription's handler. Use for set-based
-    /// subscriptions where one <see cref="BitvavoSubscription{T}"/> covers multiple markets.
-    /// </summary>
     public BitvavoSubscription(
         ILogger logger,
         string typeIdentifier,

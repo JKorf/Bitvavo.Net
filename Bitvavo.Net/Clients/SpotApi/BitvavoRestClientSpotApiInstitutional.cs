@@ -115,7 +115,6 @@ internal sealed class BitvavoRestClientSpotApiInstitutional : IBitvavoRestClient
         parameters.Add("maxItems", maxItems);
         parameters.Add("type", type);
 
-        // weight assumed â€” Bitvavo docs page did not state it; conservative default
         var def = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "v2/institutional/subaccounts/history", BitvavoExchange.RateLimiter.Bitvavo, weight: 5, authenticated: true);
         return _baseClient.SendAsync<BitvavoTransactionHistory>(def, parameters, ct);
     }
@@ -132,16 +131,16 @@ internal sealed class BitvavoRestClientSpotApiInstitutional : IBitvavoRestClient
         parameters.Add("market", market);
         parameters.Add("base", baseAsset);
 
-        // institutional/subaccounts/orders/open: weight=100 when no market filter, weight=5 otherwise.
-        var def = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "v2/institutional/subaccounts/orders/open", BitvavoExchange.RateLimiter.Bitvavo, weight: market is null ? 100 : 5, authenticated: true);
-        return _baseClient.SendAsync<IEnumerable<BitvavoOrder>>(def, parameters, ct);
+        var weight = market is null ? 100 : 5;
+        var def = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "v2/institutional/subaccounts/orders/open", BitvavoExchange.RateLimiter.Bitvavo, weight: weight, authenticated: true);
+        return _baseClient.SendAsync<IEnumerable<BitvavoOrder>>(def, parameters, ct, weight: weight);
     }
 
     /// <inheritdoc />
     public Task<HttpResult<BitvavoOrderId>> CancelSubaccountOrderAsync(
+        long operatorId,
         string market,
         string orderId,
-        long operatorId,
         string? subaccountId = null,
         string? clientOrderId = null,
         CancellationToken ct = default)
@@ -169,8 +168,8 @@ internal sealed class BitvavoRestClientSpotApiInstitutional : IBitvavoRestClient
         body.Add("market", market);
         body.Add("operatorId", operatorId);
 
-        // institutional/subaccounts/orders DELETE: weight=100 when no market filter, weight=25 otherwise.
-        var def = _definitions.GetOrCreate(HttpMethod.Delete, _baseClient.BaseAddress, "v2/institutional/subaccounts/orders", BitvavoExchange.RateLimiter.Bitvavo, weight: market is null ? 100 : 25, authenticated: true);
-        return _baseClient.SendAsync<IEnumerable<BitvavoOrderId>>(def, queryParameters: null, bodyParameters: body, ct);
+        var weight = market is null ? 100 : 25;
+        var def = _definitions.GetOrCreate(HttpMethod.Delete, _baseClient.BaseAddress, "v2/institutional/subaccounts/orders", BitvavoExchange.RateLimiter.Bitvavo, weight: weight, authenticated: true);
+        return _baseClient.SendAsync<IEnumerable<BitvavoOrderId>>(def, queryParameters: null, bodyParameters: body, ct, weight: weight);
     }
 }

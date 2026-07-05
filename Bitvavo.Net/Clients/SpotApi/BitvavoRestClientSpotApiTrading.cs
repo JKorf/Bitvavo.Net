@@ -118,7 +118,7 @@ internal sealed class BitvavoRestClientSpotApiTrading : IBitvavoRestClientSpotAp
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<IEnumerable<BitvavoOrderId>>> CancelOrdersAsync(long operatorId, string? market = null, CancellationToken ct = default)
+    public Task<HttpResult<BitvavoOrderId[]>> CancelOrdersAsync(long operatorId, string? market = null, CancellationToken ct = default)
     {
         var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
         parameters.Add("operatorId", operatorId);
@@ -126,23 +126,23 @@ internal sealed class BitvavoRestClientSpotApiTrading : IBitvavoRestClientSpotAp
 
         var weight = market is null ? 100 : 25;
         var def = _definitions.GetOrCreate(HttpMethod.Delete, _baseClient.BaseAddress, "v2/orders", BitvavoExchange.RateLimiter.Bitvavo, weight: weight, authenticated: true);
-        return _baseClient.SendAsync<IEnumerable<BitvavoOrderId>>(def, parameters, ct, weight);
+        return _baseClient.SendAsync<BitvavoOrderId[]>(def, parameters, ct, weight);
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<IEnumerable<BitvavoOrder>>> GetOpenOrdersAsync(string? market = null, string? baseAsset = null, CancellationToken ct = default)
+    public Task<HttpResult<BitvavoOrder[]>> GetOpenOrdersAsync(string? market = null, string? baseAsset = null, CancellationToken ct = default)
     {
         var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
         parameters.Add("market", market);
         parameters.Add("base", baseAsset);
 
-        // v2/ordersOpen: weight=100 when no market filter (returns all), weight=5 otherwise.
-        var def = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "v2/ordersOpen", BitvavoExchange.RateLimiter.Bitvavo, weight: market is null ? 100 : 5, authenticated: true);
-        return _baseClient.SendAsync<IEnumerable<BitvavoOrder>>(def, parameters, ct);
+        var weight = market is null ? 100 : 5;
+        var def = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "v2/ordersOpen", BitvavoExchange.RateLimiter.Bitvavo, weight: weight, authenticated: true);
+        return _baseClient.SendAsync<BitvavoOrder[]>(def, parameters, ct, weight);
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<IEnumerable<BitvavoOrder>>> GetOrderHistoryAsync(
+    public Task<HttpResult<BitvavoOrder[]>> GetOrderHistoryAsync(
         string market,
         int? limit = null,
         DateTime? startTime = null,
@@ -160,11 +160,11 @@ internal sealed class BitvavoRestClientSpotApiTrading : IBitvavoRestClientSpotAp
         parameters.Add("orderIdTo", orderIdTo);
 
         var def = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "v2/orders", BitvavoExchange.RateLimiter.Bitvavo, weight: 5, authenticated: true);
-        return _baseClient.SendAsync<IEnumerable<BitvavoOrder>>(def, parameters, ct);
+        return _baseClient.SendAsync<BitvavoOrder[]>(def, parameters, ct);
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<IEnumerable<BitvavoFill>>> GetUserTradesAsync(
+    public Task<HttpResult<BitvavoFill[]>> GetUserTradesAsync(
         string market,
         int? limit = null,
         DateTime? startTime = null,
@@ -182,6 +182,6 @@ internal sealed class BitvavoRestClientSpotApiTrading : IBitvavoRestClientSpotAp
         parameters.Add("tradeIdTo", tradeIdTo);
 
         var def = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "v2/trades", BitvavoExchange.RateLimiter.Bitvavo, weight: 5, authenticated: true);
-        return _baseClient.SendAsync<IEnumerable<BitvavoFill>>(def, parameters, ct);
+        return _baseClient.SendAsync<BitvavoFill[]>(def, parameters, ct);
     }
 }

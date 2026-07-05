@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Bitvavo.Net.Enums;
 using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
@@ -51,8 +52,8 @@ public record BitvavoDepositHistoryEntry
     public decimal? Fee { get; init; }
 
     /// <summary>
-    /// Status â€” e.g. <c>"completed"</c>, <c>"awaiting_processing"</c>, <c>"awaiting_email_confirmation"</c>.
+    /// Withdraw status
     /// </summary>
     [JsonPropertyName("status")]
-    public string Status { get; init; } = string.Empty;
+    public WithdrawStatus Status { get; init; }
 }

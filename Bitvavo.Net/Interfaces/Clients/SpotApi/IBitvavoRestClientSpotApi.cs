@@ -23,16 +23,6 @@ public interface IBitvavoRestClientSpotApi : IRestApiClient
     IBitvavoRestClientSpotApiTrading Trading { get; }
 
     /// <summary>
-    /// Funding endpoints (deposit address, deposit / withdrawal history).
-    /// </summary>
-    IBitvavoRestClientSpotApiFunding Funding { get; }
-
-    /// <summary>
-    /// MiCA regulatory-reporting endpoints (trade report, order-book report).
-    /// </summary>
-    IBitvavoRestClientSpotApiReport Report { get; }
-
-    /// <summary>
     /// Institutional endpoints (subaccount management, asset transfers, per-subaccount queries).
     /// </summary>
     IBitvavoRestClientSpotApiInstitutional Institutional { get; }

@@ -1,6 +1,5 @@
 using Bitvavo.Net.Clients.MessageHandlers;
 using Bitvavo.Net.Interfaces.Clients.SpotApi;
-using Bitvavo.Net.Objects.Internal;
 using Bitvavo.Net.Objects.Options;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Converters.MessageParsing.DynamicConverters;
@@ -36,12 +35,6 @@ internal partial class BitvavoRestClientSpotApi : RestApiClient<BitvavoEnvironme
     public IBitvavoRestClientSpotApiTrading Trading { get; }
 
     /// <inheritdoc />
-    public IBitvavoRestClientSpotApiFunding Funding { get; }
-
-    /// <inheritdoc />
-    public IBitvavoRestClientSpotApiReport Report { get; }
-
-    /// <inheritdoc />
     public IBitvavoRestClientSpotApiInstitutional Institutional { get; }
 
     /// <inheritdoc />
@@ -53,8 +46,6 @@ internal partial class BitvavoRestClientSpotApi : RestApiClient<BitvavoEnvironme
         ExchangeData = new BitvavoRestClientSpotApiExchangeData(this);
         Account = new BitvavoRestClientSpotApiAccount(this);
         Trading = new BitvavoRestClientSpotApiTrading(this);
-        Funding = new BitvavoRestClientSpotApiFunding(this);
-        Report = new BitvavoRestClientSpotApiReport(this);
         Institutional = new BitvavoRestClientSpotApiInstitutional(this);
 
         ParameterPositions = new Dictionary<HttpMethod, HttpMethodParameterPosition>

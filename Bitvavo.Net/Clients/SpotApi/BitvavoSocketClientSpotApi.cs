@@ -66,11 +66,6 @@ internal sealed partial class BitvavoSocketClientSpotApi : SocketApiClient<Bitva
         return Task.FromResult<Query?>(new BitvavoSocketAuthQuery(payload));
     }
 
-    /// <summary>
-    /// Internal wrapper for the inherited protected
-    /// <c>SocketApiClient.SubscribeAsync(string, Subscription, CancellationToken)</c> so peer
-    /// classes (the *Data partials) can subscribe without being derived from this class.
-    /// </summary>
     internal Task<WebSocketResult<UpdateSubscription>> SubscribeInternalAsync(
         string url,
         Subscription subscription,

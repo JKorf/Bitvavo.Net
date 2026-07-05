@@ -3,42 +3,46 @@ using CryptoExchange.Net.Authentication;
 namespace Bitvavo.Net;
 
 /// <summary>
-/// API credentials for Bitvavo signed endpoints. Mirrors <c>KrakenCredentials</c> shape â€”
-/// container class that holds an <see cref="HMACCredential"/> for the spot API. v0.1 is
-/// public-only, so the spot credential is optional.
+/// API credentials for Bitvavo signed endpoints
 /// </summary>
-public class BitvavoCredentials : ApiCredentials
+public class BitvavoCredentials : HMACCredential
 {
     /// <summary>
-    /// HMAC credentials for the spot API. Required only for signed endpoints.
-    /// </summary>
-    public HMACCredential? Spot { get; set; }
-
-    /// <summary>
-    /// Construct empty credentials â€” fine for public-only usage.
+    /// Create new credentials
     /// </summary>
     public BitvavoCredentials() { }
 
     /// <summary>
-    /// Construct with spot HMAC credentials.
+    /// Create new credentials providing credentials in HMAC format
     /// </summary>
-    public BitvavoCredentials(HMACCredential spotCredential)
+    /// <param name="key">API key</param>
+    /// <param name="secret">API secret</param>
+    public BitvavoCredentials(string key, string secret) : base(key, secret)
     {
-        Spot = spotCredential;
     }
 
     /// <summary>
-    /// Convenience overload â€” wraps the (key, secret) pair as an HMAC credential for the spot API.
+    /// Create new credentials providing HMAC credentials
     /// </summary>
-    public BitvavoCredentials(string apiKey, string apiSecret)
+    /// <param name="credential">Credentials</param>
+    public BitvavoCredentials(HMACCredential credential) : base(credential.Key, credential.Secret)
     {
-        Spot = new HMACCredential(apiKey, apiSecret);
+    }
+
+    /// <summary>
+    /// Specify the HMAC credentials
+    /// </summary>
+    /// <param name="key">API key</param>
+    /// <param name="secret">API secret</param>
+    public BitvavoCredentials WithHMAC(string key, string secret)
+    {
+        if (!string.IsNullOrEmpty(Key)) throw new InvalidOperationException("Credentials already set");
+
+        Key = key;
+        Secret = secret;
+        return this;
     }
 
     /// <inheritdoc />
-    public override ApiCredentials Copy() =>
-        new BitvavoCredentials { Spot = Spot is null ? null : new HMACCredential(Spot.Key, Spot.Secret) };
-
-    /// <inheritdoc />
-    public override void Validate() => Spot?.Validate();
+    public override ApiCredentials Copy() => new BitvavoCredentials(this);
 }

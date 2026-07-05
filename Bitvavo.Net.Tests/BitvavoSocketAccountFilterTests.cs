@@ -53,7 +53,7 @@ public class BitvavoSocketAccountFilterTests
     public void OrderUpdate_TopicSelector_uses_Market_not_empty()
     {
         var handler = new BitvavoSocketSpotMessageHandler();
-        var sample = new BitvavoStreamOrderUpdate { Market = "BTC-EUR" };
+        var sample = new BitvavoStreamOrderUpdate { Symbol = "BTC-EUR" };
 
         var topic = InvokeTopic(handler, sample);
 
@@ -65,7 +65,7 @@ public class BitvavoSocketAccountFilterTests
     public void FillEvent_TopicSelector_uses_Market_not_empty()
     {
         var handler = new BitvavoSocketSpotMessageHandler();
-        var sample = new BitvavoStreamFillEvent { Market = "ETH-EUR" };
+        var sample = new BitvavoStreamFillEvent { Symbol = "ETH-EUR" };
 
         var topic = InvokeTopic(handler, sample);
 
@@ -77,8 +77,8 @@ public class BitvavoSocketAccountFilterTests
     {
         var handler = new BitvavoSocketSpotMessageHandler();
 
-        var btc = InvokeTopic(handler, new BitvavoStreamOrderUpdate { Market = "BTC-EUR" });
-        var eth = InvokeTopic(handler, new BitvavoStreamOrderUpdate { Market = "ETH-EUR" });
+        var btc = InvokeTopic(handler, new BitvavoStreamOrderUpdate { Symbol = "BTC-EUR" });
+        var eth = InvokeTopic(handler, new BitvavoStreamOrderUpdate { Symbol = "ETH-EUR" });
 
         btc.ShouldBe("BTC-EUR");
         eth.ShouldBe("ETH-EUR");
@@ -90,8 +90,8 @@ public class BitvavoSocketAccountFilterTests
     {
         var handler = new BitvavoSocketSpotMessageHandler();
 
-        var btc = InvokeTopic(handler, new BitvavoStreamFillEvent { Market = "BTC-EUR" });
-        var eth = InvokeTopic(handler, new BitvavoStreamFillEvent { Market = "ETH-EUR" });
+        var btc = InvokeTopic(handler, new BitvavoStreamFillEvent { Symbol = "BTC-EUR" });
+        var eth = InvokeTopic(handler, new BitvavoStreamFillEvent { Symbol = "ETH-EUR" });
 
         btc.ShouldBe("BTC-EUR");
         eth.ShouldBe("ETH-EUR");

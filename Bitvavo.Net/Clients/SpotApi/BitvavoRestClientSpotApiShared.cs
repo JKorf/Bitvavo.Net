@@ -460,8 +460,8 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
             ToBitvavoOrderSide(request.Side),
             ToBitvavoOrderType(request.OrderType),
             operatorId,
-            amount: request.Quantity?.QuantityInBaseAsset,
-            amountQuote: request.Quantity?.QuantityInQuoteAsset,
+            quantity: request.Quantity?.QuantityInBaseAsset,
+            quoteQuantity: request.Quantity?.QuantityInQuoteAsset,
             price: request.Price,
             timeInForce: request.TimeInForce == null ? null : ToBitvavoTimeInForce(request.TimeInForce.Value),
             postOnly: request.OrderType == SharedOrderType.LimitMaker ? true : null,
@@ -772,7 +772,7 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
         if (validationError != null)
             return HttpResult.Fail<SharedDepositAddress[]>(Exchange, validationError);
 
-        var result = await Funding.GetDepositAddressAsync(request.Asset, ct).ConfigureAwait(false);
+        var result = await Account.GetDepositAddressAsync(request.Asset, ct).ConfigureAwait(false);
         if (!result.Success)
             return HttpResult.Fail<SharedDepositAddress[]>(result);
 
@@ -803,7 +803,7 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
         if (validationError != null)
             return HttpResult.Fail<SharedDeposit[]>(Exchange, validationError);
 
-        var result = await Funding.GetDepositHistoryAsync(
+        var result = await Account.GetDepositHistoryAsync(
             request.Asset,
             request.Limit,
             request.StartTime,
@@ -815,11 +815,10 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
         return HttpResult.Ok(result, result.Data!
             .Select(deposit =>
             {
-                var completed = string.Equals(deposit.Status, "completed", StringComparison.OrdinalIgnoreCase);
                 return new SharedDeposit(
                     deposit.Symbol,
                     deposit.Amount ?? 0m,
-                    completed,
+                    deposit.Status == WithdrawStatus.Completed,
                     deposit.Timestamp,
                     ToSharedTransferStatus(deposit.Status))
                 {
@@ -847,7 +846,7 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
         if (validationError != null)
             return HttpResult.Fail<SharedWithdrawal[]>(Exchange, validationError);
 
-        var result = await Funding.GetWithdrawalHistoryAsync(
+        var result = await Account.GetWithdrawalHistoryAsync(
             request.Asset,
             request.Limit,
             request.StartTime,
@@ -858,14 +857,14 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
 
         return HttpResult.Ok(result, result.Data!
             .Select(withdrawal => new SharedWithdrawal(
-                withdrawal.Symbol,
+                withdrawal.Asset,
                 withdrawal.Address ?? string.Empty,
-                withdrawal.Amount ?? 0m,
-                string.Equals(withdrawal.Status, "completed", StringComparison.OrdinalIgnoreCase),
+                withdrawal.Quantity ?? 0m,
+                withdrawal.Status == WithdrawStatus.Completed,
                 withdrawal.Timestamp,
                 ToSharedTransferStatus(withdrawal.Status))
             {
-                TransactionId = withdrawal.TxId,
+                TransactionId = withdrawal.TransactionId,
                 Tag = withdrawal.PaymentReference,
                 Fee = withdrawal.Fee,
             })
@@ -886,7 +885,7 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
         if (validationError != null)
             return HttpResult.Fail<SharedId>(Exchange, validationError);
 
-        var result = await Funding.WithdrawAsync(
+        var result = await Account.WithdrawAsync(
             request.Asset,
             request.Quantity,
             request.Address,
@@ -895,9 +894,7 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
         if (!result.Success)
             return HttpResult.Fail<SharedId>(result);
 
-        // Bitvavo's withdrawal endpoint returns no id â€” echo the requested asset symbol
-        // so the Shared contract's non-null SharedId is satisfied.
-        return HttpResult.Ok(result, new SharedId(result.Data!.Symbol));
+        return HttpResult.Ok(result, new SharedId(string.Empty));
     }
 
     #endregion
@@ -974,16 +971,16 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
         _ => throw new ArgumentOutOfRangeException(nameof(timeInForce), timeInForce, "Unmapped SharedTimeInForce"),
     };
 
-    private static SharedTransferStatus ToSharedTransferStatus(string status) => status.ToLowerInvariant() switch
+    private static SharedTransferStatus ToSharedTransferStatus(WithdrawStatus status) => status switch
     {
-        "completed" => SharedTransferStatus.Completed,
-        "awaiting_processing" => SharedTransferStatus.InProgress,
-        "awaiting_email_confirmation" => SharedTransferStatus.InProgress,
-        "awaiting_bitvavo_inspection" => SharedTransferStatus.InProgress,
-        "in_mempool" => SharedTransferStatus.InProgress,
-        "processing" => SharedTransferStatus.InProgress,
-        "canceled" => SharedTransferStatus.Failed,
-        "rejected" => SharedTransferStatus.Failed,
+        WithdrawStatus.Completed => SharedTransferStatus.Completed,
+        WithdrawStatus.AwaitingProcessing => SharedTransferStatus.InProgress,
+        WithdrawStatus.AwaitingEmailConfirmation => SharedTransferStatus.InProgress,
+        WithdrawStatus.AwaitingBitvavoInspection => SharedTransferStatus.InProgress,
+        WithdrawStatus.InMempool => SharedTransferStatus.InProgress,
+        WithdrawStatus.Processing => SharedTransferStatus.InProgress,
+        WithdrawStatus.Canceled => SharedTransferStatus.Failed,
+        WithdrawStatus.Rejected => SharedTransferStatus.Failed,
         _ => SharedTransferStatus.Unknown,
     };
 

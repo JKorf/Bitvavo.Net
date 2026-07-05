@@ -3,8 +3,7 @@ using CryptoExchange.Net.Objects;
 namespace Bitvavo.Net;
 
 /// <summary>
-/// Bitvavo trading environment. Bitvavo doesn't operate a separate testnet/sandbox, so
-/// <see cref="Live"/> is the only environment.
+/// Bitvavo trading environment
 /// </summary>
 public class BitvavoEnvironment : TradeEnvironment
 {

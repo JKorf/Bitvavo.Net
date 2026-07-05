@@ -20,7 +20,7 @@ public record BitvavoStreamFillEvent
     /// Market the fill happened on.
     /// </summary>
     [JsonPropertyName("market")]
-    public string Market { get; init; } = string.Empty;
+    public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
     /// Order this fill belongs to.
@@ -38,7 +38,7 @@ public record BitvavoStreamFillEvent
     /// Trade-fill identifier (UUID).
     /// </summary>
     [JsonPropertyName("fillId")]
-    public string FillId { get; init; } = string.Empty;
+    public string TradeId { get; init; } = string.Empty;
 
     /// <summary>
     /// Server timestamp of the fill (UTC).
@@ -50,7 +50,7 @@ public record BitvavoStreamFillEvent
     /// Filled quantity (base-asset units).
     /// </summary>
     [JsonPropertyName("amount")]
-    public decimal Amount { get; init; }
+    public decimal Quantity { get; init; }
 
     /// <summary>
     /// Trade direction from this account's perspective.
@@ -71,7 +71,7 @@ public record BitvavoStreamFillEvent
     public bool Taker { get; init; }
 
     /// <summary>
-    /// Fee paid (positive decimal). Currency is given by <see cref="FeeCurrency"/>.
+    /// Fee paid (positive decimal). Currency is given by <see cref="FeeAsset"/>.
     /// </summary>
     [JsonPropertyName("fee")]
     public decimal Fee { get; init; }
@@ -80,5 +80,5 @@ public record BitvavoStreamFillEvent
     /// Currency the fee was paid in.
     /// </summary>
     [JsonPropertyName("feeCurrency")]
-    public string FeeCurrency { get; init; } = string.Empty;
+    public string FeeAsset { get; init; } = string.Empty;
 }

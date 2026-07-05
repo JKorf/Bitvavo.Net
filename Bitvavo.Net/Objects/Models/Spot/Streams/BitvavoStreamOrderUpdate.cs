@@ -30,10 +30,10 @@ public record BitvavoStreamOrderUpdate
     public string? ClientOrderId { get; init; }
 
     /// <summary>
-    /// Market the order belongs to.
+    /// Symbol the order belongs to.
     /// </summary>
     [JsonPropertyName("market")]
-    public string Market { get; init; } = string.Empty;
+    public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
     /// Server time the order was created (UTC).

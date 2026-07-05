@@ -1,8 +1,10 @@
 using Bitvavo.Net.Enums;
 using Bitvavo.Net.Interfaces.Clients.SpotApi;
+using CryptoExchange.Net;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Objects.Sockets;
 using CryptoExchange.Net.SharedApis;
+using System.Timers;
 
 namespace Bitvavo.Net.Clients.SpotApi;
 
@@ -11,24 +13,14 @@ internal sealed partial class BitvavoSocketClientSpotApi :
     IBitvavoSocketClientSpotApiShared
 {
     private const string _exchangeName = "Bitvavo";
-
-    /// <summary>
-    /// <see cref="ExchangeParameters"/> key carrying the <c>string[]</c> of markets the
-    /// account-channel subscription should cover (e.g. <c>["ETH-EUR", "BTC-EUR"]</c>).
-    /// </summary>
-    public const string MarketsExchangeParameter = "Markets";
-
-    private static readonly TradingMode[] _spotOnlySocket = [TradingMode.Spot];
-
+    private const string _topicId = "Bitvavo";
     #region Shared client
 
     /// <inheritdoc />
     string ISharedClient.Exchange => BitvavoExchange.ExchangeName;
 
     /// <inheritdoc />
-    TradingMode[] ISharedClient.SupportedTradingModes => _spotOnlySocket;
-
-    // ISharedClient.Authenticated is satisfied by the inherited SocketApiClient.Authenticated.
+    TradingMode[] ISharedClient.SupportedTradingModes => [TradingMode.Spot];
 
     /// <inheritdoc />
     void ISharedClient.SetDefaultExchangeParameter(string name, object value)
@@ -146,18 +138,7 @@ internal sealed partial class BitvavoSocketClientSpotApi :
     #region Spot Order client
 
     /// <inheritdoc />
-    SubscribeSpotOrderOptions ISpotOrderSocketClient.SubscribeSpotOrderOptions { get; } = new(_exchangeName, true)
-    {
-        EndpointName = "SubscribeSpotOrderRequest",
-        RequiredExchangeParameters =
-        [
-            new ParameterDescription(
-                MarketsExchangeParameter,
-                typeof(string[]),
-                "Markets the Bitvavo account channel subscription should cover",
-                new[] { "ETH-EUR" }),
-        ],
-    };
+    SubscribeSpotOrderOptions ISpotOrderSocketClient.SubscribeSpotOrderOptions { get; } = new(_exchangeName, true);
 
     /// <inheritdoc />
     async Task<WebSocketResult<UpdateSubscription>> ISpotOrderSocketClient.SubscribeToSpotOrderUpdatesAsync(
@@ -169,20 +150,15 @@ internal sealed partial class BitvavoSocketClientSpotApi :
         if (validationError != null)
             return WebSocketResult.Fail<UpdateSubscription>(Exchange, validationError);
 
-        var markets = ExchangeParameters.GetValue<string[]>(request.ExchangeParameters, Exchange, MarketsExchangeParameter)
-            ?? throw new ArgumentException($"The '{MarketsExchangeParameter}' exchange parameter (string[]) is required â€” Bitvavo's account channel is subscribed per market", nameof(request));
-
         var result = await Account.SubscribeToOrderUpdatesAsync(
-            markets,
             update =>
             {
                 var order = update.Data;
-                var sharedSymbol = ParseSocketSharedSymbol(order.Market);
                 handler(update.ToType<SharedSpotOrder[]>(
                 [
                     new SharedSpotOrder(
-                        sharedSymbol,
-                        order.Market,
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, order.Symbol),
+                        order.Symbol,
                         order.OrderId,
                         ToSharedSocketOrderType(order.OrderType),
                         ToSharedSocketOrderSide(order.Side),
@@ -210,18 +186,7 @@ internal sealed partial class BitvavoSocketClientSpotApi :
     #region User Trade client
 
     /// <inheritdoc />
-    SubscribeUserTradeOptions IUserTradeSocketClient.SubscribeUserTradeOptions { get; } = new(_exchangeName, true)
-    {
-        EndpointName = "SubscribeUserTradeRequest",
-        RequiredExchangeParameters =
-        [
-            new ParameterDescription(
-                MarketsExchangeParameter,
-                typeof(string[]),
-                "Markets the Bitvavo account channel subscription should cover",
-                new[] { "ETH-EUR" }),
-        ],
-    };
+    SubscribeUserTradeOptions IUserTradeSocketClient.SubscribeUserTradeOptions { get; } = new(_exchangeName, true);
 
     /// <inheritdoc />
     async Task<WebSocketResult<UpdateSubscription>> IUserTradeSocketClient.SubscribeToUserTradeUpdatesAsync(
@@ -233,31 +198,25 @@ internal sealed partial class BitvavoSocketClientSpotApi :
         if (validationError != null)
             return WebSocketResult.Fail<UpdateSubscription>(Exchange, validationError);
 
-        var markets = ExchangeParameters.GetValue<string[]>(request.ExchangeParameters, Exchange, MarketsExchangeParameter)
-            ?? throw new ArgumentException($"The '{MarketsExchangeParameter}' exchange parameter (string[]) is required â€” Bitvavo's account channel is subscribed per market", nameof(request));
-
-        // User trades are surfaced from Bitvavo's account-channel `fill` event.
-        var result = await Account.SubscribeToFillUpdatesAsync(
-            markets,
+        var result = await Account.SubscribeToUserTradeUpdatesAsync(
             update =>
             {
                 var fill = update.Data;
-                var sharedSymbol = ParseSocketSharedSymbol(fill.Market);
                 handler(update.ToType<SharedUserTrade[]>(
                 [
                     new SharedUserTrade(
-                        sharedSymbol,
-                        fill.Market,
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, fill.Symbol),
+                        fill.Symbol,
                         fill.OrderId,
-                        fill.FillId,
+                        fill.TradeId,
                         ToSharedSocketOrderSide(fill.Side),
-                        fill.Amount,
+                        fill.Quantity,
                         fill.Price,
                         fill.Timestamp)
                     {
                         ClientOrderId = fill.ClientOrderId,
                         Fee = fill.Fee,
-                        FeeAsset = fill.FeeCurrency,
+                        FeeAsset = fill.FeeAsset,
                         Role = fill.Taker ? SharedRole.Taker : SharedRole.Maker,
                     },
                 ]));

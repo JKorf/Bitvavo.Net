@@ -6,30 +6,18 @@ using CryptoExchange.Net.Converters.SystemTextJson;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
 
-namespace Bitvavo.Net.Objects.Internal;
+namespace Bitvavo.Net;
 
 /// <summary>
-/// Bitvavo HMAC-SHA256 authentication provider. Adds the four headers Bitvavo's signed
-/// REST API requires: <c>Bitvavo-Access-Key</c>, <c>Bitvavo-Access-Signature</c>,
-/// <c>Bitvavo-Access-Timestamp</c>, <c>Bitvavo-Access-Window</c>.
+/// Bitvavo HMAC-SHA256 authentication provider
 /// </summary>
-/// <remarks>
-/// Signature payload is the concatenation <c>timestamp + METHOD + url + body</c>:
-/// <list type="bullet">
-///   <item><term>timestamp</term><description>Unix milliseconds.</description></item>
-///   <item><term>METHOD</term><description>HTTP verb upper-case.</description></item>
-///   <item><term>url</term><description><c>"/" + path</c> with optional <c>"?" + queryString</c>.</description></item>
-///   <item><term>body</term><description>Exact JSON body for POST/PUT, empty for GET/DELETE.</description></item>
-/// </list>
-/// HMAC-SHA256 hex (lower-case) of that payload is the signature.
-/// </remarks>
 internal sealed class BitvavoAuthenticationProvider : AuthenticationProvider<BitvavoCredentials, HMACCredential>
 {
     private readonly int _receiveWindowMs;
     private readonly IMessageSerializer _serializer;
 
     public BitvavoAuthenticationProvider(BitvavoCredentials credentials, int receiveWindowMs = 10_000)
-        : base(credentials, credentials.Spot ?? new HMACCredential(string.Empty, string.Empty))
+        : base(credentials, credentials)
     {
         _receiveWindowMs = receiveWindowMs;
         _serializer = new SystemTextJsonMessageSerializer(new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -66,16 +54,12 @@ internal sealed class BitvavoAuthenticationProvider : AuthenticationProvider<Bit
     }
 
     /// <summary>
-    /// Build the JSON payload for Bitvavo's WebSocket authentication. Wire shape:
-    /// <code>{ "action": "authenticate", "key": "...", "signature": "&lt;hex&gt;", "timestamp": &lt;ms&gt;, "window": &lt;ms&gt; }</code>
-    /// Signature = HMAC-SHA256-hex(secret, timestamp + "GET" + "/v2/websocket"). Per
-    /// Bitvavo's WebSocket Introduction docs.
-    /// </summary>
-    /// <param name="receiveWindowMs">Optional override for the per-request receive window. Defaults to the value passed to this provider's constructor (typically <see cref="Options.BitvavoSocketOptions.ReceiveWindowMs"/>).</param>
+    /// Build the JSON payload for Bitvavo's WebSocket authentication
     public Dictionary<string, object> BuildSocketAuth(int? receiveWindowMs = null)
     {
         var window = receiveWindowMs ?? _receiveWindowMs;
-        var timestamp = (System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).ToString(CultureInfo.InvariantCulture);
+
+        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(CultureInfo.InvariantCulture);
         var signature = SignHMACSHA256(timestamp + "GET/v2/websocket", SignOutputType.Hex)!.ToLowerInvariant();
 
         return new Dictionary<string, object>

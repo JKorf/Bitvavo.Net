@@ -4,25 +4,25 @@ using CryptoExchange.Net.Converters.SystemTextJson;
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Acknowledgement Bitvavo emits after accepting a <c>POST /v2/withdrawal</c> request.
+/// Withdrawal result
 /// </summary>
 public record BitvavoWithdrawalResult
 {
     /// <summary>
-    /// Indicates Bitvavo accepted the withdrawal request. Final settlement still goes through the normal pending â†’ completed lifecycle visible via <c>GetWithdrawalHistoryAsync</c>.
+    /// Indicates Bitvavo accepted the withdrawal request
     /// </summary>
     [JsonPropertyName("success")]
     public bool Success { get; init; }
 
     /// <summary>
-    /// Asset that was withdrawn â€” echoed back from the request.
+    /// Asset that was withdrawn
     /// </summary>
     [JsonPropertyName("symbol")]
-    public string Symbol { get; init; } = string.Empty;
+    public string Asset { get; init; } = string.Empty;
 
     /// <summary>
-    /// Total amount debited from the account (request amount + fee if <c>AddWithdrawalFee</c>=true).
+    /// Total amount debited from the account
     /// </summary>
     [JsonPropertyName("amount"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Amount { get; init; }
+    public decimal? Quantity { get; init; }
 }
