@@ -1,3 +1,6 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
+using System;
 using System.Text.Json.Serialization;
 using CryptoExchange.Net.Converters;
 using CryptoExchange.Net.Converters.SystemTextJson;
@@ -5,58 +8,44 @@ using CryptoExchange.Net.Converters.SystemTextJson;
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Bitvavo candlestick (kline) as returned by <c>GET /v2/{market}/candles</c>. Bitvavo
-/// returns candles as positional arrays (<c>[ts_ms, open, high, low, close, volume]</c>),
-/// hence the <see cref="ArrayConverter{T}"/> mapping.
+/// Kline.
 /// </summary>
-/// <remarks>
-/// The mutable setters and parameterless ctor below are required by
-/// <see cref="ArrayConverter{T}"/>: the converter constructs the record then assigns each
-/// <see cref="ArrayPropertyAttribute"/>-tagged member by index. Init-only properties or a
-/// positional-record syntax would not work here.
-/// <para>
-/// Each decimal field uses <see cref="DecimalConverter"/> so sub-cent coins (e.g. VTHO at
-/// <c>"1e-8"</c>) deserialise correctly. The default System.Text.Json decimal parser uses
-/// <c>NumberStyles.Number</c> which rejects exponent notation; <see cref="DecimalConverter"/>
-/// uses <c>NumberStyles.Float</c>.
-/// </para>
-/// </remarks>
 [JsonConverter(typeof(ArrayConverter<BitvavoKline>))]
 public record BitvavoKline
 {
     /// <summary>
-    /// Open time of the candle (UTC). Bitvavo emits unix-millis at the array head.
+    /// Open Time.
     /// </summary>
-    [ArrayProperty(0), JsonConverter(typeof(DateTimeConverter))]
+    [ArrayProperty(0)]
     public DateTime OpenTime { get; set; }
 
     /// <summary>
-    /// Open price.
+    /// Open Price.
     /// </summary>
-    [ArrayProperty(1), JsonConverter(typeof(DecimalConverter))]
+    [ArrayProperty(1)]
     public decimal OpenPrice { get; set; }
 
     /// <summary>
-    /// High price.
+    /// High Price.
     /// </summary>
-    [ArrayProperty(2), JsonConverter(typeof(DecimalConverter))]
+    [ArrayProperty(2)]
     public decimal HighPrice { get; set; }
 
     /// <summary>
-    /// Low price.
+    /// Low Price.
     /// </summary>
-    [ArrayProperty(3), JsonConverter(typeof(DecimalConverter))]
+    [ArrayProperty(3)]
     public decimal LowPrice { get; set; }
 
     /// <summary>
-    /// Close price.
+    /// Close Price.
     /// </summary>
-    [ArrayProperty(4), JsonConverter(typeof(DecimalConverter))]
+    [ArrayProperty(4)]
     public decimal ClosePrice { get; set; }
 
     /// <summary>
-    /// Volume traded during the candle period (base-asset units).
+    /// Volume.
     /// </summary>
-    [ArrayProperty(5), JsonConverter(typeof(DecimalConverter))]
+    [ArrayProperty(5)]
     public decimal Volume { get; set; }
 }

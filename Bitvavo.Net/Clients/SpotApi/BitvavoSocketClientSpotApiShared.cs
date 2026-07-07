@@ -121,7 +121,7 @@ internal sealed partial class BitvavoSocketClientSpotApi :
                 new SharedTrade(
                     sharedSymbol,
                     symbol,
-                    update.Data.Amount,
+                    update.Data.Quantity,
                     update.Data.Price,
                     update.Data.Timestamp)
                 {
@@ -157,8 +157,8 @@ internal sealed partial class BitvavoSocketClientSpotApi :
                 handler(update.ToType<SharedSpotOrder[]>(
                 [
                     new SharedSpotOrder(
-                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, order.Symbol),
-                        order.Symbol,
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, order.Market),
+                        order.Market,
                         order.OrderId,
                         ToSharedSocketOrderType(order.OrderType),
                         ToSharedSocketOrderSide(order.Side),
@@ -167,12 +167,12 @@ internal sealed partial class BitvavoSocketClientSpotApi :
                     {
                         ClientOrderId = order.ClientOrderId,
                         OrderPrice = order.Price,
-                        OrderQuantity = new SharedOrderQuantity(order.Amount, null),
-                        QuantityFilled = new SharedOrderQuantity(order.FilledAmount, order.FilledAmountQuote),
+                        OrderQuantity = new SharedOrderQuantity(order.Quantity, null),
+                        QuantityFilled = new SharedOrderQuantity(order.FilledQuantity, order.FilledQuoteQuantity),
                         TimeInForce = order.TimeInForce == null ? null : ToSharedSocketTimeInForce(order.TimeInForce.Value),
                         UpdateTime = order.Updated,
-                        TriggerPrice = order.TriggerAmount,
-                        IsTriggerOrder = order.TriggerAmount != null,
+                        TriggerPrice = order.TriggerQuantity,
+                        IsTriggerOrder = order.TriggerQuantity != null,
                     },
                 ]));
             },
@@ -205,10 +205,10 @@ internal sealed partial class BitvavoSocketClientSpotApi :
                 handler(update.ToType<SharedUserTrade[]>(
                 [
                     new SharedUserTrade(
-                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, fill.Symbol),
-                        fill.Symbol,
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, fill.Market),
+                        fill.Market,
                         fill.OrderId,
-                        fill.TradeId,
+                        fill.FillId,
                         ToSharedSocketOrderSide(fill.Side),
                         fill.Quantity,
                         fill.Price,

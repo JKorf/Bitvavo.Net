@@ -28,7 +28,7 @@ internal sealed class BitvavoSocketClientSpotApiAccount : IBitvavoSocketClientSp
         => SubscribeAccountAsync<BitvavoStreamOrderUpdate>(
             typeIdentifier: "order",
             onMessage: msg => onMessage(msg),
-            symbolSelector: m => m.Symbol,
+            symbolSelector: m => m.Market,
             ct: ct);
 
     /// <inheritdoc />
@@ -38,7 +38,7 @@ internal sealed class BitvavoSocketClientSpotApiAccount : IBitvavoSocketClientSp
         => SubscribeAccountAsync<BitvavoStreamFillEvent>(
             typeIdentifier: "fill",
             onMessage: msg => onMessage(msg),
-            symbolSelector: m => m.Symbol,
+            symbolSelector: m => m.Market,
             ct: ct);
 
     private Task<WebSocketResult<UpdateSubscription>> SubscribeAccountAsync<T>(

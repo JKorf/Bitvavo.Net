@@ -1,34 +1,34 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Paginated transaction-history response from <c>GET /v2/account/history</c>. Unlike the
-/// deposit / withdrawal history endpoints, this endpoint paginates by page number â€” use
-/// <see cref="CurrentPage"/> / <see cref="TotalPages"/> to walk the result set.
+/// Transaction History.
 /// </summary>
 public record BitvavoTransactionHistory
 {
     /// <summary>
-    /// The transactions on the current page.
+    /// Items.
     /// </summary>
     [JsonPropertyName("items")]
-    public IReadOnlyList<BitvavoTransactionHistoryEntry> Items { get; init; } = new List<BitvavoTransactionHistoryEntry>();
+    public BitvavoTransactionHistoryEntry[] Items { get; init; } = System.Array.Empty<BitvavoTransactionHistoryEntry>();
 
     /// <summary>
-    /// One-based index of the page returned.
+    /// Current Page.
     /// </summary>
     [JsonPropertyName("currentPage")]
     public int CurrentPage { get; init; }
 
     /// <summary>
-    /// Total number of pages available for the requested filter.
+    /// Total Pages.
     /// </summary>
     [JsonPropertyName("totalPages")]
     public int TotalPages { get; init; }
 
     /// <summary>
-    /// Maximum number of items per page applied to this response.
+    /// Max Items.
     /// </summary>
     [JsonPropertyName("maxItems")]
     public int MaxItems { get; init; }

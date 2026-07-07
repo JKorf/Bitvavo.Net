@@ -1,42 +1,42 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
+using System;
 using System.Text.Json.Serialization;
 using Bitvavo.Net.Enums;
-using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Public trade-tape entry as returned by <c>GET /v2/{market}/trades</c>. Distinct from
-/// <see cref="BitvavoFill"/> which is the user's own trade-fill (private endpoint, with
-/// fee + taker info).
+/// Public Trade.
 /// </summary>
 public record BitvavoPublicTrade
 {
     /// <summary>
-    /// Trade identifier (UUID).
+    /// ID.
     /// </summary>
     [JsonPropertyName("id")]
     public string Id { get; init; } = string.Empty;
 
     /// <summary>
-    /// Trade timestamp (UTC).
+    /// Timestamp.
     /// </summary>
-    [JsonPropertyName("timestamp"), JsonConverter(typeof(DateTimeConverter))]
+    [JsonPropertyName("timestamp")]
     public DateTime Timestamp { get; init; }
 
     /// <summary>
-    /// Quantity traded (base-asset units).
+    /// Quantity.
     /// </summary>
-    [JsonPropertyName("amount"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Amount { get; init; }
+    [JsonPropertyName("amount")]
+    public decimal? Quantity { get; init; }
 
     /// <summary>
-    /// Trade price (quote-asset units).
+    /// Price.
     /// </summary>
-    [JsonPropertyName("price"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("price")]
     public decimal? Price { get; init; }
 
     /// <summary>
-    /// Aggressor side â€” which side hit the resting order.
+    /// Side.
     /// </summary>
     [JsonPropertyName("side")]
     public OrderSide Side { get; init; }

@@ -1,174 +1,174 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
+using System;
 using System.Text.Json.Serialization;
 using Bitvavo.Net.Enums;
-using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace Bitvavo.Net.Objects.Models.Spot.Streams;
 
 /// <summary>
-/// Bitvavo private <c>order</c> WebSocket event â€” emitted on the <c>account</c> channel
-/// after authenticating, whenever any of the user's orders changes state on the markets
-/// they subscribed to.
+/// Stream Order Update.
 /// </summary>
 public record BitvavoStreamOrderUpdate
 {
     /// <summary>
-    /// Always <c>"order"</c> for this stream.
+    /// Event.
     /// </summary>
     [JsonPropertyName("event")]
-    public string Event { get; init; } = string.Empty;
+    public StreamEvent Event { get; init; }
 
     /// <summary>
-    /// Server-assigned order id (UUID).
+    /// Order ID.
     /// </summary>
     [JsonPropertyName("orderId")]
     public string OrderId { get; init; } = string.Empty;
 
     /// <summary>
-    /// Client-assigned order id (UUID) â€” only present when the order was placed with one.
+    /// Client Order ID.
     /// </summary>
     [JsonPropertyName("clientOrderId")]
     public string? ClientOrderId { get; init; }
 
     /// <summary>
-    /// Symbol the order belongs to.
+    /// Market.
     /// </summary>
     [JsonPropertyName("market")]
-    public string Symbol { get; init; } = string.Empty;
+    public string Market { get; init; } = string.Empty;
 
     /// <summary>
-    /// Server time the order was created (UTC).
+    /// Created.
     /// </summary>
-    [JsonPropertyName("created"), JsonConverter(typeof(DateTimeConverter))]
+    [JsonPropertyName("created")]
     public DateTime Created { get; init; }
 
     /// <summary>
-    /// Server time of the most recent state change (UTC).
+    /// Updated.
     /// </summary>
-    [JsonPropertyName("updated"), JsonConverter(typeof(DateTimeConverter))]
+    [JsonPropertyName("updated")]
     public DateTime Updated { get; init; }
 
     /// <summary>
-    /// Lifecycle state.
+    /// Status.
     /// </summary>
     [JsonPropertyName("status")]
     public OrderStatus Status { get; init; }
 
     /// <summary>
-    /// Order direction.
+    /// Side.
     /// </summary>
     [JsonPropertyName("side")]
     public OrderSide Side { get; init; }
 
     /// <summary>
-    /// Order placement type.
+    /// Order Type.
     /// </summary>
     [JsonPropertyName("orderType")]
     public OrderType OrderType { get; init; }
 
     /// <summary>
-    /// Originally requested base-asset quantity.
+    /// Quantity.
     /// </summary>
     [JsonPropertyName("amount")]
-    public decimal? Amount { get; init; }
+    public decimal? Quantity { get; init; }
 
     /// <summary>
-    /// Base-asset quantity still outstanding.
+    /// Quantity Remaining.
     /// </summary>
     [JsonPropertyName("amountRemaining")]
-    public decimal? AmountRemaining { get; init; }
+    public decimal? QuantityRemaining { get; init; }
 
     /// <summary>
-    /// Limit price (limit / stop-limit / take-profit-limit orders).
+    /// Price.
     /// </summary>
     [JsonPropertyName("price")]
     public decimal? Price { get; init; }
 
     /// <summary>
-    /// Quantity currently held in escrow for this open order.
+    /// On Hold.
     /// </summary>
     [JsonPropertyName("onHold")]
     public decimal? OnHold { get; init; }
 
     /// <summary>
-    /// Currency of the held amount.
+    /// On Hold Asset.
     /// </summary>
     [JsonPropertyName("onHoldCurrency")]
-    public string? OnHoldCurrency { get; init; }
+    public string? OnHoldAsset { get; init; }
 
     /// <summary>
-    /// Trigger amount for stop / take-profit orders.
+    /// Trigger Quantity.
     /// </summary>
     [JsonPropertyName("triggerAmount")]
-    public decimal? TriggerAmount { get; init; }
+    public decimal? TriggerQuantity { get; init; }
 
     /// <summary>
-    /// Realised trigger price (after the trigger fired).
+    /// Trigger Price.
     /// </summary>
     [JsonPropertyName("triggerPrice")]
     public decimal? TriggerPrice { get; init; }
 
     /// <summary>
-    /// Trigger event type (currently only price-based).
+    /// Trigger Type.
     /// </summary>
     [JsonPropertyName("triggerType")]
     public TriggerType? TriggerType { get; init; }
 
     /// <summary>
-    /// Which price reference Bitvavo evaluates the trigger against.
+    /// Trigger Reference.
     /// </summary>
     [JsonPropertyName("triggerReference")]
     public TriggerReference? TriggerReference { get; init; }
 
     /// <summary>
-    /// Time-in-force policy.
+    /// Time In Force.
     /// </summary>
     [JsonPropertyName("timeInForce")]
     public TimeInForce? TimeInForce { get; init; }
 
     /// <summary>
-    /// Post-only flag.
+    /// Post Only.
     /// </summary>
     [JsonPropertyName("postOnly")]
     public bool? PostOnly { get; init; }
 
     /// <summary>
-    /// Self-trade-prevention rule applied to this order.
+    /// Self Trade Prevention.
     /// </summary>
     [JsonPropertyName("selfTradePrevention")]
     public SelfTradePrevention? SelfTradePrevention { get; init; }
 
     /// <summary>
-    /// True when the order id is visible in the public order book for the market.
+    /// Visible.
     /// </summary>
     [JsonPropertyName("visible")]
     public bool? Visible { get; init; }
 
     /// <summary>
-    /// Total base-asset quantity filled so far.
+    /// Filled Quantity.
     /// </summary>
     [JsonPropertyName("filledAmount")]
-    public decimal? FilledAmount { get; init; }
+    public decimal? FilledQuantity { get; init; }
 
     /// <summary>
-    /// Total quote-asset value filled so far.
+    /// Filled Quote Quantity.
     /// </summary>
     [JsonPropertyName("filledAmountQuote")]
-    public decimal? FilledAmountQuote { get; init; }
+    public decimal? FilledQuoteQuantity { get; init; }
 
     /// <summary>
-    /// Why the state change happened (e.g. <c>"new"</c>, <c>"trade"</c>, <c>"canceled"</c>).
+    /// Execution Type.
     /// </summary>
     [JsonPropertyName("executionType")]
     public string? ExecutionType { get; init; }
 
     /// <summary>
-    /// Reason if the order was restated (e.g. trigger moved).
+    /// Restatement Reason.
     /// </summary>
     [JsonPropertyName("restatementReason")]
     public string? RestatementReason { get; init; }
 
     /// <summary>
-    /// Cancel-on-disconnect group id (1â€“1000).
+    /// COD Group ID.
     /// </summary>
     [JsonPropertyName("codGroupId")]
     public int? CodGroupId { get; init; }

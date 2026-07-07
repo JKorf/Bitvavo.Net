@@ -1,3 +1,5 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
 using CryptoExchange.Net.Attributes;
 using CryptoExchange.Net.Converters.SystemTextJson;
@@ -5,19 +7,17 @@ using CryptoExchange.Net.Converters.SystemTextJson;
 namespace Bitvavo.Net.Enums;
 
 /// <summary>
-/// Direction of an institutional subaccount asset transfer.
+/// Subaccount Transfer Direction.
 /// </summary>
 [JsonConverter(typeof(EnumConverter<SubaccountTransferDirection>))]
 public enum SubaccountTransferDirection
 {
     /// <summary>
-    /// Move assets from the main account to the subaccount.
+    /// ["<c>masterToSub</c>"] Master To Sub.
     /// </summary>
-    [Map("masterToSub")]
-    MasterToSub = 0,
+    [Map("masterToSub")] MasterToSub = 0,
     /// <summary>
-    /// Move assets from the subaccount to the main account.
+    /// ["<c>subToMaster</c>"] Sub To Master.
     /// </summary>
-    [Map("subToMaster")] 
-    SubToMaster = 1,
+    [Map("subToMaster")] SubToMaster = 1,
 }

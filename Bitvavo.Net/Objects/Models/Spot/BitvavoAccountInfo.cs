@@ -1,22 +1,24 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
+using Bitvavo.Net.Enums;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Account-wide information as returned by <c>GET /v2/account</c>: the active fee tier
-/// (taker/maker rates + 30-day volume) and the list of capabilities granted to the API key.
+/// Account Info.
 /// </summary>
 public record BitvavoAccountInfo
 {
     /// <summary>
-    /// Active fee tier (taker, maker, 30-day volume).
+    /// Fees.
     /// </summary>
     [JsonPropertyName("fees")]
     public BitvavoFeeTier Fees { get; init; } = new();
 
     /// <summary>
-    /// Capabilities granted to the API key â€” e.g. <c>["buy", "sell", "view"]</c>.
+    /// Capabilities.
     /// </summary>
     [JsonPropertyName("capabilities")]
-    public IReadOnlyList<string> Capabilities { get; init; } = new List<string>();
+    public AccountCapability[] Capabilities { get; init; } = System.Array.Empty<AccountCapability>();
 }

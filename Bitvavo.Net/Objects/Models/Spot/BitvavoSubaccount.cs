@@ -1,63 +1,65 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
+using Bitvavo.Net.Enums;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// A subaccount under an institutional main account, as returned by
-/// <c>POST /v2/subaccounts</c> and elements of <c>GET /v2/subaccounts</c>.
+/// Subaccount.
 /// </summary>
 public record BitvavoSubaccount
 {
     /// <summary>
-    /// Unique identifier (UUID) of the subaccount.
+    /// ID.
     /// </summary>
     [JsonPropertyName("id")]
     public string Id { get; init; } = string.Empty;
 
     /// <summary>
-    /// Subaccount type â€” <c>spot</c> or <c>margin</c>.
+    /// Type.
     /// </summary>
     [JsonPropertyName("type")]
-    public string Type { get; init; } = string.Empty;
+    public SubaccountType Type { get; init; }
 
     /// <summary>
-    /// Current status â€” <c>open</c> or <c>closed</c>.
+    /// Status.
     /// </summary>
     [JsonPropertyName("status")]
-    public string Status { get; init; } = string.Empty;
+    public SubaccountStatus Status { get; init; }
 
     /// <summary>
-    /// Caller-supplied description of the subaccount (up to 100 characters). Null when none was set.
+    /// Label.
     /// </summary>
     [JsonPropertyName("label")]
     public string? Label { get; init; }
 }
 
 /// <summary>
-/// Paginated list of subaccounts as returned by <c>GET /v2/subaccounts</c>.
+/// Subaccount List.
 /// </summary>
 public record BitvavoSubaccountList
 {
     /// <summary>
-    /// The subaccounts on the current page.
+    /// Items.
     /// </summary>
     [JsonPropertyName("items")]
-    public IReadOnlyList<BitvavoSubaccount> Items { get; init; } = new List<BitvavoSubaccount>();
+    public BitvavoSubaccount[] Items { get; init; } = System.Array.Empty<BitvavoSubaccount>();
 
     /// <summary>
-    /// One-based index of the page returned.
+    /// Current Page.
     /// </summary>
     [JsonPropertyName("currentPage")]
     public int CurrentPage { get; init; }
 
     /// <summary>
-    /// Total number of pages available.
+    /// Total Pages.
     /// </summary>
     [JsonPropertyName("totalPages")]
     public int TotalPages { get; init; }
 
     /// <summary>
-    /// Maximum number of items per page applied to this response.
+    /// Max Items.
     /// </summary>
     [JsonPropertyName("maxItems")]
     public int MaxItems { get; init; }

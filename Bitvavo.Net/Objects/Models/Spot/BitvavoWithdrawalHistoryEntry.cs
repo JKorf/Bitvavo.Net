@@ -1,58 +1,60 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
+using System;
 using System.Text.Json.Serialization;
 using Bitvavo.Net.Enums;
-using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Withdrawal info
+/// Withdrawal History Entry.
 /// </summary>
 public record BitvavoWithdrawalHistoryEntry
 {
     /// <summary>
-    /// Timestamp
+    /// Timestamp.
     /// </summary>
     [JsonPropertyName("timestamp")]
     public DateTime Timestamp { get; init; }
 
     /// <summary>
-    /// Asset symbol
+    /// Symbol.
     /// </summary>
     [JsonPropertyName("symbol")]
-    public string Asset { get; init; } = string.Empty;
+    public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
-    /// Net amount debited from the account.
+    /// Quantity.
     /// </summary>
     [JsonPropertyName("amount")]
-    public decimal? Quantity { get; init; }
+    public decimal Quantity { get; init; }
 
     /// <summary>
-    /// Destination on-chain address
+    /// Address.
     /// </summary>
     [JsonPropertyName("address")]
     public string? Address { get; init; }
 
     /// <summary>
-    /// Optional payment-reference / memo
+    /// Payment Reference.
     /// </summary>
     [JsonPropertyName("paymentId")]
     public string? PaymentReference { get; init; }
 
     /// <summary>
-    /// On-chain transaction id
+    /// TX ID.
     /// </summary>
     [JsonPropertyName("txId")]
-    public string? TransactionId { get; init; }
+    public string? TxId { get; init; }
 
     /// <summary>
-    /// Fee
+    /// Fee.
     /// </summary>
     [JsonPropertyName("fee")]
-    public decimal? Fee { get; init; }
+    public decimal Fee { get; init; }
 
     /// <summary>
-    /// Status
+    /// Status.
     /// </summary>
     [JsonPropertyName("status")]
     public WithdrawStatus Status { get; init; }

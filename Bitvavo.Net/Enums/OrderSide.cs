@@ -1,3 +1,5 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
 using CryptoExchange.Net.Attributes;
 using CryptoExchange.Net.Converters.SystemTextJson;
@@ -5,19 +7,17 @@ using CryptoExchange.Net.Converters.SystemTextJson;
 namespace Bitvavo.Net.Enums;
 
 /// <summary>
-/// Direction of an order â€” buy or sell.
+/// Order Side.
 /// </summary>
 [JsonConverter(typeof(EnumConverter<OrderSide>))]
 public enum OrderSide
 {
     /// <summary>
-    /// Buy the base asset (e.g. acquire ETH paying EUR).
+    /// ["<c>buy</c>"] Buy.
     /// </summary>
-    [Map("buy")]
-    Buy = 0,
+    [Map("buy")] Buy = 0,
     /// <summary>
-    /// Sell the base asset (e.g. dispose of ETH for EUR).
+    /// ["<c>sell</c>"] Sell.
     /// </summary>
-    [Map("sell")] 
-    Sell = 1,
+    [Map("sell")] Sell = 1,
 }

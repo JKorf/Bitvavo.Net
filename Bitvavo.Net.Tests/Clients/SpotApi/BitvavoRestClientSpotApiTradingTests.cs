@@ -119,14 +119,14 @@ public class BitvavoRestClientSpotApiTradingTests
         result.Data.Status.ShouldBe(OrderStatus.Filled);
         result.Data.Side.ShouldBe(OrderSide.Buy);
         result.Data.OrderType.ShouldBe(OrderType.Limit);
-        result.Data.Amount.ShouldBe(0.5m);
+        result.Data.Quantity.ShouldBe(0.5m);
         result.Data.Price.ShouldBe(1500m);
         result.Data.FeePaid.ShouldBe(0.6m);
         result.Data.TimeInForce.ShouldBe(TimeInForce.GoodTillCanceled);
         result.Data.PostOnly.ShouldBe(false);
         result.Data.Fills.Count.ShouldBe(1);
         result.Data.Fills[0].Id.ShouldBe("f-1");
-        result.Data.Fills[0].Amount.ShouldBe(0.5m);
+        result.Data.Fills[0].Quantity.ShouldBe(0.5m);
     }
 
     [Fact]
@@ -372,7 +372,7 @@ public class BitvavoRestClientSpotApiTradingTests
         fills[0].OrderId.ShouldBe("o1");
         fills[0].Market.ShouldBe("ETH-EUR");
         fills[0].Side.ShouldBe(OrderSide.Buy);
-        fills[0].Amount.ShouldBe(0.5m);
+        fills[0].Quantity.ShouldBe(0.5m);
         fills[0].Price.ShouldBe(3000m);
         fills[0].Taker.ShouldBe(true);
         fills[0].Settled.ShouldBe(true);
@@ -381,7 +381,7 @@ public class BitvavoRestClientSpotApiTradingTests
     [Fact]
     public async Task GetUserTradesAsync_fillWithoutFeeCurrency_yieldsNull()
     {
-        // Bitvavo omits feeCurrency (and fee) when settled=false. FeeCurrency is string? so an
+        // Bitvavo omits feeCurrency (and fee) when settled=false. FeeAsset is string? so an
         // unsettled fill yields null â€” a true sentinel, consistent with the nullable Fee â€” not
         // an empty-string that a caller cannot distinguish from a real currency.
         const string json = """
@@ -394,7 +394,7 @@ public class BitvavoRestClientSpotApiTradingTests
 
         result.Success.ShouldBeTrue();
         var fills = result.Data.ToList();
-        fills[0].FeeCurrency.ShouldBeNull();
+        fills[0].FeeAsset.ShouldBeNull();
         fills[0].Fee.ShouldBeNull();
         fills[0].Settled.ShouldBe(false);
     }

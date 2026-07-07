@@ -1,3 +1,5 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
 using CryptoExchange.Net.Attributes;
 using CryptoExchange.Net.Converters.SystemTextJson;
@@ -5,29 +7,25 @@ using CryptoExchange.Net.Converters.SystemTextJson;
 namespace Bitvavo.Net.Enums;
 
 /// <summary>
-/// How Bitvavo resolves a situation where one of your orders would match against another of your own orders.
+/// Self Trade Prevention.
 /// </summary>
 [JsonConverter(typeof(EnumConverter<SelfTradePrevention>))]
 public enum SelfTradePrevention
 {
     /// <summary>
-    /// Decrement both quantities and cancel both orders.
+    /// ["<c>decrementAndCancel</c>"] Decrement And Cancel.
     /// </summary>
-    [Map("decrementAndCancel")] 
-    DecrementAndCancel = 0,
+    [Map("decrementAndCancel")] DecrementAndCancel = 0,
     /// <summary>
-    /// Cancel the older of the two orders, let the newer fill.
+    /// ["<c>cancelOldest</c>"] Cancel Oldest.
     /// </summary>
-    [Map("cancelOldest")] 
-    CancelOldest = 1,
+    [Map("cancelOldest")] CancelOldest = 1,
     /// <summary>
-    /// Cancel the newer of the two orders, let the older remain.
+    /// ["<c>cancelNewest</c>"] Cancel Newest.
     /// </summary>
-    [Map("cancelNewest")] 
-    CancelNewest = 2,
+    [Map("cancelNewest")] CancelNewest = 2,
     /// <summary>
-    /// Cancel both orders entirely.
+    /// ["<c>cancelBoth</c>"] Cancel Both.
     /// </summary>
-    [Map("cancelBoth")]
-    CancelBoth = 3,
+    [Map("cancelBoth")] CancelBoth = 3,
 }

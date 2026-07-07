@@ -1,3 +1,5 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
 using CryptoExchange.Net.Attributes;
 using CryptoExchange.Net.Converters.SystemTextJson;
@@ -5,29 +7,25 @@ using CryptoExchange.Net.Converters.SystemTextJson;
 namespace Bitvavo.Net.Enums;
 
 /// <summary>
-/// Which price reference Bitvavo evaluates a trigger order against.
+/// Trigger Reference.
 /// </summary>
 [JsonConverter(typeof(EnumConverter<TriggerReference>))]
 public enum TriggerReference
 {
     /// <summary>
-    /// The most recent trade price.
+    /// ["<c>lastTrade</c>"] Last Trade.
     /// </summary>
-    [Map("lastTrade")] 
-    LastTrade = 0,
+    [Map("lastTrade")] LastTrade = 0,
     /// <summary>
-    /// The current best bid on the order book.
+    /// ["<c>bestBid</c>"] Best Bid.
     /// </summary>
-    [Map("bestBid")] 
-    BestBid = 1,
+    [Map("bestBid")] BestBid = 1,
     /// <summary>
-    /// The current best ask on the order book.
+    /// ["<c>bestAsk</c>"] Best Ask.
     /// </summary>
-    [Map("bestAsk")] 
-    BestAsk = 2,
+    [Map("bestAsk")] BestAsk = 2,
     /// <summary>
-    /// The midpoint between best bid and best ask.
+    /// ["<c>midPrice</c>"] Mid Price.
     /// </summary>
-    [Map("midPrice")] 
-    MidPrice = 3,
+    [Map("midPrice")] MidPrice = 3,
 }

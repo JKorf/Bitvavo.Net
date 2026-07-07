@@ -1,91 +1,89 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
-using CryptoExchange.Net.Converters.SystemTextJson;
+using Bitvavo.Net.Enums;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// An asset transfer between an institutional main account and one of its subaccounts,
-/// as returned by <c>POST /v2/subaccounts/transfers</c> and
-/// <c>GET /v2/subaccounts/transfers/{transferId}</c>.
+/// Subaccount Transfer.
 /// </summary>
 public record BitvavoSubaccountTransfer
 {
     /// <summary>
-    /// Bitvavo-assigned identifier (UUID) of the transfer.
+    /// Transfer ID.
     /// </summary>
     [JsonPropertyName("transferId")]
     public string TransferId { get; init; } = string.Empty;
 
     /// <summary>
-    /// Caller-supplied idempotency identifier (UUID), if one was passed on creation.
+    /// Client Request ID.
     /// </summary>
     [JsonPropertyName("clientRequestId")]
     public string? ClientRequestId { get; init; }
 
     /// <summary>
-    /// Identifier (UUID) of the subaccount involved in the transfer.
+    /// Subaccount ID.
     /// </summary>
     [JsonPropertyName("subaccountId")]
     public string SubaccountId { get; init; } = string.Empty;
 
     /// <summary>
-    /// Transfer direction â€” <c>masterToSub</c> or <c>subToMaster</c>.
+    /// Direction.
     /// </summary>
     [JsonPropertyName("direction")]
-    public string Direction { get; init; } = string.Empty;
+    public SubaccountTransferDirection Direction { get; init; }
 
     /// <summary>
-    /// Asset symbol that was transferred.
+    /// Symbol.
     /// </summary>
     [JsonPropertyName("symbol")]
     public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
-    /// Quantity of the asset transferred.
+    /// Quantity.
     /// </summary>
-    [JsonPropertyName("amount"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Amount { get; init; }
+    [JsonPropertyName("amount")]
+    public decimal? Quantity { get; init; }
 
     /// <summary>
-    /// Transfer status â€” <c>failed</c>, <c>pending</c>, or <c>completed</c>.
+    /// Status.
     /// </summary>
     [JsonPropertyName("status")]
-    public string Status { get; init; } = string.Empty;
+    public TransferStatus Status { get; init; }
 
     /// <summary>
-    /// When the transfer was created (UTC).
+    /// Created At.
     /// </summary>
-    [JsonPropertyName("createdAt"), JsonConverter(typeof(DateTimeConverter))]
+    [JsonPropertyName("createdAt")]
     public System.DateTime CreatedAt { get; init; }
 }
 
 /// <summary>
-/// Paginated list of subaccount transfers as returned by <c>GET /v2/subaccounts/transfers</c>.
-/// This endpoint paginates by time-window cursor (<see cref="Start"/> / <see cref="End"/>) and
-/// page size (<see cref="Limit"/>) rather than page number.
+/// Subaccount Transfer List.
 /// </summary>
 public record BitvavoSubaccountTransferList
 {
     /// <summary>
-    /// The transfers in the requested window.
+    /// Items.
     /// </summary>
     [JsonPropertyName("items")]
-    public IReadOnlyList<BitvavoSubaccountTransfer> Items { get; init; } = new List<BitvavoSubaccountTransfer>();
+    public BitvavoSubaccountTransfer[] Items { get; init; } = System.Array.Empty<BitvavoSubaccountTransfer>();
 
     /// <summary>
-    /// Unix-ms lower bound of the returned window.
+    /// Start.
     /// </summary>
     [JsonPropertyName("start")]
     public long Start { get; init; }
 
     /// <summary>
-    /// Unix-ms upper bound of the returned window.
+    /// End.
     /// </summary>
     [JsonPropertyName("end")]
     public long End { get; init; }
 
     /// <summary>
-    /// Maximum number of items applied to this response (1â€“1000, default 25).
+    /// Limit.
     /// </summary>
     [JsonPropertyName("limit")]
     public int Limit { get; init; }

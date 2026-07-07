@@ -1,87 +1,84 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
+using System;
 using System.Text.Json.Serialization;
-using CryptoExchange.Net.Converters.SystemTextJson;
+using Bitvavo.Net.Enums;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// One transaction-history entry as returned in the <c>items</c> array of
-/// <c>GET /v2/account/history</c>. A transaction is any account-ledger movement â€”
-/// trades, deposits, withdrawals, staking rewards, affiliate payouts, internal
-/// transfers, rebates, etc. â€” distinguished by <see cref="Type"/>.
+/// Transaction History Entry.
 /// </summary>
 public record BitvavoTransactionHistoryEntry
 {
     /// <summary>
-    /// Unique identifier of the transaction.
+    /// Transaction ID.
     /// </summary>
     [JsonPropertyName("transactionId")]
     public string TransactionId { get; init; } = string.Empty;
 
     /// <summary>
-    /// When Bitvavo executed the transaction (UTC).
+    /// Executed At.
     /// </summary>
-    [JsonPropertyName("executedAt"), JsonConverter(typeof(DateTimeConverter))]
-    public DateTime ExecutedAt { get; init; }
+    [JsonPropertyName("executedAt")]
+    public DateTime ExecuteTime { get; init; }
 
     /// <summary>
-    /// Transaction-type classification â€” one of <c>sell</c>, <c>buy</c>, <c>staking</c>,
-    /// <c>fixed_staking</c>, <c>deposit</c>, <c>withdrawal</c>, <c>affiliate</c>,
-    /// <c>distribution</c>, <c>internal_transfer</c>, <c>withdrawal_cancelled</c>,
-    /// <c>rebate</c>, <c>loan</c>, <c>external_transferred_funds</c>, <c>manually_assigned</c>.
+    /// Type.
     /// </summary>
     [JsonPropertyName("type")]
-    public string Type { get; init; } = string.Empty;
+    public TransactionType Type { get; init; }
 
     /// <summary>
-    /// Currency in which the transaction is priced.
+    /// Price Asset.
     /// </summary>
     [JsonPropertyName("priceCurrency")]
-    public string? PriceCurrency { get; init; }
+    public string? PriceAsset { get; init; }
 
     /// <summary>
-    /// Transaction price/value amount.
+    /// Price Quantity.
     /// </summary>
-    [JsonPropertyName("priceAmount"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? PriceAmount { get; init; }
+    [JsonPropertyName("priceAmount")]
+    public decimal? PriceQuantity { get; init; }
 
     /// <summary>
-    /// Currency sent in the transaction.
+    /// Sent Asset.
     /// </summary>
     [JsonPropertyName("sentCurrency")]
-    public string? SentCurrency { get; init; }
+    public string? SentAsset { get; init; }
 
     /// <summary>
-    /// Amount sent.
+    /// Sent Quantity.
     /// </summary>
-    [JsonPropertyName("sentAmount"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? SentAmount { get; init; }
+    [JsonPropertyName("sentAmount")]
+    public decimal? SentQuantity { get; init; }
 
     /// <summary>
-    /// Currency received from the transaction.
+    /// Received Asset.
     /// </summary>
     [JsonPropertyName("receivedCurrency")]
-    public string? ReceivedCurrency { get; init; }
+    public string? ReceivedAsset { get; init; }
 
     /// <summary>
-    /// Amount received.
+    /// Received Quantity.
     /// </summary>
-    [JsonPropertyName("receivedAmount"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? ReceivedAmount { get; init; }
+    [JsonPropertyName("receivedAmount")]
+    public decimal? ReceivedQuantity { get; init; }
 
     /// <summary>
-    /// Currency the fees were charged in.
+    /// Fees Asset.
     /// </summary>
     [JsonPropertyName("feesCurrency")]
-    public string? FeesCurrency { get; init; }
+    public string? FeesAsset { get; init; }
 
     /// <summary>
-    /// Fee amount charged on the transaction.
+    /// Fees Quantity.
     /// </summary>
-    [JsonPropertyName("feesAmount"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? FeesAmount { get; init; }
+    [JsonPropertyName("feesAmount")]
+    public decimal? FeesQuantity { get; init; }
 
     /// <summary>
-    /// On-chain or external address involved in the transaction. Null when not applicable.
+    /// Address.
     /// </summary>
     [JsonPropertyName("address")]
     public string? Address { get; init; }

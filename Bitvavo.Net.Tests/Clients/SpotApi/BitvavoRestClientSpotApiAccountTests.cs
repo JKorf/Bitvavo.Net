@@ -254,12 +254,12 @@ public class BitvavoRestClientSpotApiAccountTests
         var entry = result.Data.Items[0];
         entry.TransactionId.ShouldBe("tx-1");
         entry.Type.ShouldBe("buy");
-        entry.PriceAmount.ShouldBe(1500.0m);
-        entry.SentCurrency.ShouldBe("EUR");
-        entry.SentAmount.ShouldBe(750.0m);
-        entry.ReceivedCurrency.ShouldBe("ETH");
-        entry.ReceivedAmount.ShouldBe(0.5m);
-        entry.FeesAmount.ShouldBe(1.875m);
+        entry.PriceQuantity.ShouldBe(1500.0m);
+        entry.SentAsset.ShouldBe("EUR");
+        entry.SentQuantity.ShouldBe(750.0m);
+        entry.ReceivedAsset.ShouldBe("ETH");
+        entry.ReceivedQuantity.ShouldBe(0.5m);
+        entry.FeesQuantity.ShouldBe(1.875m);
         entry.Address.ShouldBeNull();
     }
 }

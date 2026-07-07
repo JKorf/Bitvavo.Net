@@ -1,3 +1,5 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
 using CryptoExchange.Net.Attributes;
 using CryptoExchange.Net.Converters.SystemTextJson;
@@ -5,74 +7,61 @@ using CryptoExchange.Net.Converters.SystemTextJson;
 namespace Bitvavo.Net.Enums;
 
 /// <summary>
-/// Lifecycle state of an order on the Bitvavo exchange.
+/// Order Status.
 /// </summary>
 [JsonConverter(typeof(EnumConverter<OrderStatus>))]
 public enum OrderStatus
 {
     /// <summary>
-    /// Order accepted, resting on the book.
+    /// ["<c>new</c>"] New.
     /// </summary>
-    [Map("new")] 
-    New = 0,
+    [Map("new")] New = 0,
     /// <summary>
-    /// Trigger order awaiting its trigger price.
+    /// ["<c>awaitingTrigger</c>"] Awaiting Trigger.
     /// </summary>
-    [Map("awaitingTrigger")] 
-    AwaitingTrigger = 1,
+    [Map("awaitingTrigger")] AwaitingTrigger = 1,
     /// <summary>
-    /// Order canceled by the user.
+    /// ["<c>canceled</c>"] Canceled.
     /// </summary>
-    [Map("canceled")] 
-    Canceled = 2,
+    [Map("canceled")] Canceled = 2,
     /// <summary>
-    /// Order canceled because it was placed during an auction.
+    /// ["<c>canceledAuction</c>"] Canceled Auction.
     /// </summary>
-    [Map("canceledAuction")] 
-    CanceledAuction = 3,
+    [Map("canceledAuction")] CanceledAuction = 3,
     /// <summary>
-    /// Order canceled by the self-trade-prevention rule.
+    /// ["<c>canceledSelfTradePrevention</c>"] Canceled Self Trade Prevention.
     /// </summary>
-    [Map("canceledSelfTradePrevention")] 
-    CanceledSelfTradePrevention = 4,
+    [Map("canceledSelfTradePrevention")] CanceledSelfTradePrevention = 4,
     /// <summary>
-    /// IOC order canceled because it could not fill immediately.
+    /// ["<c>canceledIOC</c>"] Canceled Ioc.
     /// </summary>
-    [Map("canceledIOC")]
-    CanceledIoc = 5,
+    [Map("canceledIOC")] CanceledIoc = 5,
     /// <summary>
-    /// FOK order canceled because it could not fill in full immediately.
+    /// ["<c>canceledFOK</c>"] Canceled Fok.
     /// </summary>
-    [Map("canceledFOK")]
-    CanceledFok = 6,
+    [Map("canceledFOK")] CanceledFok = 6,
     /// <summary>
-    /// Order canceled because of Bitvavo's market-protection rule.
+    /// ["<c>canceledMarketProtection</c>"] Canceled Market Protection.
     /// </summary>
-    [Map("canceledMarketProtection")]
-    CanceledMarketProtection = 7,
+    [Map("canceledMarketProtection")] CanceledMarketProtection = 7,
     /// <summary>
-    /// Post-only order canceled because it would have crossed the spread.
+    /// ["<c>canceledPostOnly</c>"] Canceled Post Only.
     /// </summary>
-    [Map("canceledPostOnly")] 
-    CanceledPostOnly = 8,
+    [Map("canceledPostOnly")] CanceledPostOnly = 8,
     /// <summary>
-    /// Order fully filled.
+    /// ["<c>filled</c>"] Filled.
     /// </summary>
-    [Map("filled")]
-    Filled = 9,
+    [Map("filled")] Filled = 9,
     /// <summary>
-    /// Order partially filled (still resting for the remaining amount).
+    /// ["<c>partiallyFilled</c>"] Partially Filled.
     /// </summary>
-    [Map("partiallyFilled")]
-    PartiallyFilled = 10,
+    [Map("partiallyFilled")] PartiallyFilled = 10,
     /// <summary>
-    /// Order expired (TimeInForce honored).
+    /// ["<c>expired</c>"] Expired.
     /// </summary>
-    [Map("expired")] 
-    Expired = 11,
+    [Map("expired")] Expired = 11,
     /// <summary>
-    /// Order rejected by the exchange.
+    /// ["<c>rejected</c>"] Rejected.
     /// </summary>
-    [Map("rejected")]
-    Rejected = 12,
+    [Map("rejected")] Rejected = 12,
 }

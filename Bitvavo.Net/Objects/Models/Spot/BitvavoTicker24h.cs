@@ -1,101 +1,102 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
+using System;
 using System.Text.Json.Serialization;
-using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// 24-hour rolling OHLCV + best-quote stats for a single market as returned by
-/// <c>GET /v2/ticker/24h</c>.
+/// Ticker24h.
 /// </summary>
 public record BitvavoTicker24h
 {
     /// <summary>
-    /// Market identifier.
+    /// Symbol.
     /// </summary>
     [JsonPropertyName("market")]
     public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
-    /// Beginning of the 24h window (UTC).
+    /// Start Timestamp.
     /// </summary>
-    [JsonPropertyName("startTimestamp"), JsonConverter(typeof(DateTimeConverter))]
-    public DateTime? StartTimestamp { get; init; }
+    [JsonPropertyName("startTimestamp")]
+    public DateTime? StartTime { get; init; }
 
     /// <summary>
-    /// End of the 24h window (UTC).
+    /// Timestamp.
     /// </summary>
-    [JsonPropertyName("timestamp"), JsonConverter(typeof(DateTimeConverter))]
+    [JsonPropertyName("timestamp")]
     public DateTime? Timestamp { get; init; }
 
     /// <summary>
-    /// Open price (first traded price in the window).
+    /// Open.
     /// </summary>
-    [JsonPropertyName("open"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Open { get; init; }
+    [JsonPropertyName("open")]
+    public decimal? OpenPrice { get; init; }
 
     /// <summary>
-    /// Timestamp of the open trade (UTC).
+    /// Open Timestamp.
     /// </summary>
-    [JsonPropertyName("openTimestamp"), JsonConverter(typeof(DateTimeConverter))]
-    public DateTime? OpenTimestamp { get; init; }
+    [JsonPropertyName("openTimestamp")]
+    public DateTime? OpenTime { get; init; }
 
     /// <summary>
-    /// Highest traded price in the window.
+    /// High.
     /// </summary>
-    [JsonPropertyName("high"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? High { get; init; }
+    [JsonPropertyName("high")]
+    public decimal? HighPrice { get; init; }
 
     /// <summary>
-    /// Lowest traded price in the window.
+    /// Low.
     /// </summary>
-    [JsonPropertyName("low"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Low { get; init; }
+    [JsonPropertyName("low")]
+    public decimal? LowPrice { get; init; }
 
     /// <summary>
-    /// Last (most recent) traded price.
+    /// Last.
     /// </summary>
-    [JsonPropertyName("last"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Last { get; init; }
+    [JsonPropertyName("last")]
+    public decimal? LastPrice { get; init; }
 
     /// <summary>
-    /// Timestamp of the close (last) trade (UTC).
+    /// Close Timestamp.
     /// </summary>
-    [JsonPropertyName("closeTimestamp"), JsonConverter(typeof(DateTimeConverter))]
-    public DateTime? CloseTimestamp { get; init; }
+    [JsonPropertyName("closeTimestamp")]
+    public DateTime? CloseTime { get; init; }
 
     /// <summary>
-    /// Best bid price.
+    /// Bid.
     /// </summary>
-    [JsonPropertyName("bid"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Bid { get; init; }
+    [JsonPropertyName("bid")]
+    public decimal? BestBidPrice { get; init; }
 
     /// <summary>
-    /// Quantity at the best bid.
+    /// Bid Quantity.
     /// </summary>
-    [JsonPropertyName("bidSize"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? BidSize { get; init; }
+    [JsonPropertyName("bidSize")]
+    public decimal? BestBidQuantity { get; init; }
 
     /// <summary>
-    /// Best ask price.
+    /// Ask.
     /// </summary>
-    [JsonPropertyName("ask"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Ask { get; init; }
+    [JsonPropertyName("ask")]
+    public decimal? BestAskPrice { get; init; }
 
     /// <summary>
-    /// Quantity at the best ask.
+    /// Ask Quantity.
     /// </summary>
-    [JsonPropertyName("askSize"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? AskSize { get; init; }
+    [JsonPropertyName("askSize")]
+    public decimal? BestAskQuantity { get; init; }
 
     /// <summary>
-    /// Total volume traded in the window, base-asset units.
+    /// Volume.
     /// </summary>
-    [JsonPropertyName("volume"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("volume")]
     public decimal? Volume { get; init; }
 
     /// <summary>
-    /// Total volume traded in the window, quote-asset units.
+    /// Volume Quote.
     /// </summary>
-    [JsonPropertyName("volumeQuote"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? VolumeQuote { get; init; }
+    [JsonPropertyName("volumeQuote")]
+    public decimal? QuoteVolume { get; init; }
 }

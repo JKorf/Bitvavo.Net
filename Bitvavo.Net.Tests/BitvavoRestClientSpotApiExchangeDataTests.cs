@@ -225,7 +225,7 @@ public class BitvavoRestClientSpotApiExchangeDataTests
         handler.Requests[0].RequestUri!.AbsolutePath.ShouldBe("/v2/ticker/price");
         var prices = result.Data.ToList();
         prices.Count.ShouldBe(2);
-        prices[0].Market.ShouldBe("ETH-EUR");
+        prices[0].Symbol.ShouldBe("ETH-EUR");
         prices[0].Price.ShouldBe(2003.35m);
     }
 
@@ -253,9 +253,9 @@ public class BitvavoRestClientSpotApiExchangeDataTests
         handler.Requests[0].RequestUri!.AbsolutePath.ShouldBe("/v2/ticker/book");
         var books = result.Data.ToList();
         books[0].Symbol.ShouldBe("ETH-EUR");
-        books[0].Bid.ShouldBe(2002.50m);
+        books[0].BestBidPrice.ShouldBe(2002.50m);
         books[0].BidSize.ShouldBe(3.5m);
-        books[0].Ask.ShouldBe(2003.35m);
+        books[0].BestAskPrice.ShouldBe(2003.35m);
         books[0].AskSize.ShouldBe(5m);
     }
 
@@ -280,13 +280,13 @@ public class BitvavoRestClientSpotApiExchangeDataTests
         handler.Requests[0].RequestUri!.AbsolutePath.ShouldBe("/v2/ticker/24h");
         var t = result.Data.First();
         t.Symbol.ShouldBe("ETH-EUR");
-        t.Open.ShouldBe(2000m);
-        t.High.ShouldBe(2050m);
-        t.Low.ShouldBe(1980m);
-        t.Last.ShouldBe(2010m);
+        t.OpenPrice.ShouldBe(2000m);
+        t.HighPrice.ShouldBe(2050m);
+        t.LowPrice.ShouldBe(1980m);
+        t.LastPrice.ShouldBe(2010m);
         t.Volume.ShouldBe(1234.5m);
-        t.VolumeQuote.ShouldBe(2470000m);
-        t.StartTimestamp.ShouldBe(new DateTime(2024, 4, 25, 12, 0, 0, DateTimeKind.Utc));
+        t.QuoteVolume.ShouldBe(2470000m);
+        t.StartTime.ShouldBe(new DateTime(2024, 4, 25, 12, 0, 0, DateTimeKind.Utc));
     }
 
     // â”€â”€ GetOrderBookAsync â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -339,7 +339,7 @@ public class BitvavoRestClientSpotApiExchangeDataTests
         var trades = result.Data.ToList();
         trades.Count.ShouldBe(2);
         trades[0].Id.ShouldBe("abc");
-        trades[0].Amount.ShouldBe(0.5m);
+        trades[0].Quantity.ShouldBe(0.5m);
         trades[0].Price.ShouldBe(2003.35m);
         trades[0].Side.ShouldBe(Bitvavo.Net.Enums.OrderSide.Buy);
         trades[1].Side.ShouldBe(Bitvavo.Net.Enums.OrderSide.Sell);

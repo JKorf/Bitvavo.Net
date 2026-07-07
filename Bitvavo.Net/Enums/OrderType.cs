@@ -1,3 +1,5 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
 using CryptoExchange.Net.Attributes;
 using CryptoExchange.Net.Converters.SystemTextJson;
@@ -5,39 +7,33 @@ using CryptoExchange.Net.Converters.SystemTextJson;
 namespace Bitvavo.Net.Enums;
 
 /// <summary>
-/// Order placement type â€” controls how the order matches against the book.
+/// Order Type.
 /// </summary>
 [JsonConverter(typeof(EnumConverter<OrderType>))]
 public enum OrderType
 {
     /// <summary>
-    /// Market order â€” fills immediately at best available prices.
+    /// ["<c>market</c>"] Market.
     /// </summary>
-    [Map("market")] 
-    Market = 0,
+    [Map("market")] Market = 0,
     /// <summary>
-    /// Limit order â€” fills only at the specified price or better; rests on the book if not immediately marketable.
+    /// ["<c>limit</c>"] Limit.
     /// </summary>
-    [Map("limit")]
-    Limit = 1,
+    [Map("limit")] Limit = 1,
     /// <summary>
-    /// Stop-loss market order â€” triggers a market order when the trigger price is hit.
+    /// ["<c>stopLoss</c>"] Stop Loss.
     /// </summary>
-    [Map("stopLoss")]
-    StopLoss = 2,
+    [Map("stopLoss")] StopLoss = 2,
     /// <summary>
-    /// Stop-loss limit order â€” triggers a limit order when the trigger price is hit.
+    /// ["<c>stopLossLimit</c>"] Stop Loss Limit.
     /// </summary>
-    [Map("stopLossLimit")] 
-    StopLossLimit = 3,
+    [Map("stopLossLimit")] StopLossLimit = 3,
     /// <summary>
-    /// Take-profit market order â€” triggers a market order when the trigger price is hit.
+    /// ["<c>takeProfit</c>"] Take Profit.
     /// </summary>
-    [Map("takeProfit")] 
-    TakeProfit = 4,
+    [Map("takeProfit")] TakeProfit = 4,
     /// <summary>
-    /// Take-profit limit order â€” triggers a limit order when the trigger price is hit.
+    /// ["<c>takeProfitLimit</c>"] Take Profit Limit.
     /// </summary>
-    [Map("takeProfitLimit")] 
-    TakeProfitLimit = 5,
+    [Map("takeProfitLimit")] TakeProfitLimit = 5,
 }

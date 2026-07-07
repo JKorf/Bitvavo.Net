@@ -123,7 +123,7 @@ public class BitvavoRestClientSpotApiFundingTests
         var entries = result.Data.ToList();
         entries.Count.ShouldBe(1);
         entries[0].Symbol.ShouldBe("BTC");
-        entries[0].Amount.ShouldBe(0.05m);
+        entries[0].Quantity.ShouldBe(0.05m);
         entries[0].Address.ShouldBe("bc1q...");
         entries[0].TxId.ShouldBe("abc...");
         entries[0].Fee.ShouldBe(0m);
@@ -164,7 +164,7 @@ public class BitvavoRestClientSpotApiFundingTests
         var entries = result.Data.ToList();
         entries.Count.ShouldBe(1);
         entries[0].Symbol.ShouldBe("EUR");
-        entries[0].Amount.ShouldBe(100.0m);
+        entries[0].Quantity.ShouldBe(100.0m);
         entries[0].Fee.ShouldBe(0.5m);
         entries[0].Status.ShouldBe("completed");
     }
@@ -210,7 +210,7 @@ public class BitvavoRestClientSpotApiFundingTests
         result.Success.ShouldBeTrue();
         result.Data.Success.ShouldBeTrue();
         result.Data.Symbol.ShouldBe("BTC");
-        result.Data.Amount.ShouldBe(0.0012m);
+        result.Data.Quantity.ShouldBe(0.0012m);
     }
 }
 

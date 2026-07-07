@@ -1,59 +1,61 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
+using System;
 using System.Text.Json.Serialization;
 using Bitvavo.Net.Enums;
-using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// One deposit-history entry as returned by <c>GET /v2/depositHistory</c>.
+/// Deposit History Entry.
 /// </summary>
 public record BitvavoDepositHistoryEntry
 {
     /// <summary>
-    /// When Bitvavo recorded the deposit (UTC).
+    /// Timestamp.
     /// </summary>
-    [JsonPropertyName("timestamp"), JsonConverter(typeof(DateTimeConverter))]
+    [JsonPropertyName("timestamp")]
     public DateTime Timestamp { get; init; }
 
     /// <summary>
-    /// Asset symbol â€” e.g. <c>"BTC"</c>, <c>"EUR"</c>.
+    /// Symbol.
     /// </summary>
     [JsonPropertyName("symbol")]
     public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
-    /// Net amount credited to the account.
+    /// Quantity.
     /// </summary>
-    [JsonPropertyName("amount"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Amount { get; init; }
+    [JsonPropertyName("amount")]
+    public decimal? Quantity { get; init; }
 
     /// <summary>
-    /// Source on-chain address. Null for fiat deposits.
+    /// Address.
     /// </summary>
     [JsonPropertyName("address")]
     public string? Address { get; init; }
 
     /// <summary>
-    /// Optional payment-reference / memo set by the depositor.
+    /// Payment Reference.
     /// </summary>
     [JsonPropertyName("paymentId")]
     public string? PaymentReference { get; init; }
 
     /// <summary>
-    /// On-chain transaction id. Null for fiat deposits.
+    /// TX ID.
     /// </summary>
     [JsonPropertyName("txId")]
     public string? TxId { get; init; }
 
     /// <summary>
-    /// Bitvavo's deposit fee (0 for crypto, non-zero for some fiat methods).
+    /// Fee.
     /// </summary>
-    [JsonPropertyName("fee"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("fee")]
     public decimal? Fee { get; init; }
 
     /// <summary>
-    /// Withdraw status
+    /// Status.
     /// </summary>
     [JsonPropertyName("status")]
-    public WithdrawStatus Status { get; init; }
+    public DepositStatus Status { get; init; }
 }

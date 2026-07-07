@@ -83,9 +83,9 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
             .Select(network => new SharedAssetNetwork(network)
             {
                 WithdrawFee = asset.WithdrawalFee,
-                MinWithdrawQuantity = asset.WithdrawalMinAmount,
-                WithdrawEnabled = string.Equals(asset.WithdrawalStatus, "OK", StringComparison.OrdinalIgnoreCase),
-                DepositEnabled = string.Equals(asset.DepositStatus, "OK", StringComparison.OrdinalIgnoreCase),
+                MinWithdrawQuantity = asset.WithdrawalMinQuantity,
+                WithdrawEnabled = asset.WithdrawalStatus == AssetStatus.Ok,
+                DepositEnabled = asset.DepositStatus == AssetStatus.Ok,
                 MinConfirmations = asset.DepositConfirmations,
             })
             .ToArray(),
@@ -178,7 +178,7 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
             .Select(trade => new SharedTrade(
                 request.Symbol,
                 symbol,
-                trade.Amount ?? 0m,
+                trade.Quantity ?? 0m,
                 trade.Price ?? 0m,
                 trade.Timestamp)
             {
@@ -207,8 +207,8 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
             return HttpResult.Fail<SharedOrderBook>(result);
 
         return HttpResult.Ok(result, new SharedOrderBook(
-            result.Data!.Asks,
-            result.Data!.Bids));
+            result.Data!.Asks.Select(entry => (ISymbolOrderBookEntry)new BitvavoSharedOrderBookEntry { Price = entry.Price, Quantity = entry.Quantity }).ToArray(),
+            result.Data!.Bids.Select(entry => (ISymbolOrderBookEntry)new BitvavoSharedOrderBookEntry { Price = entry.Price, Quantity = entry.Quantity }).ToArray()));
     }
 
     #endregion
@@ -234,7 +234,7 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
                 market.BaseAsset,
                 market.QuoteAsset,
                 market.Symbol,
-                string.Equals(market.Status, "trading", StringComparison.OrdinalIgnoreCase))
+                market.Status == SymbolStatus.Trading)
             {
                 MinTradeQuantity = market.MinOrderInBaseAsset,
                 MaxTradeQuantity = market.MaxOrderInBaseAsset,
@@ -331,20 +331,20 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
 
     private static SharedSpotTicker ToSharedSpotTicker(SharedSymbol? sharedSymbol, BitvavoTicker24h ticker)
     {
-        var changePercentage = ticker.Open is > 0m && ticker.Last != null
-            ? Math.Round((ticker.Last.Value - ticker.Open.Value) / ticker.Open.Value * 100m, 6)
+        var changePercentage = ticker.OpenPrice is > 0m && ticker.LastPrice != null
+            ? Math.Round((ticker.LastPrice.Value - ticker.OpenPrice.Value) / ticker.OpenPrice.Value * 100m, 6)
             : (decimal?)null;
 
         return new SharedSpotTicker(
             sharedSymbol,
             ticker.Symbol,
-            ticker.Last,
-            ticker.High,
-            ticker.Low,
+            ticker.LastPrice,
+            ticker.HighPrice,
+            ticker.LowPrice,
             ticker.Volume ?? 0m,
             changePercentage)
         {
-            QuoteVolume = ticker.VolumeQuote,
+            QuoteVolume = ticker.QuoteVolume,
         };
     }
 
@@ -374,10 +374,10 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
         return HttpResult.Ok(result, new SharedBookTicker(
             request.Symbol,
             book.Symbol,
-            book.Ask ?? 0m,
-            book.AskSize ?? 0m,
-            book.Bid ?? 0m,
-            book.BidSize ?? 0m));
+            book.BestAskPrice ?? 0m,
+            book.BestAskQuantity ?? 0m,
+            book.BestBidPrice ?? 0m,
+            book.BestBidQuantity ?? 0m));
     }
 
     #endregion
@@ -401,7 +401,7 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
         return HttpResult.Ok(result, result.Data!
             .Select(balance => new SharedBalance(
                 TradingMode.Spot,
-                balance.Asset,
+                balance.Symbol,
                 balance.Available ?? 0m,
                 (balance.Available ?? 0m) + (balance.InOrder ?? 0m)))
             .ToArray());
@@ -696,17 +696,17 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
         {
             ClientOrderId = order.ClientOrderId,
             OrderPrice = order.Price,
-            OrderQuantity = new SharedOrderQuantity(order.Amount, order.AmountQuote),
-            QuantityFilled = new SharedOrderQuantity(order.FilledAmount, order.FilledAmountQuote),
-            AveragePrice = order.FilledAmount is > 0m && order.FilledAmountQuote != null
-                ? order.FilledAmountQuote / order.FilledAmount
+            OrderQuantity = new SharedOrderQuantity(order.Quantity, order.QuoteQuantity),
+            QuantityFilled = new SharedOrderQuantity(order.FilledQuantity, order.FilledQuoteQuantity),
+            AveragePrice = order.FilledQuantity is > 0m && order.FilledQuoteQuantity != null
+                ? order.FilledQuoteQuantity / order.FilledQuantity
                 : null,
             TimeInForce = order.TimeInForce == null ? null : ToSharedTimeInForce(order.TimeInForce.Value),
             UpdateTime = order.Updated,
             Fee = order.FeePaid,
-            FeeAsset = order.FeeCurrency,
-            TriggerPrice = order.TriggerAmount,
-            IsTriggerOrder = order.TriggerAmount != null,
+            FeeAsset = order.FeeAsset,
+            TriggerPrice = order.TriggerQuantity,
+            IsTriggerOrder = order.TriggerQuantity != null,
         };
     }
 
@@ -718,13 +718,13 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
             fill.OrderId ?? string.Empty,
             fill.Id,
             ToSharedOrderSide(fill.Side),
-            fill.Amount ?? 0m,
+            fill.Quantity ?? 0m,
             fill.Price ?? 0m,
             fill.Timestamp)
         {
             ClientOrderId = fill.ClientOrderId,
             Fee = fill.Fee,
-            FeeAsset = fill.FeeCurrency,
+            FeeAsset = fill.FeeAsset,
             Role = fill.Taker switch
             {
                 true => SharedRole.Taker,
@@ -817,8 +817,8 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
             {
                 return new SharedDeposit(
                     deposit.Symbol,
-                    deposit.Amount ?? 0m,
-                    deposit.Status == WithdrawStatus.Completed,
+                    deposit.Quantity ?? 0m,
+                    deposit.Status == DepositStatus.Completed,
                     deposit.Timestamp,
                     ToSharedTransferStatus(deposit.Status))
                 {
@@ -857,14 +857,14 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
 
         return HttpResult.Ok(result, result.Data!
             .Select(withdrawal => new SharedWithdrawal(
-                withdrawal.Asset,
+                withdrawal.Symbol,
                 withdrawal.Address ?? string.Empty,
-                withdrawal.Quantity ?? 0m,
+                withdrawal.Quantity,
                 withdrawal.Status == WithdrawStatus.Completed,
                 withdrawal.Timestamp,
                 ToSharedTransferStatus(withdrawal.Status))
             {
-                TransactionId = withdrawal.TransactionId,
+                TransactionId = withdrawal.TxId,
                 Tag = withdrawal.PaymentReference,
                 Fee = withdrawal.Fee,
             })
@@ -981,6 +981,18 @@ internal partial class BitvavoRestClientSpotApi : IBitvavoRestClientSpotApiShare
         WithdrawStatus.Processing => SharedTransferStatus.InProgress,
         WithdrawStatus.Canceled => SharedTransferStatus.Failed,
         WithdrawStatus.Rejected => SharedTransferStatus.Failed,
+        _ => SharedTransferStatus.Unknown,
+    };
+
+    private static SharedTransferStatus ToSharedTransferStatus(DepositStatus status) => status switch
+    {
+        DepositStatus.Completed => SharedTransferStatus.Completed,
+        DepositStatus.AwaitingProcessing => SharedTransferStatus.InProgress,
+        DepositStatus.AwaitingEmailConfirmation => SharedTransferStatus.InProgress,
+        DepositStatus.AwaitingBitvavoInspection => SharedTransferStatus.InProgress,
+        DepositStatus.InMempool => SharedTransferStatus.InProgress,
+        DepositStatus.Processing => SharedTransferStatus.InProgress,
+        DepositStatus.Rejected => SharedTransferStatus.Failed,
         _ => SharedTransferStatus.Unknown,
     };
 

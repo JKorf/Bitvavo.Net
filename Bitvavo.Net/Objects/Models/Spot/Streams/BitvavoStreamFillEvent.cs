@@ -1,83 +1,84 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
+using System;
 using System.Text.Json.Serialization;
 using Bitvavo.Net.Enums;
-using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace Bitvavo.Net.Objects.Models.Spot.Streams;
 
 /// <summary>
-/// Bitvavo private <c>fill</c> WebSocket event â€” emitted on the <c>account</c> channel
-/// after authenticating, whenever any of the user's orders trades against the book.
+/// Stream Fill Event.
 /// </summary>
 public record BitvavoStreamFillEvent
 {
     /// <summary>
-    /// Always <c>"fill"</c> for this stream.
+    /// Event.
     /// </summary>
     [JsonPropertyName("event")]
-    public string Event { get; init; } = string.Empty;
+    public StreamEvent Event { get; init; }
 
     /// <summary>
-    /// Market the fill happened on.
+    /// Market.
     /// </summary>
     [JsonPropertyName("market")]
-    public string Symbol { get; init; } = string.Empty;
+    public string Market { get; init; } = string.Empty;
 
     /// <summary>
-    /// Order this fill belongs to.
+    /// Order ID.
     /// </summary>
     [JsonPropertyName("orderId")]
     public string OrderId { get; init; } = string.Empty;
 
     /// <summary>
-    /// Client-assigned order id (UUID), if the order was placed with one.
+    /// Client Order ID.
     /// </summary>
     [JsonPropertyName("clientOrderId")]
     public string? ClientOrderId { get; init; }
 
     /// <summary>
-    /// Trade-fill identifier (UUID).
+    /// Fill ID.
     /// </summary>
     [JsonPropertyName("fillId")]
-    public string TradeId { get; init; } = string.Empty;
+    public string FillId { get; init; } = string.Empty;
 
     /// <summary>
-    /// Server timestamp of the fill (UTC).
+    /// Timestamp.
     /// </summary>
-    [JsonPropertyName("timestamp"), JsonConverter(typeof(DateTimeConverter))]
+    [JsonPropertyName("timestamp")]
     public DateTime Timestamp { get; init; }
 
     /// <summary>
-    /// Filled quantity (base-asset units).
+    /// Quantity.
     /// </summary>
     [JsonPropertyName("amount")]
     public decimal Quantity { get; init; }
 
     /// <summary>
-    /// Trade direction from this account's perspective.
+    /// Side.
     /// </summary>
     [JsonPropertyName("side")]
     public OrderSide Side { get; init; }
 
     /// <summary>
-    /// Trade price.
+    /// Price.
     /// </summary>
     [JsonPropertyName("price")]
     public decimal Price { get; init; }
 
     /// <summary>
-    /// True if this account was the taker on the fill; false if maker.
+    /// Taker.
     /// </summary>
     [JsonPropertyName("taker")]
     public bool Taker { get; init; }
 
     /// <summary>
-    /// Fee paid (positive decimal). Currency is given by <see cref="FeeAsset"/>.
+    /// Fee.
     /// </summary>
     [JsonPropertyName("fee")]
     public decimal Fee { get; init; }
 
     /// <summary>
-    /// Currency the fee was paid in.
+    /// Fee Asset.
     /// </summary>
     [JsonPropertyName("feeCurrency")]
     public string FeeAsset { get; init; } = string.Empty;

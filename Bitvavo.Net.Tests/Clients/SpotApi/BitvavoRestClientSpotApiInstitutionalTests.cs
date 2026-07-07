@@ -140,7 +140,7 @@ public class BitvavoRestClientSpotApiInstitutionalTests
         result.Data.ClientRequestId.ShouldBe("c-9");
         result.Data.Direction.ShouldBe("subToMaster");
         result.Data.Symbol.ShouldBe("BTC");
-        result.Data.Amount.ShouldBe(0.5m);
+        result.Data.Quantity.ShouldBe(0.5m);
         result.Data.Status.ShouldBe("completed");
     }
 
@@ -168,7 +168,7 @@ public class BitvavoRestClientSpotApiInstitutionalTests
         result.Data.TransferId.ShouldBe("t-1");
         result.Data.SubaccountId.ShouldBe("sub-3");
         result.Data.Symbol.ShouldBe("ETH");
-        result.Data.Amount.ShouldBe(2.5m);
+        result.Data.Quantity.ShouldBe(2.5m);
     }
 
     // â”€â”€ GetTransfersAsync â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -209,7 +209,7 @@ public class BitvavoRestClientSpotApiInstitutionalTests
         result.Data.Limit.ShouldBe(25);
         result.Data.Items.Count.ShouldBe(1);
         result.Data.Items[0].TransferId.ShouldBe("t-1");
-        result.Data.Items[0].Amount.ShouldBe(100m);
+        result.Data.Items[0].Quantity.ShouldBe(100m);
     }
 
     // â”€â”€ GetSubaccountBalancesAsync â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -298,7 +298,7 @@ public class BitvavoRestClientSpotApiInstitutionalTests
         result.Data.Items.Count.ShouldBe(1);
         result.Data.Items[0].TransactionId.ShouldBe("tx-1");
         result.Data.Items[0].Type.ShouldBe("deposit");
-        result.Data.Items[0].ReceivedAmount.ShouldBe(500m);
+        result.Data.Items[0].ReceivedQuantity.ShouldBe(500m);
     }
 
     // â”€â”€ GetSubaccountOpenOrdersAsync â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

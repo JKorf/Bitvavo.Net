@@ -1,96 +1,96 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
+using System;
 using System.Text.Json.Serialization;
-using CryptoExchange.Net.Converters.SystemTextJson;
+using Bitvavo.Net.Enums;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// One MiCA-regulatory trade record as returned by <c>GET /v2/report/{market}/trades</c>.
-/// The report shape follows the EU Markets-in-Crypto-Assets (MiCA) reporting schema, so
-/// field names and notations (<c>MONE</c>, <c>CRYP</c>) differ from the regular
-/// <see cref="BitvavoPublicTrade"/> / <see cref="BitvavoFill"/> models.
+/// Trades Report.
 /// </summary>
 public record BitvavoTradesReport
 {
     /// <summary>
-    /// Unique identifier of the trade.
+    /// Trade ID.
     /// </summary>
     [JsonPropertyName("tradeId")]
     public string TradeId { get; init; } = string.Empty;
 
     /// <summary>
-    /// Timestamp when the trade was added to the database (UTC).
+    /// Transact Timestamp.
     /// </summary>
-    [JsonPropertyName("transactTimestamp"), JsonConverter(typeof(DateTimeConverter))]
-    public DateTime TransactTimestamp { get; init; }
+    [JsonPropertyName("transactTimestamp")]
+    public DateTime TransactTime { get; init; }
 
     /// <summary>
-    /// Digital-Token-Identifier (DTI) code or symbol of the asset.
+    /// Asset Code.
     /// </summary>
     [JsonPropertyName("assetCode")]
     public string AssetCode { get; init; } = string.Empty;
 
     /// <summary>
-    /// Full name of the asset.
+    /// Asset Name.
     /// </summary>
     [JsonPropertyName("assetName")]
     public string AssetName { get; init; } = string.Empty;
 
     /// <summary>
-    /// Price per unit in the quote currency.
+    /// Price.
     /// </summary>
-    [JsonPropertyName("price"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Price { get; init; }
+    [JsonPropertyName("price")]
+    public decimal Price { get; init; }
 
     /// <summary>
-    /// Missing-price status indicator â€” <c>PNDG</c> (pending) or <c>NOAP</c> (not applicable). Null when a price is present.
+    /// Missing Price.
     /// </summary>
     [JsonPropertyName("missingPrice")]
-    public string? MissingPrice { get; init; }
+    public MissingPriceStatus? MissingPrice { get; init; }
 
     /// <summary>
-    /// Price notation â€” <c>MONE</c> for a monetary value.
+    /// Price Notation.
     /// </summary>
     [JsonPropertyName("priceNotation")]
     public string PriceNotation { get; init; } = string.Empty;
 
     /// <summary>
-    /// Currency in which the price is expressed.
+    /// Price Asset.
     /// </summary>
     [JsonPropertyName("priceCurrency")]
-    public string PriceCurrency { get; init; } = string.Empty;
+    public string PriceAsset { get; init; } = string.Empty;
 
     /// <summary>
-    /// Quantity of the asset traded.
+    /// Quantity.
     /// </summary>
-    [JsonPropertyName("quantity"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("quantity")]
     public decimal? Quantity { get; init; }
 
     /// <summary>
-    /// Currency the quantity is expressed in.
+    /// Quantity Asset.
     /// </summary>
     [JsonPropertyName("quantityCurrency")]
-    public string QuantityCurrency { get; init; } = string.Empty;
+    public string QuantityAsset { get; init; } = string.Empty;
 
     /// <summary>
-    /// Quantity notation â€” <c>CRYP</c> for crypto units.
+    /// Quantity Notation.
     /// </summary>
     [JsonPropertyName("quantityNotation")]
     public string QuantityNotation { get; init; } = string.Empty;
 
     /// <summary>
-    /// Market Identifier Code of the Bitvavo trading platform.
+    /// Venue.
     /// </summary>
     [JsonPropertyName("venue")]
     public string Venue { get; init; } = string.Empty;
 
     /// <summary>
-    /// Timestamp when the trade was published (UTC).
+    /// Publication Timestamp.
     /// </summary>
-    [JsonPropertyName("publicationTimestamp"), JsonConverter(typeof(DateTimeConverter))]
-    public DateTime PublicationTimestamp { get; init; }
+    [JsonPropertyName("publicationTimestamp")]
+    public DateTime PublicationTime { get; init; }
 
     /// <summary>
-    /// Market Identifier Code of the publishing platform.
+    /// Publication Venue.
     /// </summary>
     [JsonPropertyName("publicationVenue")]
     public string PublicationVenue { get; init; } = string.Empty;

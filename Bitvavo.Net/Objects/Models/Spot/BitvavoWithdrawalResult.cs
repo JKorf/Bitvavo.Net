@@ -1,28 +1,29 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
-using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Withdrawal result
+/// Withdrawal Result.
 /// </summary>
 public record BitvavoWithdrawalResult
 {
     /// <summary>
-    /// Indicates Bitvavo accepted the withdrawal request
+    /// Success.
     /// </summary>
     [JsonPropertyName("success")]
     public bool Success { get; init; }
 
     /// <summary>
-    /// Asset that was withdrawn
+    /// Asset.
     /// </summary>
     [JsonPropertyName("symbol")]
     public string Asset { get; init; } = string.Empty;
 
     /// <summary>
-    /// Total amount debited from the account
+    /// Quantity.
     /// </summary>
-    [JsonPropertyName("amount"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("amount")]
     public decimal? Quantity { get; init; }
 }

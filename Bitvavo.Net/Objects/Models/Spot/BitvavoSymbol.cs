@@ -1,68 +1,69 @@
+using Bitvavo.Net.Enums;
 using System.Text.Json.Serialization;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Bitvavo symbol
+/// Symbol.
 /// </summary>
 public record BitvavoSymbol
 {
     /// <summary>
-    /// Symbol identifier
+    /// Symbol.
     /// </summary>
     [JsonPropertyName("market")]
     public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
-    /// Trading status
+    /// Status.
     /// </summary>
     [JsonPropertyName("status")]
-    public string Status { get; init; } = string.Empty;
+    public SymbolStatus Status { get; init; }
 
     /// <summary>
-    /// Base asset
+    /// Base Asset.
     /// </summary>
     [JsonPropertyName("base")]
     public string BaseAsset { get; init; } = string.Empty;
 
     /// <summary>
-    /// Quote asset
+    /// Quote Asset.
     /// </summary>
     [JsonPropertyName("quote")]
     public string QuoteAsset { get; init; } = string.Empty;
 
     /// <summary>
-    /// Significant digits used by Bitvavo when displaying prices for this market
+    /// Price Precision.
     /// </summary>
     [JsonPropertyName("pricePrecision")]
     public int PricePrecision { get; init; }
 
     /// <summary>
-    /// Minimum order size, expressed in the base asset.
+    /// Min Order In Base Asset.
     /// </summary>
     [JsonPropertyName("minOrderInBaseAsset")]
     public decimal MinOrderInBaseAsset { get; init; }
 
     /// <summary>
-    /// Minimum order size, expressed in the quote asset.
+    /// Min Order In Quote Asset.
     /// </summary>
     [JsonPropertyName("minOrderInQuoteAsset")]
     public decimal MinOrderInQuoteAsset { get; init; }
 
     /// <summary>
-    /// Maximum order size, expressed in the base asset.
+    /// Max Order In Base Asset.
     /// </summary>
     [JsonPropertyName("maxOrderInBaseAsset")]
     public decimal MaxOrderInBaseAsset { get; init; }
 
     /// <summary>
-    /// Maximum order size, expressed in the quote asset.
+    /// Max Order In Quote Asset.
     /// </summary>
     [JsonPropertyName("maxOrderInQuoteAsset")]
     public decimal MaxOrderInQuoteAsset { get; init; }
 
     /// <summary>
-    /// Order types supported on this symbol
+    /// Supported Order Types.
     /// </summary>
     [JsonPropertyName("orderTypes")]
     public string[] SupportedOrderTypes { get; init; } = [];

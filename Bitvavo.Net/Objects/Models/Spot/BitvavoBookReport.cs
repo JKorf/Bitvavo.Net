@@ -1,114 +1,114 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
+using System;
 using System.Text.Json.Serialization;
-using CryptoExchange.Net.Converters.SystemTextJson;
+using Bitvavo.Net.Enums;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// MiCA-regulatory order-book snapshot as returned by <c>GET /v2/report/{market}/book</c>.
-/// Follows the EU Markets-in-Crypto-Assets reporting schema â€” the <see cref="Bids"/> /
-/// <see cref="Asks"/> arrays carry per-price-level aggregates, not the raw order book.
+/// Book Report.
 /// </summary>
 public record BitvavoBookReport
 {
     /// <summary>
-    /// Timestamp when the order book was submitted to the database (UTC).
+    /// Submission Timestamp.
     /// </summary>
-    [JsonPropertyName("submissionTimestamp"), JsonConverter(typeof(DateTimeConverter))]
+    [JsonPropertyName("submissionTimestamp")]
     public DateTime SubmissionTimestamp { get; init; }
 
     /// <summary>
-    /// Digital-Token-Identifier (DTI) code or symbol of the asset.
+    /// Asset Code.
     /// </summary>
     [JsonPropertyName("assetCode")]
     public string AssetCode { get; init; } = string.Empty;
 
     /// <summary>
-    /// Full name of the asset.
+    /// Asset Name.
     /// </summary>
     [JsonPropertyName("assetName")]
     public string AssetName { get; init; } = string.Empty;
 
     /// <summary>
-    /// DTI code or symbol of the currency the prices are expressed in.
+    /// Price Asset.
     /// </summary>
     [JsonPropertyName("priceCurrency")]
-    public string PriceCurrency { get; init; } = string.Empty;
+    public string PriceAsset { get; init; } = string.Empty;
 
     /// <summary>
-    /// Price notation â€” <c>MONE</c> for a monetary value.
+    /// Price Notation.
     /// </summary>
     [JsonPropertyName("priceNotation")]
     public string PriceNotation { get; init; } = string.Empty;
 
     /// <summary>
-    /// Currency the quantities are expressed in.
+    /// Quantity Asset.
     /// </summary>
     [JsonPropertyName("quantityCurrency")]
-    public string QuantityCurrency { get; init; } = string.Empty;
+    public string QuantityAsset { get; init; } = string.Empty;
 
     /// <summary>
-    /// Quantity notation â€” <c>CRYP</c> for crypto units.
+    /// Quantity Notation.
     /// </summary>
     [JsonPropertyName("quantityNotation")]
     public string QuantityNotation { get; init; } = string.Empty;
 
     /// <summary>
-    /// Market Identifier Code of the Bitvavo trading platform.
+    /// Venue.
     /// </summary>
     [JsonPropertyName("venue")]
     public string Venue { get; init; } = string.Empty;
 
     /// <summary>
-    /// Identifier of the trading system.
+    /// Trading System.
     /// </summary>
     [JsonPropertyName("tradingSystem")]
     public string TradingSystem { get; init; } = string.Empty;
 
     /// <summary>
-    /// Timestamp when the book snapshot was added to the database (UTC).
+    /// Publication Timestamp.
     /// </summary>
-    [JsonPropertyName("publicationTimestamp"), JsonConverter(typeof(DateTimeConverter))]
+    [JsonPropertyName("publicationTimestamp")]
     public DateTime PublicationTimestamp { get; init; }
 
     /// <summary>
-    /// Aggregated buy-side price levels, best price first.
+    /// Bids.
     /// </summary>
     [JsonPropertyName("bids")]
-    public IReadOnlyList<BitvavoBookReportEntry> Bids { get; init; } = new List<BitvavoBookReportEntry>();
+    public BitvavoBookReportEntry[] Bids { get; init; } = System.Array.Empty<BitvavoBookReportEntry>();
 
     /// <summary>
-    /// Aggregated sell-side price levels, best price first.
+    /// Asks.
     /// </summary>
     [JsonPropertyName("asks")]
-    public IReadOnlyList<BitvavoBookReportEntry> Asks { get; init; } = new List<BitvavoBookReportEntry>();
+    public BitvavoBookReportEntry[] Asks { get; init; } = System.Array.Empty<BitvavoBookReportEntry>();
 }
 
 /// <summary>
-/// One aggregated price level in a <see cref="BitvavoBookReport"/> â€” the total quantity
-/// resting at a single price plus the count of contributing orders.
+/// Book Report Entry.
 /// </summary>
 public record BitvavoBookReportEntry
 {
     /// <summary>
-    /// Order direction â€” <c>BUYI</c> for bids, <c>SELL</c> for asks.
+    /// Side.
     /// </summary>
     [JsonPropertyName("side")]
-    public string Side { get; init; } = string.Empty;
+    public ReportSide Side { get; init; }
 
     /// <summary>
-    /// Quote-currency price per base-currency unit at this level.
+    /// Price.
     /// </summary>
-    [JsonPropertyName("price"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("price")]
     public decimal? Price { get; init; }
 
     /// <summary>
-    /// Total asset quantity resting at this price level.
+    /// Quantity.
     /// </summary>
-    [JsonPropertyName("quantity"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("quantity")]
     public decimal? Quantity { get; init; }
 
     /// <summary>
-    /// Number of individual orders aggregated into this price level.
+    /// Num Orders.
     /// </summary>
     [JsonPropertyName("numOrders")]
     public int NumOrders { get; init; }

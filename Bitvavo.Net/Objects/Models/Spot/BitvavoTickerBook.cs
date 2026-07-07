@@ -1,40 +1,41 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
-using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Top-of-book quote for a single market as returned by <c>GET /v2/ticker/book</c>.
+/// Ticker Book.
 /// </summary>
 public record BitvavoTickerBook
 {
     /// <summary>
-    /// Market identifier.
+    /// Symbol.
     /// </summary>
     [JsonPropertyName("market")]
     public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
-    /// Best bid (highest buy) price, in the quote currency.
+    /// Best bid price.
     /// </summary>
-    [JsonPropertyName("bid"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Bid { get; init; }
+    [JsonPropertyName("bid")]
+    public decimal? BestBidPrice { get; init; }
 
     /// <summary>
-    /// Quantity available at the best bid, in base-asset units.
+    /// Best bid quantity.
     /// </summary>
-    [JsonPropertyName("bidSize"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? BidSize { get; init; }
+    [JsonPropertyName("bidSize")]
+    public decimal? BestBidQuantity { get; init; }
 
     /// <summary>
-    /// Best ask (lowest sell) price, in the quote currency.
+    /// Best ask price
     /// </summary>
-    [JsonPropertyName("ask"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Ask { get; init; }
+    [JsonPropertyName("ask")]
+    public decimal? BestAskPrice { get; init; }
 
     /// <summary>
-    /// Quantity available at the best ask, in base-asset units.
+    /// Best Ask Quantity.
     /// </summary>
-    [JsonPropertyName("askSize"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? AskSize { get; init; }
+    [JsonPropertyName("askSize")]
+    public decimal? BestAskQuantity { get; init; }
 }

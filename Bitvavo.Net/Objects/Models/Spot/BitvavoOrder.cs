@@ -1,193 +1,193 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
+using System;
 using System.Text.Json.Serialization;
 using Bitvavo.Net.Enums;
-using CryptoExchange.Net.Converters.SystemTextJson;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// An order on Bitvavo, in any lifecycle state. The same record covers the response
-/// shape of <c>POST /v2/order</c>, <c>PUT /v2/order</c>, <c>GET /v2/order</c>, and
-/// element of the list responses <c>GET /v2/ordersOpen</c> and <c>GET /v2/orders</c>.
+/// Order.
 /// </summary>
 public record BitvavoOrder
 {
     /// <summary>
-    /// Server-assigned order id (UUID).
+    /// Order ID.
     /// </summary>
     [JsonPropertyName("orderId")]
     public string OrderId { get; init; } = string.Empty;
 
     /// <summary>
-    /// Client-assigned order id (UUID), if the order was placed with one.
+    /// Client Order ID.
     /// </summary>
     [JsonPropertyName("clientOrderId")]
     public string? ClientOrderId { get; init; }
 
     /// <summary>
-    /// Market the order belongs to (e.g. <c>"ETH-EUR"</c>).
+    /// Market.
     /// </summary>
     [JsonPropertyName("market")]
     public string Market { get; init; } = string.Empty;
 
     /// <summary>
-    /// Server timestamp when the order was created (UTC).
+    /// Created.
     /// </summary>
-    [JsonPropertyName("created"), JsonConverter(typeof(DateTimeConverter))]
+    [JsonPropertyName("created")]
     public DateTime Created { get; init; }
 
     /// <summary>
-    /// Server timestamp of the most recent state change (UTC).
+    /// Updated.
     /// </summary>
-    [JsonPropertyName("updated"), JsonConverter(typeof(DateTimeConverter))]
+    [JsonPropertyName("updated")]
     public DateTime Updated { get; init; }
 
     /// <summary>
-    /// Lifecycle state â€” see <see cref="OrderStatus"/>.
+    /// Status.
     /// </summary>
     [JsonPropertyName("status")]
     public OrderStatus Status { get; init; }
 
     /// <summary>
-    /// Direction of the order.
+    /// Side.
     /// </summary>
     [JsonPropertyName("side")]
     public OrderSide Side { get; init; }
 
     /// <summary>
-    /// Order placement type.
+    /// Order Type.
     /// </summary>
     [JsonPropertyName("orderType")]
     public OrderType OrderType { get; init; }
 
     /// <summary>
-    /// Originally requested base-asset quantity. Null for amount-quote orders.
+    /// Quantity.
     /// </summary>
-    [JsonPropertyName("amount"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? Amount { get; init; }
+    [JsonPropertyName("amount")]
+    public decimal? Quantity { get; init; }
 
     /// <summary>
-    /// Base-asset quantity still outstanding (= <see cref="Amount"/> âˆ’ <see cref="FilledAmount"/>).
+    /// Quantity Remaining.
     /// </summary>
-    [JsonPropertyName("amountRemaining"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? AmountRemaining { get; init; }
+    [JsonPropertyName("amountRemaining")]
+    public decimal? QuantityRemaining { get; init; }
 
     /// <summary>
-    /// Limit price for limit / stop-limit / take-profit-limit orders.
+    /// Price.
     /// </summary>
-    [JsonPropertyName("price"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("price")]
     public decimal? Price { get; init; }
 
     /// <summary>
-    /// Originally requested quote-asset budget. Used by quote-amount market buys.
+    /// Quote Quantity.
     /// </summary>
-    [JsonPropertyName("amountQuote"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? AmountQuote { get; init; }
+    [JsonPropertyName("amountQuote")]
+    public decimal? QuoteQuantity { get; init; }
 
     /// <summary>
-    /// Quote-asset budget still outstanding.
+    /// Quote Quantity Remaining.
     /// </summary>
-    [JsonPropertyName("amountQuoteRemaining"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? AmountQuoteRemaining { get; init; }
+    [JsonPropertyName("amountQuoteRemaining")]
+    public decimal? QuoteQuantityRemaining { get; init; }
 
     /// <summary>
-    /// Total base-asset quantity filled so far.
+    /// Filled Quantity.
     /// </summary>
-    [JsonPropertyName("filledAmount"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? FilledAmount { get; init; }
+    [JsonPropertyName("filledAmount")]
+    public decimal? FilledQuantity { get; init; }
 
     /// <summary>
-    /// Total quote-asset value filled so far.
+    /// Filled Quote Quantity.
     /// </summary>
-    [JsonPropertyName("filledAmountQuote"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? FilledAmountQuote { get; init; }
+    [JsonPropertyName("filledAmountQuote")]
+    public decimal? FilledQuoteQuantity { get; init; }
 
     /// <summary>
-    /// Total fees paid so far on this order.
+    /// Fee Paid.
     /// </summary>
-    [JsonPropertyName("feePaid"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("feePaid")]
     public decimal? FeePaid { get; init; }
 
     /// <summary>
-    /// Currency the fee was paid in.
+    /// Fee Asset.
     /// </summary>
     [JsonPropertyName("feeCurrency")]
-    public string? FeeCurrency { get; init; }
+    public string? FeeAsset { get; init; }
 
     /// <summary>
-    /// Trade fills that have happened against this order so far.
+    /// Fills.
     /// </summary>
     [JsonPropertyName("fills")]
-    public IReadOnlyList<BitvavoFill> Fills { get; init; } = new List<BitvavoFill>();
+    public BitvavoFill[] Fills { get; init; } = System.Array.Empty<BitvavoFill>();
 
     /// <summary>
-    /// Time-in-force policy.
+    /// Time In Force.
     /// </summary>
     [JsonPropertyName("timeInForce")]
     public TimeInForce? TimeInForce { get; init; }
 
     /// <summary>
-    /// If true, the order will only post liquidity (will not cross the spread).
+    /// Post Only.
     /// </summary>
     [JsonPropertyName("postOnly")]
     public bool? PostOnly { get; init; }
 
     /// <summary>
-    /// Self-trade-prevention rule applied to this order.
+    /// Self Trade Prevention.
     /// </summary>
     [JsonPropertyName("selfTradePrevention")]
     public SelfTradePrevention? SelfTradePrevention { get; init; }
 
     /// <summary>
-    /// True when the order id is visible in the public order book for the market.
+    /// Visible.
     /// </summary>
     [JsonPropertyName("visible")]
     public bool? Visible { get; init; }
 
     /// <summary>
-    /// Trigger amount for stop / take-profit orders.
+    /// Trigger Quantity.
     /// </summary>
-    [JsonPropertyName("triggerAmount"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? TriggerAmount { get; init; }
+    [JsonPropertyName("triggerAmount")]
+    public decimal? TriggerQuantity { get; init; }
 
     /// <summary>
-    /// Realised trigger price (after the trigger fired). Sometimes returned alongside <see cref="TriggerAmount"/>.
+    /// Trigger Price.
     /// </summary>
-    [JsonPropertyName("triggerPrice"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("triggerPrice")]
     public decimal? TriggerPrice { get; init; }
 
     /// <summary>
-    /// Trigger event type (currently only price-based).
+    /// Trigger Type.
     /// </summary>
     [JsonPropertyName("triggerType")]
     public TriggerType? TriggerType { get; init; }
 
     /// <summary>
-    /// Which price reference Bitvavo evaluates the trigger against.
+    /// Trigger Reference.
     /// </summary>
     [JsonPropertyName("triggerReference")]
     public TriggerReference? TriggerReference { get; init; }
 
     /// <summary>
-    /// Per-account integer used by Bitvavo to route order operations to a specific operator.
+    /// Operator ID.
     /// </summary>
     [JsonPropertyName("operatorId")]
     public long? OperatorId { get; init; }
 
     /// <summary>
-    /// Cancel-on-disconnect group id (1â€“1000).
+    /// COD Group ID.
     /// </summary>
     [JsonPropertyName("codGroupId")]
     public int? CodGroupId { get; init; }
 
     /// <summary>
-    /// Quantity currently held in escrow for this open order.
+    /// On Hold.
     /// </summary>
-    [JsonPropertyName("onHold"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("onHold")]
     public decimal? OnHold { get; init; }
 
     /// <summary>
-    /// Currency of the held amount.
+    /// On Hold Asset.
     /// </summary>
     [JsonPropertyName("onHoldCurrency")]
-    public string? OnHoldCurrency { get; init; }
+    public string? OnHoldAsset { get; init; }
 }

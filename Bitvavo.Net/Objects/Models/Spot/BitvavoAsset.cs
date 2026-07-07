@@ -1,76 +1,77 @@
+// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
+
 using System.Text.Json.Serialization;
-using CryptoExchange.Net.Converters.SystemTextJson;
+using Bitvavo.Net.Enums;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
 /// <summary>
-/// Single asset descriptor as returned by <c>GET /v2/assets</c> â€” covers static metadata
-/// (name, decimals, networks) plus deposit / withdrawal lifecycle state.
+/// Asset.
 /// </summary>
 public record BitvavoAsset
 {
     /// <summary>
-    /// Asset symbol â€” e.g. <c>"BTC"</c>, <c>"EUR"</c>.
+    /// Symbol.
     /// </summary>
     [JsonPropertyName("symbol")]
     public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
-    /// Full asset name â€” e.g. <c>"Bitcoin"</c>.
+    /// Name.
     /// </summary>
     [JsonPropertyName("name")]
     public string Name { get; init; } = string.Empty;
 
     /// <summary>
-    /// Number of significant decimal places used by Bitvavo for this asset.
+    /// Decimals.
     /// </summary>
     [JsonPropertyName("decimals")]
     public int Decimals { get; init; }
 
     /// <summary>
-    /// Fee Bitvavo charges per deposit (typically 0 for crypto, non-zero for some fiat methods).
+    /// Deposit Fee.
     /// </summary>
-    [JsonPropertyName("depositFee"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("depositFee")]
     public decimal? DepositFee { get; init; }
 
     /// <summary>
-    /// Minimum number of network confirmations Bitvavo waits for before crediting a deposit.
+    /// Deposit Confirmations.
     /// </summary>
     [JsonPropertyName("depositConfirmations")]
     public int DepositConfirmations { get; init; }
 
     /// <summary>
-    /// Current deposit availability â€” typical values <c>"OK"</c>, <c>"MAINTENANCE"</c>, <c>"DELISTED"</c>.
+    /// Deposit Status.
     /// </summary>
     [JsonPropertyName("depositStatus")]
-    public string DepositStatus { get; init; } = string.Empty;
+    public AssetStatus DepositStatus { get; init; }
 
     /// <summary>
-    /// Fee Bitvavo charges per withdrawal.
+    /// Withdrawal Fee.
     /// </summary>
-    [JsonPropertyName("withdrawalFee"), JsonConverter(typeof(DecimalConverter))]
+    [JsonPropertyName("withdrawalFee")]
     public decimal? WithdrawalFee { get; init; }
 
     /// <summary>
-    /// Minimum withdrawal amount.
+    /// Withdrawal Min Quantity.
     /// </summary>
-    [JsonPropertyName("withdrawalMinAmount"), JsonConverter(typeof(DecimalConverter))]
-    public decimal? WithdrawalMinAmount { get; init; }
+    [JsonPropertyName("withdrawalMinAmount")]
+    public decimal? WithdrawalMinQuantity { get; init; }
 
     /// <summary>
-    /// Current withdrawal availability â€” typical values <c>"OK"</c>, <c>"MAINTENANCE"</c>, <c>"DELISTED"</c>.
+    /// Withdrawal Status.
     /// </summary>
     [JsonPropertyName("withdrawalStatus")]
-    public string WithdrawalStatus { get; init; } = string.Empty;
+    public AssetStatus WithdrawalStatus { get; init; }
 
     /// <summary>
-    /// Supported blockchain networks for crypto assets (e.g. <c>["Bitcoin"]</c>, <c>["Mainnet", "BSC"]</c>).
+    /// Networks.
     /// </summary>
     [JsonPropertyName("networks")]
-    public IReadOnlyList<string> Networks { get; init; } = new List<string>();
+    public string[] Networks { get; init; } = System.Array.Empty<string>();
 
     /// <summary>
-    /// Free-text explanation when <see cref="DepositStatus"/> or <see cref="WithdrawalStatus"/> is non-OK.
+    /// Message.
     /// </summary>
     [JsonPropertyName("message")]
     public string? Message { get; init; }
