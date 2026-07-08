@@ -25,7 +25,7 @@ internal class BitvavoSocketChannel : BitvavoSocketChannelBase
     public string[]? Interval { get; set; }
 
     [JsonPropertyName("markets")]
-    public string[] Markets { get; set; } = System.Array.Empty<string>();
+    public string[] Symbols { get; set; } = System.Array.Empty<string>();
 }
 
 internal class BitvavoAllMarketRequest : BitvavoSocketChannelBase

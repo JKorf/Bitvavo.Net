@@ -1,6 +1,7 @@
 using Bitvavo.Net.Enums;
 using Bitvavo.Net.Interfaces.Clients.SpotApi;
 using Bitvavo.Net.Objects.Internal;
+using Bitvavo.Net.Objects.Models.Spot;
 using Bitvavo.Net.Objects.Models.Spot.Streams;
 using CryptoExchange.Net.Converters.SystemTextJson;
 using CryptoExchange.Net.Objects;
@@ -23,7 +24,7 @@ internal sealed class BitvavoSocketClientSpotApiExchangeData : IBitvavoSocketCli
 
     /// <inheritdoc />
     public Task<WebSocketResult<UpdateSubscription>> SubscribeToKlineUpdatesAsync(
-        string market,
+        string symbol,
         KlineInterval interval,
         Action<DataEvent<BitvavoStreamCandleEvent>> onMessage,
         CancellationToken ct = default)
@@ -32,12 +33,12 @@ internal sealed class BitvavoSocketClientSpotApiExchangeData : IBitvavoSocketCli
         var subscription = new BitvavoSubscription<BitvavoStreamCandleEvent>(
             _logger,
             typeIdentifier: "candle",
-            topic: market + intervalWire,
+            topic: symbol + intervalWire,
             channel: new BitvavoSocketChannel
             {
                 Name = "candles",
                 Interval = [intervalWire],
-                Markets = [market],
+                Symbols = [symbol],
             },
             handler: (receiveTime, originalData, message) =>
                 onMessage(new DataEvent<BitvavoStreamCandleEvent>(
@@ -45,7 +46,7 @@ internal sealed class BitvavoSocketClientSpotApiExchangeData : IBitvavoSocketCli
                     message,
                     receiveTime,
                     originalData)
-                    .WithSymbol(message.Market)
+                    .WithSymbol(message.Symbol)
                     .WithStreamId("candles")));
 
         return _client.SubscribeInternalAsync(_client.BaseAddress, subscription, ct);
@@ -53,18 +54,18 @@ internal sealed class BitvavoSocketClientSpotApiExchangeData : IBitvavoSocketCli
 
     /// <inheritdoc />
     public Task<WebSocketResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(
-        string market,
+        string symbol,
         Action<DataEvent<BitvavoStreamTrade>> onMessage,
         CancellationToken ct = default)
     {
         var subscription = new BitvavoSubscription<BitvavoStreamTrade>(
             _logger,
             typeIdentifier: "trade",
-            topic: market,
+            topic: symbol,
             channel: new BitvavoSocketChannel
             {
                 Name = "trades",
-                Markets = [market],
+                Symbols = [symbol],
             },
             handler: (receiveTime, originalData, message) =>
                 onMessage(new DataEvent<BitvavoStreamTrade>(
@@ -72,7 +73,7 @@ internal sealed class BitvavoSocketClientSpotApiExchangeData : IBitvavoSocketCli
                     message,
                     receiveTime,
                     originalData)
-                    .WithSymbol(message.Market)
+                    .WithSymbol(message.Symbol)
                     .WithStreamId("trades")));
 
         return _client.SubscribeInternalAsync(_client.BaseAddress, subscription, ct);
@@ -80,11 +81,11 @@ internal sealed class BitvavoSocketClientSpotApiExchangeData : IBitvavoSocketCli
 
     /// <inheritdoc />
     public Task<WebSocketResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(
-        IEnumerable<string> markets,
+        IEnumerable<string> symbols,
         Action<DataEvent<BitvavoStreamTrade>> onMessage,
         CancellationToken ct = default)
     {
-        var marketArray = markets.ToArray();
+        var marketArray = symbols.ToArray();
         var subscription = new BitvavoSubscription<BitvavoStreamTrade>(
             _logger,
             typeIdentifier: "trade",
@@ -92,7 +93,7 @@ internal sealed class BitvavoSocketClientSpotApiExchangeData : IBitvavoSocketCli
             channel: new BitvavoSocketChannel
             {
                 Name = "trades",
-                Markets = marketArray,
+                Symbols = marketArray,
             },
             handler: (receiveTime, originalData, message) =>
                 onMessage(new DataEvent<BitvavoStreamTrade>(
@@ -100,8 +101,36 @@ internal sealed class BitvavoSocketClientSpotApiExchangeData : IBitvavoSocketCli
                     message,
                     receiveTime,
                     originalData)
-                    .WithSymbol(message.Market)
+                    .WithSymbol(message.Symbol)
                     .WithStreamId("trades")));
+
+        return _client.SubscribeInternalAsync(_client.BaseAddress, subscription, ct);
+    }
+
+    /// <inheritdoc />
+    public Task<WebSocketResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(
+        IEnumerable<string> symbols,
+        Action<DataEvent<BitvavoOrderBookUpdate>> onMessage,
+        CancellationToken ct = default)
+    {
+        var marketArray = symbols.ToArray();
+        var subscription = new BitvavoSubscription<BitvavoOrderBookUpdate>(
+            _logger,
+            typeIdentifier: "book",
+            topics: marketArray,
+            channel: new BitvavoSocketChannel
+            {
+                Name = "book",
+                Symbols = marketArray,
+            },
+            handler: (receiveTime, originalData, message) =>
+                onMessage(new DataEvent<BitvavoOrderBookUpdate>(
+                    BitvavoExchange.ExchangeName,
+                    message,
+                    receiveTime,
+                    originalData)
+                    .WithSymbol(message.Symbol)
+                    .WithStreamId("book")));
 
         return _client.SubscribeInternalAsync(_client.BaseAddress, subscription, ct);
     }

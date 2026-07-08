@@ -26,10 +26,10 @@ public record BitvavoStreamTrade
     public DateTime Timestamp { get; init; }
 
     /// <summary>
-    /// Market.
+    /// Symbol.
     /// </summary>
     [JsonPropertyName("market")]
-    public string Market { get; init; } = string.Empty;
+    public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
     /// ID.

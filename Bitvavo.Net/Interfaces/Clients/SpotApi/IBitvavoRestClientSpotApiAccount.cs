@@ -21,7 +21,7 @@ public interface IBitvavoRestClientSpotApiAccount
     /// </summary>
     /// <param name="asset">Optional asset symbol (e.g. <c>"BTC"</c>) to filter the result. Null returns all assets.</param>
     /// <param name="ct">Cancellation token.</param>
-    Task<HttpResult<IEnumerable<BitvavoBalance>>> GetBalancesAsync(string? asset = null, CancellationToken ct = default);
+    Task<HttpResult<BitvavoBalance[]>> GetBalancesAsync(string? asset = null, CancellationToken ct = default);
 
     /// <summary>
     /// Get the market-specific fee schedule for the active 30-day-volume tier.
@@ -77,7 +77,7 @@ public interface IBitvavoRestClientSpotApiAccount
     /// <param name="startTime">Inclusive UTC lower bound.</param>
     /// <param name="endTime">Inclusive UTC upper bound.</param>
     /// <param name="ct">Cancellation token.</param>
-    Task<HttpResult<IEnumerable<BitvavoDepositHistoryEntry>>> GetDepositHistoryAsync(
+    Task<HttpResult<BitvavoDepositHistoryEntry[]>> GetDepositHistoryAsync(
         string? asset = null,
         int? limit = null,
         DateTime? startTime = null,
@@ -93,7 +93,7 @@ public interface IBitvavoRestClientSpotApiAccount
     /// <param name="startTime">Inclusive UTC lower bound.</param>
     /// <param name="endTime">Inclusive UTC upper bound.</param>
     /// <param name="ct">Cancellation token.</param>
-    Task<HttpResult<IEnumerable<BitvavoWithdrawalHistoryEntry>>> GetWithdrawalHistoryAsync(
+    Task<HttpResult<BitvavoWithdrawalHistoryEntry[]>> GetWithdrawalHistoryAsync(
         string? asset = null,
         int? limit = null,
         DateTime? startTime = null,

@@ -23,13 +23,13 @@ internal sealed class BitvavoRestClientSpotApiAccount : IBitvavoRestClientSpotAp
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<IEnumerable<BitvavoBalance>>> GetBalancesAsync(string? symbol = null, CancellationToken ct = default)
+    public Task<HttpResult<BitvavoBalance[]>> GetBalancesAsync(string? symbol = null, CancellationToken ct = default)
     {
         var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
         parameters.Add("symbol", symbol);
 
         var request = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "v2/balance", BitvavoExchange.RateLimiter.Bitvavo, weight: 5, authenticated: true);
-        return _baseClient.SendAsync<IEnumerable<BitvavoBalance>>(request, parameters, ct);
+        return _baseClient.SendAsync<BitvavoBalance[]>(request, parameters, ct);
     }
 
     /// <inheritdoc />
@@ -82,7 +82,7 @@ internal sealed class BitvavoRestClientSpotApiAccount : IBitvavoRestClientSpotAp
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<IEnumerable<BitvavoDepositHistoryEntry>>> GetDepositHistoryAsync(
+    public Task<HttpResult<BitvavoDepositHistoryEntry[]>> GetDepositHistoryAsync(
         string? symbol = null,
         int? limit = null,
         DateTime? startTime = null,
@@ -96,11 +96,11 @@ internal sealed class BitvavoRestClientSpotApiAccount : IBitvavoRestClientSpotAp
         parameters.Add("end", endTime);
 
         var def = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "v2/depositHistory", BitvavoExchange.RateLimiter.Bitvavo, weight: 5, authenticated: true);
-        return _baseClient.SendAsync<IEnumerable<BitvavoDepositHistoryEntry>>(def, parameters, ct);
+        return _baseClient.SendAsync<BitvavoDepositHistoryEntry[]>(def, parameters, ct);
     }
 
     /// <inheritdoc />
-    public Task<HttpResult<IEnumerable<BitvavoWithdrawalHistoryEntry>>> GetWithdrawalHistoryAsync(
+    public Task<HttpResult<BitvavoWithdrawalHistoryEntry[]>> GetWithdrawalHistoryAsync(
         string? symbol = null,
         int? limit = null,
         DateTime? startTime = null,
@@ -114,7 +114,7 @@ internal sealed class BitvavoRestClientSpotApiAccount : IBitvavoRestClientSpotAp
         parameters.Add("end", endTime);
 
         var def = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "v2/withdrawalHistory", BitvavoExchange.RateLimiter.Bitvavo, weight: 5, authenticated: true);
-        return _baseClient.SendAsync<IEnumerable<BitvavoWithdrawalHistoryEntry>>(def, parameters, ct);
+        return _baseClient.SendAsync<BitvavoWithdrawalHistoryEntry[]>(def, parameters, ct);
     }
 
     /// <inheritdoc />

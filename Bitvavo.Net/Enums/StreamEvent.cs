@@ -28,4 +28,8 @@ public enum StreamEvent
     /// ["<c>fill</c>"] Fill.
     /// </summary>
     [Map("fill")] Fill = 3,
+    /// <summary>
+    /// ["<c>book</c>"] Order Book.
+    /// </summary>
+    [Map("book")] OrderBook = 4,
 }

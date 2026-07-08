@@ -157,8 +157,8 @@ internal sealed partial class BitvavoSocketClientSpotApi :
                 handler(update.ToType<SharedSpotOrder[]>(
                 [
                     new SharedSpotOrder(
-                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, order.Market),
-                        order.Market,
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, order.Symbol),
+                        order.Symbol,
                         order.OrderId,
                         ToSharedSocketOrderType(order.OrderType),
                         ToSharedSocketOrderSide(order.Side),
@@ -205,8 +205,8 @@ internal sealed partial class BitvavoSocketClientSpotApi :
                 handler(update.ToType<SharedUserTrade[]>(
                 [
                     new SharedUserTrade(
-                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, fill.Market),
-                        fill.Market,
+                        ExchangeSymbolCache.ParseSymbol(_topicId, EnvironmentName, null, fill.Symbol),
+                        fill.Symbol,
                         fill.OrderId,
                         fill.FillId,
                         ToSharedSocketOrderSide(fill.Side),

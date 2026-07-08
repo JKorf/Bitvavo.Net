@@ -23,7 +23,7 @@ internal sealed class BitvavoSubscription<T> : Subscription
         _handler = handler;
         _channel = channel;
 
-        IndividualSubscriptionCount = channel.Markets.Length;
+        IndividualSubscriptionCount = channel.Symbols.Length;
         MessageRouter = MessageRouter.CreateForEvent<T>(typeIdentifier, topic, DoHandleMessage);
     }
 
@@ -38,7 +38,7 @@ internal sealed class BitvavoSubscription<T> : Subscription
         _handler = handler;
         _channel = channel;
 
-        IndividualSubscriptionCount = channel.Markets.Length;
+        IndividualSubscriptionCount = channel.Symbols.Length;
         MessageRouter = MessageRouter.CreateForEvent<T>(typeIdentifier, topics, DoHandleMessage);
     }
 

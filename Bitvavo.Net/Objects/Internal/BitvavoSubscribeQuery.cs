@@ -3,7 +3,7 @@ using CryptoExchange.Net.Sockets.Default.Routing;
 
 namespace Bitvavo.Net.Objects.Internal;
 
-internal sealed class BitvavoSubscribeQuery : Query<object>
+internal sealed class BitvavoSubscribeQuery : Query<BitvavoSocketRequest>
 {
     public BitvavoSubscribeQuery(BitvavoSocketRequest request)
         : base(request, authenticated: false, weight: 1)

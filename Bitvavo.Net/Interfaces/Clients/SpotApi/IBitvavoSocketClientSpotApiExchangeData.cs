@@ -1,4 +1,5 @@
 using Bitvavo.Net.Enums;
+using Bitvavo.Net.Objects.Models.Spot;
 using Bitvavo.Net.Objects.Models.Spot.Streams;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Objects.Sockets;
@@ -52,5 +53,19 @@ public interface IBitvavoSocketClientSpotApiExchangeData
     Task<WebSocketResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(
         IEnumerable<string> symbols,
         Action<DataEvent<BitvavoStreamTrade>> onMessage,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Subscribe to public order book updates for multiple symbols
+    /// <para>
+    /// <a href="https://docs.bitvavo.com/docs/websocket-overview/">Bitvavo WS docs</a>
+    /// </para>
+    /// </summary>
+    /// <param name="symbols">Symbol identifiers, e.g. <c>["BTC-EUR", "ETH-EUR"]</c>.</param>
+    /// <param name="onMessage">Handler invoked for each public trade event</param>
+    /// <param name="ct">Cancellation token used to close this subscription.</param>
+    Task<WebSocketResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(
+        IEnumerable<string> symbols,
+        Action<DataEvent<BitvavoOrderBookUpdate>> onMessage,
         CancellationToken ct = default);
 }

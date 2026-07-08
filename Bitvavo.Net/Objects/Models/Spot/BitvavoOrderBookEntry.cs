@@ -3,6 +3,7 @@
 using System.Text.Json.Serialization;
 using CryptoExchange.Net.Converters;
 using CryptoExchange.Net.Converters.SystemTextJson;
+using CryptoExchange.Net.Interfaces;
 
 namespace Bitvavo.Net.Objects.Models.Spot;
 
@@ -10,7 +11,7 @@ namespace Bitvavo.Net.Objects.Models.Spot;
 /// Order Book Entry.
 /// </summary>
 [JsonConverter(typeof(ArrayConverter<BitvavoOrderBookEntry>))]
-public record BitvavoOrderBookEntry
+public record BitvavoOrderBookEntry : ISymbolOrderBookEntry
 {
     /// <summary>
     /// Price.

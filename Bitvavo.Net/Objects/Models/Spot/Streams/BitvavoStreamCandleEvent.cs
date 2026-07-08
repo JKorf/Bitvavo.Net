@@ -20,7 +20,7 @@ public record BitvavoStreamCandleEvent
     /// Market.
     /// </summary>
     [JsonPropertyName("market")]
-    public string Market { get; init; } = string.Empty;
+    public string Symbol { get; init; } = string.Empty;
 
     /// <summary>
     /// Interval.
