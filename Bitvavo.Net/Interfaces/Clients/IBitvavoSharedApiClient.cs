@@ -12,5 +12,10 @@ namespace Bitvavo.Net.Interfaces.Clients
         /// Exchange REST Shared API implementations
         /// </summary>
         IBitvavoRestClientExchangeSharedApi ExchangeRest { get; }
+
+        /// <summary>
+        /// Exchange WebSocket Shared API implementations
+        /// </summary>
+        IBitvavoSocketClientExchangeSharedApi ExchangeSocket { get; }
     }
 }

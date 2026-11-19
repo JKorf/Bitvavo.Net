@@ -282,6 +282,23 @@ namespace Bitvavo.Net.Interfaces.Clients.ExchangeApi
             CancellationToken ct = default);
 
         /// <summary>
+        /// Receive 24-hour ticker updates in batches, with one callback per message containing updates for the subscribed symbols
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/ticker-24-hour-subscription/" /><br />
+        /// Channel:<br />
+        /// ticker24h
+        /// </para>
+        /// </summary>
+        /// <param name="symbols">["<c>markets</c>"] Symbols</param>
+        /// <param name="onMessage">Update handler</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToTicker24hBatchUpdatesAsync(
+            IEnumerable<string> symbols,
+            Action<DataEvent<BitvavoTicker[]>> onMessage,
+            CancellationToken ct = default);
+
+        /// <summary>
         /// Receive candlestick updates
         /// <para>
         /// Docs:<br />

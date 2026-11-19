@@ -248,6 +248,20 @@ namespace Bitvavo.Net.Clients.ExchangeApi
                 }
             }, ct: ct);
 
+        /// <inheritdoc />
+        public Task<WebSocketResult<UpdateSubscription>> SubscribeToTicker24hBatchUpdatesAsync(
+            IEnumerable<string> symbols,
+            Action<DataEvent<BitvavoTicker[]>> onMessage,
+            CancellationToken ct = default)
+            => SubscribeAsync<BitvavoTicker24hMessage>("ticker24h", "ticker24h", symbols, null, (subscribedSymbols, receiveTime, originalData, update) =>
+            {
+                var tickers = update.Data.Where(ticker => subscribedSymbols.Contains(ticker.Symbol)).ToArray();
+                if (tickers.Length > 0)
+                    onMessage(new DataEvent<BitvavoTicker[]>(BitvavoExchange.Metadata.Id, tickers, receiveTime, originalData)
+                        .WithUpdateType(SocketUpdateType.Update)
+                        .WithStreamId("ticker24h"));
+            }, ct);
+
         #endregion
 
         #region Subscribe To Kline Updates

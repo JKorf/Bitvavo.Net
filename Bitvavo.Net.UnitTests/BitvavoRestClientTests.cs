@@ -130,10 +130,11 @@ namespace Bitvavo.Net.UnitTests
         [Test]
         public void TestSocketSpotSharedApiDiscoveryMatchesAggregate()
         {
-            //var (missingOptions, missingInterfaces) = CryptoExchange.Net.Testing.TestHelpers.ValidateSharedApi(new BitvavoRestClient().SpotApi.SharedApi);
+            using var client = new BitvavoSocketClient();
+            var (missingOptions, missingInterfaces) = CryptoExchange.Net.Testing.TestHelpers.ValidateSharedApi(client.ExchangeApi.SharedApi);
 
-            //Assert.That(missingOptions, Is.Empty);
-            //Assert.That(missingInterfaces, Is.Empty);
+            Assert.That(missingOptions, Is.Empty);
+            Assert.That(missingInterfaces, Is.Empty);
         }
 
         [Test]
@@ -148,9 +149,10 @@ namespace Bitvavo.Net.UnitTests
         [Test]
         public void TestSpotSocketSharedApiDoesntHaveUnsupportedCapabilities()
         {
-            //var unsupported = CryptoExchange.Net.Testing.TestHelpers.ValidateUnsupportedCapabilities(new BitvavoRestClient().SpotApi.SharedApi);
+            using var client = new BitvavoSocketClient();
+            var unsupported = CryptoExchange.Net.Testing.TestHelpers.ValidateUnsupportedCapabilities(client.ExchangeApi.SharedApi);
 
-            //Assert.That(unsupported, Is.Empty);
+            Assert.That(unsupported, Is.Empty);
         }
     }
 }

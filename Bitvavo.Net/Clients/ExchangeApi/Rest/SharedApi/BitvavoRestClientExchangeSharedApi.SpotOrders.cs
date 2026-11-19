@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using static Bitvavo.Net.Clients.ExchangeApi.BitvavoSharedApiMappings;
 
 namespace Bitvavo.Net.Clients.ExchangeApi
 {
@@ -57,7 +58,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
                 timeInForce: MapTimeInForce(request.TimeInForce),
                 postOnly: request.OrderType == SharedOrderType.LimitMaker ? true : null,
                 responseRequired: false,
-                operatorId: GetOperatorId(request),
+                operatorId: GetOperatorId(request, _exchangeName),
                 ct: ct).ConfigureAwait(false);
             if (!result.Success)
                 return HttpResult.Fail<SharedId>(result);
@@ -137,7 +138,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
                 quoteQuantity: quantity == null ? request.Quantity?.QuantityInQuoteAsset : null,
                 price: request.Price,
                 responseRequired: false,
-                operatorId: GetOperatorId(request),
+                operatorId: GetOperatorId(request, _exchangeName),
                 ct: ct).ConfigureAwait(false);
             if (!result.Success)
                 return HttpResult.Fail<SharedId>(result);
@@ -171,7 +172,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
                 quoteQuantity: quantity == null ? request.Quantity?.QuantityInQuoteAsset : null,
                 price: request.Price,
                 responseRequired: false,
-                operatorId: GetOperatorId(request),
+                operatorId: GetOperatorId(request, _exchangeName),
                 ct: ct).ConfigureAwait(false);
             if (!result.Success)
                 return HttpResult.Fail<SharedId>(result);
@@ -253,7 +254,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
 
             var result = await _api.Trading.CancelOrderAsync(
                 request.Symbol!.GetSymbol(FormatSymbol), orderId: request.OrderId,
-                operatorId: GetOperatorId(request), ct: ct).ConfigureAwait(false);
+                operatorId: GetOperatorId(request, _exchangeName), ct: ct).ConfigureAwait(false);
             if (!result.Success)
                 return HttpResult.Fail<SharedId>(result);
 
@@ -280,7 +281,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
 
             var result = await _api.Trading.CancelOrderAsync(
                 request.Symbol!.GetSymbol(FormatSymbol), clientOrderId: request.OrderId,
-                operatorId: GetOperatorId(request), ct: ct).ConfigureAwait(false);
+                operatorId: GetOperatorId(request, _exchangeName), ct: ct).ConfigureAwait(false);
             if (!result.Success)
                 return HttpResult.Fail<SharedId>(result);
 
@@ -305,7 +306,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
             if (validationError != null)
                 return HttpResult.Fail(Exchange, validationError);
 
-            return await _api.Trading.CancelOrdersAsync(operatorId: GetOperatorId(request), ct: ct).ConfigureAwait(false);
+            return await _api.Trading.CancelOrdersAsync(operatorId: GetOperatorId(request, _exchangeName), ct: ct).ConfigureAwait(false);
         }
 
         #endregion
@@ -327,7 +328,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
                 return HttpResult.Fail(Exchange, validationError);
 
             return await _api.Trading.CancelOrdersAsync(
-                request.Symbol!.GetSymbol(FormatSymbol), operatorId: GetOperatorId(request), ct: ct).ConfigureAwait(false);
+                request.Symbol!.GetSymbol(FormatSymbol), operatorId: GetOperatorId(request, _exchangeName), ct: ct).ConfigureAwait(false);
         }
 
         #endregion
@@ -348,50 +349,5 @@ namespace Bitvavo.Net.Clients.ExchangeApi
                 IsTriggerOrder = order.Type is OrderType.StopLoss or OrderType.StopLossLimit or OrderType.TakeProfit or OrderType.TakeProfitLimit,
                 TriggerPrice = order.TriggerPrice ?? order.RequestedTriggerPrice
             };
-
-        private static SharedOrderType ParseOrderType(BitvavoOrder order)
-            => order.Type switch
-            {
-                OrderType.Market or OrderType.StopLoss or OrderType.TakeProfit => SharedOrderType.Market,
-                OrderType.Limit when order.PostOnly == true => SharedOrderType.LimitMaker,
-                OrderType.Limit or OrderType.StopLossLimit or OrderType.TakeProfitLimit => SharedOrderType.Limit,
-                _ => SharedOrderType.Other
-            };
-
-        private static SharedOrderStatus ParseOrderStatus(OrderStatus? status)
-            => status switch
-            {
-                OrderStatus.New or OrderStatus.AwaitingTrigger or OrderStatus.PartiallyFilled => SharedOrderStatus.Open,
-                OrderStatus.Canceled or OrderStatus.Expired => SharedOrderStatus.Canceled,
-                OrderStatus.Filled => SharedOrderStatus.Filled,
-                _ => SharedOrderStatus.Unknown
-            };
-
-        private static TimeInForce? MapTimeInForce(SharedTimeInForce? timeInForce)
-            => timeInForce switch
-            {
-                SharedTimeInForce.GoodTillCanceled => TimeInForce.GoodTillCanceled,
-                SharedTimeInForce.ImmediateOrCancel => TimeInForce.ImmediateOrCancel,
-                SharedTimeInForce.FillOrKill => TimeInForce.FillOrKill,
-                _ => null
-            };
-
-        private static SharedTimeInForce? ParseTimeInForce(TimeInForce? timeInForce)
-            => timeInForce switch
-            {
-                TimeInForce.GoodTillCanceled => SharedTimeInForce.GoodTillCanceled,
-                TimeInForce.ImmediateOrCancel => SharedTimeInForce.ImmediateOrCancel,
-                TimeInForce.FillOrKill => SharedTimeInForce.FillOrKill,
-                _ => null
-            };
-
-        private static decimal? GetAveragePrice(BitvavoOrder order)
-            => order.FilledQuantity > 0 ? order.FilledQuoteQuantity / order.FilledQuantity : null;
-
-        private static ExchangeParameterDescription OperatorIdRule
-            => ExchangeParameterRule.Optional("operatorId", "Override the operator ID configured in the Bitvavo REST options", 1L);
-
-        private static long? GetOperatorId(SharedRequest request)
-            => request.GetParamValue<long?>(_exchangeName, "operatorId");
     }
 }

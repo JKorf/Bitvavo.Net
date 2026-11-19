@@ -1,9 +1,9 @@
-using Bitvavo.Net.Objects.Models;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.SharedApis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using static Bitvavo.Net.Clients.ExchangeApi.BitvavoSharedApiMappings;
 
 namespace Bitvavo.Net.Clients.ExchangeApi
 {
@@ -44,10 +44,5 @@ namespace Bitvavo.Net.Clients.ExchangeApi
             return HttpResult.Ok(result, result.Data.Select(ticker => ParseTicker(ticker, ParseSymbol(ticker.Symbol))).ToArray());
         }
 
-        private static SharedTicker ParseTicker(BitvavoTicker ticker, SharedSymbol? symbol)
-            => new SharedTicker(
-                symbol, ticker.Symbol, ticker.LastPrice, ticker.HighPrice, ticker.LowPrice,
-                new SharedOrderQuantity(ticker.BaseQuantity, ticker.QuoteQuantity),
-                ticker.OpenPrice > 0 ? (ticker.LastPrice - ticker.OpenPrice) / ticker.OpenPrice * 100 : null);
     }
 }

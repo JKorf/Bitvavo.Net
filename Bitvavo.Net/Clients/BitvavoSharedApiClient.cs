@@ -12,6 +12,9 @@ namespace Bitvavo.Net.Clients
         /// <inheritdoc />
         public IBitvavoRestClientExchangeSharedApi ExchangeRest { get; }
 
+        /// <inheritdoc />
+        public IBitvavoSocketClientExchangeSharedApi ExchangeSocket { get; }
+
         /// <summary>
         /// ctor
         /// </summary>
@@ -19,9 +22,10 @@ namespace Bitvavo.Net.Clients
             IBitvavoRestClient restClient,
             IBitvavoSocketClient socketClient,
             IOptions<BitvavoOptions> options)
-            : base(options.Value.SharedApi.PreferredTransport, restClient.ExchangeApi.SharedApi)
+            : base(options.Value.SharedApi.PreferredTransport, restClient.ExchangeApi.SharedApi, socketClient.ExchangeApi.SharedApi)
         {
             ExchangeRest = restClient.ExchangeApi.SharedApi;
+            ExchangeSocket = socketClient.ExchangeApi.SharedApi;
         }
     }
 }

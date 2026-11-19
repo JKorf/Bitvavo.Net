@@ -3,6 +3,7 @@ using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.SharedApis;
 using System.Threading;
 using System.Threading.Tasks;
+using static Bitvavo.Net.Clients.ExchangeApi.BitvavoSharedApiMappings;
 
 namespace Bitvavo.Net.Clients.ExchangeApi
 {
@@ -47,7 +48,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
                 triggerReference: TriggerReference.LastTrade,
                 timeInForce: MapTimeInForce(request.TimeInForce),
                 responseRequired: false,
-                operatorId: GetOperatorId(request),
+                operatorId: GetOperatorId(request, _exchangeName),
                 ct: ct).ConfigureAwait(false);
             if (!result.Success)
                 return HttpResult.Fail<SharedId>(result);
@@ -125,7 +126,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
                 return HttpResult.Fail<SharedId>(Exchange, validationError);
 
             var result = await _api.Trading.CancelOrderAsync(
-                request.Symbol!.GetSymbol(FormatSymbol), request.OrderId, operatorId: GetOperatorId(request), ct: ct).ConfigureAwait(false);
+                request.Symbol!.GetSymbol(FormatSymbol), request.OrderId, operatorId: GetOperatorId(request, _exchangeName), ct: ct).ConfigureAwait(false);
             if (!result.Success)
                 return HttpResult.Fail<SharedId>(result);
 

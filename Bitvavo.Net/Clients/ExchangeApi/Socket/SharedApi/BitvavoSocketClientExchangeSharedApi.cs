@@ -1,4 +1,7 @@
 using CryptoExchange.Net.SharedApis;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Bitvavo.Net.Interfaces.Clients.ExchangeApi;
 
 namespace Bitvavo.Net.Clients.ExchangeApi
@@ -24,7 +27,36 @@ namespace Bitvavo.Net.Clients.ExchangeApi
         {
             _api = api;
 
-            SetCapabilities();
+            SetCapabilities(
+                PlaceSpotOrderOptions,
+                EditSpotOrderOptions,
+                EditSpotOrderByClientOrderIdOptions,
+                CancelSpotOrderOptions,
+                CancelSpotOrderByClientOrderIdOptions,
+                CancelAllSpotOrdersOptions,
+                CancelAllSpotSymbolOrdersOptions,
+                SubscribeTickerOptions,
+                SubscribeAllTickersOptions,
+                SubscribeBookTickerOptions,
+                SubscribeKlineOptions,
+                SubscribeIncrementalOrderBookOptions,
+                SubscribeTradeOptions,
+                SubscribeSpotOrderOptions,
+                SubscribeUserTradeOptions);
         }
+
+        public Task UnsubscribeAllAsync() => _api.UnsubscribeAllAsync();
+
+        private Dictionary<string, SharedSymbol> GetSubscriptionSymbols(SharedSymbolRequest request)
+        {
+            var symbols = new Dictionary<string, SharedSymbol>(StringComparer.Ordinal);
+            foreach (var symbol in request.Symbols ?? [request.Symbol!])
+                symbols[symbol.GetSymbol(FormatSymbol)] = symbol;
+
+            return symbols;
+        }
+
+        private SharedSymbol? ParseSymbol(string symbol)
+            => BitvavoSharedApiMappings.ParseSymbol(_topicId, _api.EnvironmentName, symbol);
     }
 }

@@ -73,17 +73,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
         }
 
         private SharedSymbol? ParseSymbol(string symbol)
-        {
-            var cached = ExchangeSymbolCache.ParseSymbol(_topicId, _api.EnvironmentName, null, symbol);
-            if (cached != null)
-                return cached;
-
-            var separator = symbol.IndexOf('-');
-            if (separator <= 0 || separator == symbol.Length - 1)
-                return null;
-
-            return new SharedSymbol(TradingMode.Spot, symbol.Substring(0, separator), symbol.Substring(separator + 1)) { SymbolName = symbol };
-        }
+            => BitvavoSharedApiMappings.ParseSymbol(_topicId, _api.EnvironmentName, symbol);
 
         private static SharedSpotSymbol ToSharedSymbolInfo(BitvavoSymbol symbol)
             => new SharedSpotSymbol(symbol.BaseAsset, symbol.QuoteAsset, symbol.Symbol, symbol.Status == SymbolStatus.Trading)

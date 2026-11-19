@@ -6,7 +6,21 @@ namespace Bitvavo.Net.Interfaces.Clients.ExchangeApi
     /// Shared interface for Exchange socket API usage
     /// </summary>
     public interface IBitvavoSocketClientExchangeSharedApi :
-        ISharedClient
+        IPlaceSpotOrderSocket,
+        IEditSpotOrderSocket,
+        IEditSpotOrderByClientOrderIdSocket,
+        ICancelSpotOrderSocket,
+        ICancelSpotOrderByClientOrderIdSocket,
+        ICancelAllSpotOrdersSocket,
+        ICancelAllSpotSymbolOrdersSocket,
+        ISubscribeTickerSocket,
+        ISubscribeAllTickersSocket,
+        ISubscribeBookTickerSocket,
+        ISubscribeKlinesSocket,
+        ISubscribeIncrementalOrderBookSocket,
+        ISubscribeTradesSocket,
+        ISubscribeSpotOrdersSocket,
+        ISubscribeUserTradesSocket
     {
     }
 }
