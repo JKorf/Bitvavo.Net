@@ -1,26 +1,27 @@
-using CryptoExchange.Net.Objects;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using CryptoExchange.Net.Objects.Sockets;
-using Bitvavo.Net.Objects.Models;
 using CryptoExchange.Net.Interfaces.Clients;
+using System;
 
 namespace Bitvavo.Net.Interfaces.Clients.ExchangeApi
 {
     /// <summary>
-    /// Bitvavo Exchange streams
+    /// Bitvavo Exchange WebSocket API
     /// </summary>
     public interface IBitvavoSocketClientExchangeApi : ISocketApiClient<BitvavoCredentials>, IDisposable
     {
         /// <summary>
-        /// 
-        /// <para><a href="XXX" /></para>
+        /// Account endpoints
         /// </summary>
-        /// <param name="onMessage">The event handler for the received data</param>
-        /// <param name="ct">Cancellation token for closing this subscription</param>
-        /// <returns>A stream subscription. This stream subscription can be used to be notified when the socket is disconnected/reconnected</returns>
-        Task<WebSocketResult<UpdateSubscription>> SubscribeToXXXUpdatesAsync(Action<DataEvent<BitvavoModel>> onMessage, CancellationToken ct = default);
+        IBitvavoSocketClientExchangeApiAccount Account { get; }
+
+        /// <summary>
+        /// Exchange data endpoints
+        /// </summary>
+        IBitvavoSocketClientExchangeApiExchangeData ExchangeData { get; }
+
+        /// <summary>
+        /// Trading endpoints
+        /// </summary>
+        IBitvavoSocketClientExchangeApiTrading Trading { get; }
 
         /// <summary>
         /// [V2] Gets the aggregate Shared API interface. Shared APIs provide a common,

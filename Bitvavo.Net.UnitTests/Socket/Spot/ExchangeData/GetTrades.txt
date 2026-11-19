@@ -1,0 +1,22 @@
+> {"action":"getTrades","requestId":"|id|","market":"BTC-EUR","tradeIdFrom":"00000000-0000-0431-0000-0000039c5ec6","tradeIdTo":"00000000-0000-0431-0000-0000039c5ec7","start":1735689600000,"end":1735693200000,"limit":2}
+= 
+{
+  "action": "getTrades",
+  "requestId": |id|,
+  "response": [
+    {
+      "id": "00000000-0000-0431-0000-0000039c5ec7",
+      "timestamp": 1735689601000,
+      "amount": "0.015",
+      "price": "5001.1",
+      "side": "buy"
+    },
+    {
+      "id": "00000000-0000-0431-0000-0000039c5ec6",
+      "timestamp": 1735689600000,
+      "amount": "0.02",
+      "price": "4999.9",
+      "side": "sell"
+    }
+  ]
+}

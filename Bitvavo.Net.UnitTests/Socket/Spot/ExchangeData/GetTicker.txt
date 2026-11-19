@@ -1,0 +1,23 @@
+> {"action":"getTicker24h","requestId":"|id|","market":"BTC-EUR"}
+= 
+{
+  "action": "getTicker24h",
+  "requestId": |id|,
+  "response": {
+    "market": "BTC-EUR",
+    "bid": "4999.9",
+    "bidSize": "0.015",
+    "ask": "5001.1",
+    "askSize": "0.015",
+    "startTimestamp": 1735603200000,
+    "timestamp": 1735689600000,
+    "open": "5000",
+    "openTimestamp": 1735603210000,
+    "high": "5110",
+    "low": "4980",
+    "last": "5.0011E+3",
+    "closeTimestamp": 1735689599000,
+    "volume": "2.1",
+    "volumeQuote": "10500"
+  }
+}

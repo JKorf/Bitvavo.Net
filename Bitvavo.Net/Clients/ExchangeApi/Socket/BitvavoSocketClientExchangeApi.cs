@@ -2,20 +2,19 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using CryptoExchange.Net;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Converters.MessageParsing.DynamicConverters;
 using CryptoExchange.Net.Converters.SystemTextJson;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Objects.Errors;
-using CryptoExchange.Net.Objects.Sockets;
 using CryptoExchange.Net.SharedApis;
 using Microsoft.Extensions.Logging;
 using Bitvavo.Net.Clients.MessageHandlers;
 using Bitvavo.Net.Interfaces.Clients.ExchangeApi;
-using Bitvavo.Net.Objects.Models;
 using Bitvavo.Net.Objects.Options;
-using Bitvavo.Net.Objects.Sockets.Subscriptions;
+using Bitvavo.Net.Objects.Sockets;
 
 namespace Bitvavo.Net.Clients.ExchangeApi
 {
@@ -30,14 +29,28 @@ namespace Bitvavo.Net.Clients.ExchangeApi
         protected override ErrorMapping ErrorMapping => BitvavoErrors.Errors;
         #endregion
 
+        #region Api clients
+        /// <inheritdoc />
+        public IBitvavoSocketClientExchangeApiAccount Account { get; }
+        /// <inheritdoc />
+        public IBitvavoSocketClientExchangeApiExchangeData ExchangeData { get; }
+        /// <inheritdoc />
+        public IBitvavoSocketClientExchangeApiTrading Trading { get; }
+        #endregion
+
         #region constructor/destructor
 
         /// <summary>
         /// ctor
         /// </summary>
         internal BitvavoSocketClientExchangeApi(ILoggerFactory? loggerFactory, BitvavoSocketOptions options) :
-            base(loggerFactory, BitvavoExchange.Metadata.Id, options.Environment.SocketClientAddress!, options, options.ExchangeOptions)
+            base(loggerFactory, BitvavoExchange.Metadata.Id, options.Environment.SocketClientAddress, options, options.ExchangeOptions)
         {
+            RateLimiter = BitvavoExchange.RateLimiter.Bitvavo;
+            Account = new BitvavoSocketClientExchangeApiAccount();
+            ExchangeData = new BitvavoSocketClientExchangeApiExchangeData(this);
+            Trading = new BitvavoSocketClientExchangeApiTrading();
+            _sharedApi = new BitvavoSocketClientExchangeSharedApi(this);
         }
         #endregion
 
@@ -53,24 +66,11 @@ namespace Bitvavo.Net.Clients.ExchangeApi
         /// <inheritdoc />
         public IBitvavoSocketClientExchangeSharedApi SharedApi => _sharedApi;
 
-        /// <inheritdoc />
-        public async Task<WebSocketResult<UpdateSubscription>> SubscribeToXXXUpdatesAsync(Action<DataEvent<BitvavoModel>> onMessage, CancellationToken ct = default)
+        internal Task<QueryResult<T>> SendAsync<T>(string action, Parameters? parameters, CancellationToken ct, int weight = 1)
         {
-            var internalHandler = new Action<DateTime, string?, BitvavoModel>((receiveTime, originalData, data) =>
-            {
-                //UpdateTimeOffset(data.Timestamp);
-
-                onMessage(
-                    new DataEvent<BitvavoModel>(BitvavoExchange.Metadata.Id, data, receiveTime, originalData)
-                        .WithUpdateType(SocketUpdateType.Update)
-                        //.WithStreamId(data.Stream)
-                        //.WithSymbol(data.Symbol)
-                        //.WithDataTimestamp(data.EventTime, GetTimeOffset())
-                    );
-            });
-
-            var subscription = new BitvavoSubscription<BitvavoModel>(_logger, new [] { "XXX" }, internalHandler, false);
-            return await SubscribeAsync(subscription, ct).ConfigureAwait(false);
+            parameters ??= new Parameters(BitvavoExchange._parameterSerializationSettings);
+            var query = new BitvavoQuery<T>(this, action, parameters, false, weight);
+            return QueryAsync(BaseAddress.AppendPath("/v2"), query, ct);
         }
 
         /// <inheritdoc />

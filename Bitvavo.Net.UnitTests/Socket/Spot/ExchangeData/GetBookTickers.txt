@@ -1,0 +1,15 @@
+> {"action":"getTickerBook","requestId":"|id|"}
+= 
+{
+  "action": "getTickerBook",
+  "requestId": |id|,
+  "response": [
+    {
+      "market": "BTC-EUR",
+      "bid": "4999.9",
+      "bidSize": "0.015",
+      "ask": "5001.1",
+      "askSize": "0.015"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+> {"action":"getBook","requestId":"|id|","market":"BTC-EUR","depth":1}
+= 
+{
+  "action": "getBook",
+  "requestId": |id|,
+  "response": {
+    "market": "BTC-EUR",
+    "nonce": 123,
+    "bids": [
+      [
+        "4999.9",
+        "0.015"
+      ]
+    ],
+    "asks": [
+      [
+        "5001.1",
+        "0.015"
+      ]
+    ],
+    "timestamp": 1735689600000000000
+  }
+}

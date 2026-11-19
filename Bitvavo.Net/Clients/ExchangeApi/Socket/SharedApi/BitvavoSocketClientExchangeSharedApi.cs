@@ -3,7 +3,7 @@ using Bitvavo.Net.Interfaces.Clients.ExchangeApi;
 
 namespace Bitvavo.Net.Clients.ExchangeApi
 {
-    internal partial class BitvavoSocketClientExchangeSharedApi :         
+    internal partial class BitvavoSocketClientExchangeSharedApi :
         SharedApiBase,
         IBitvavoSocketClientExchangeSharedApi
     {
@@ -18,8 +18,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
             : base(
                   SharedTransport.Socket,
                   api,
-#warning TODO
-                  new[] { TradingMode.Spot, TradingMode.PerpetualLinear, TradingMode.PerpetualInverse, TradingMode.DeliveryLinear, TradingMode.DeliveryInverse },
+                  new[] { TradingMode.Spot },
                   () => api.Authenticated,
                   api.FormatSymbol)
         {

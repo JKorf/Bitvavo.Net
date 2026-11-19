@@ -1,0 +1,16 @@
+> {"action":"getCandles","requestId":"|id|","market":"BTC-EUR","interval":"1h","start":1735689600000,"end":1735693200000,"limit":1}
+= 
+{
+  "action": "getCandles",
+  "requestId": |id|,
+  "response": [
+    [
+      1735689600000,
+      "4999.9",
+      "5010",
+      "4980",
+      "5001.1",
+      "0.054"
+    ]
+  ]
+}

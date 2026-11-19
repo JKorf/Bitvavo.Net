@@ -1,0 +1,10 @@
+> {"action":"getTickerPrice","requestId":"|id|","market":"BTC-EUR"}
+= 
+{
+  "action": "getTickerPrice",
+  "requestId": |id|,
+  "response": {
+    "market": "BTC-EUR",
+    "price": "5001.1"
+  }
+}
