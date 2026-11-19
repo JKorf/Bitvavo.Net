@@ -1,4 +1,4 @@
-using CryptoExchange.Net.Interfaces.Clients;
+using Bitvavo.Net.Interfaces.Clients.ExchangeApi;
 using CryptoExchange.Net.SharedApis;
 
 namespace Bitvavo.Net.Interfaces.Clients
@@ -8,6 +8,9 @@ namespace Bitvavo.Net.Interfaces.Clients
     /// </summary>
     public interface IBitvavoSharedApiClient : ISharedApiClientBase
     {
-#warning TODO
+        /// <summary>
+        /// Exchange REST Shared API implementations
+        /// </summary>
+        IBitvavoRestClientExchangeSharedApi ExchangeRest { get; }
     }
 }

@@ -24,7 +24,40 @@ namespace Bitvavo.Net.Clients.ExchangeApi
         {
             _api = api;
 
-            SetCapabilities();
+            SetCapabilities(
+                GetAssetOptions,
+                GetAllAssetsOptions,
+                GetBalancesOptions,
+                GetDepositAddressesOptions,
+                GetDepositHistoryOptions,
+                GetFeeOptions,
+                GetKlinesOptions,
+                GetOrderBookOptions,
+                GetBookTickerOptions,
+                GetSpotSymbolsOptions,
+                GetTickerOptions,
+                GetAllTickersOptions,
+                GetRecentTradesOptions,
+                GetTradeHistoryOptions,
+                WithdrawOptions,
+                GetWithdrawalHistoryOptions,
+                GetLedgerOptions,
+                PlaceSpotOrderOptions,
+                GetSpotOrderOptions,
+                GetSpotOrderByClientOrderIdOptions,
+                EditSpotOrderOptions,
+                EditSpotOrderByClientOrderIdOptions,
+                GetOpenSpotOrdersOptions,
+                GetClosedSpotOrdersOptions,
+                CancelSpotOrderOptions,
+                CancelSpotOrderByClientOrderIdOptions,
+                CancelAllSpotOrdersOptions,
+                CancelAllSpotSymbolOrdersOptions,
+                PlaceSpotTriggerOrderOptions,
+                GetSpotTriggerOrderOptions,
+                CancelSpotTriggerOrderOptions,
+                GetSpotUserTradeHistoryOptions,
+                GetSpotOrderTradesOptions);
         }
     }
 }

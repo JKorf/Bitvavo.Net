@@ -1,16 +1,17 @@
-using CryptoExchange.Net.Clients;
-using CryptoExchange.Net.SharedApis;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
 using Bitvavo.Net.Interfaces.Clients;
+using Bitvavo.Net.Interfaces.Clients.ExchangeApi;
 using Bitvavo.Net.Objects.Options;
+using CryptoExchange.Net.SharedApis;
+using Microsoft.Extensions.Options;
 
 namespace Bitvavo.Net.Clients
 {
     /// <inheritdoc cref="IBitvavoSharedApiClient" />
     public class BitvavoSharedApiClient : SharedApiClientBase, IBitvavoSharedApiClient
     {
+        /// <inheritdoc />
+        public IBitvavoRestClientExchangeSharedApi ExchangeRest { get; }
+
         /// <summary>
         /// ctor
         /// </summary>
@@ -18,12 +19,9 @@ namespace Bitvavo.Net.Clients
             IBitvavoRestClient restClient,
             IBitvavoSocketClient socketClient,
             IOptions<BitvavoOptions> options)
-            : base(options.Value.SharedApi.PreferredTransport
-                #warning TODO
-
-                )
+            : base(options.Value.SharedApi.PreferredTransport, restClient.ExchangeApi.SharedApi)
         {
-#warning TODO
+            ExchangeRest = restClient.ExchangeApi.SharedApi;
         }
     }
 }
