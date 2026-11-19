@@ -101,5 +101,115 @@ namespace Bitvavo.Net.Clients.ExchangeApi
         }
 
         #endregion
+
+        #region Get Deposit Data
+
+        /// <inheritdoc />
+        public async Task<HttpResult<BitvavoDepositData>> GetDepositDataAsync(string asset, CancellationToken ct = default)
+        {
+            var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
+            parameters.Add("symbol", asset);
+
+            var request = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "/v2/deposit", BitvavoExchange.RateLimiter.Bitvavo, 1, true);
+            return await _baseClient.SendAsync<BitvavoDepositData>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Get Deposit History
+
+        /// <inheritdoc />
+        public async Task<HttpResult<BitvavoDeposit[]>> GetDepositHistoryAsync(
+            string? asset = null,
+            DateTime? startTime = null,
+            DateTime? endTime = null,
+            int? limit = null,
+            CancellationToken ct = default)
+        {
+            var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
+            parameters.Add("symbol", asset);
+            parameters.Add("start", startTime);
+            parameters.Add("end", endTime);
+            parameters.Add("limit", limit);
+
+            var request = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "/v2/depositHistory", BitvavoExchange.RateLimiter.Bitvavo, 5, true);
+            return await _baseClient.SendAsync<BitvavoDeposit[]>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Withdraw
+
+        /// <inheritdoc />
+        public async Task<HttpResult<BitvavoWithdrawalResult>> WithdrawAsync(
+            string asset,
+            string address,
+            decimal quantity,
+            string? paymentId = null,
+            bool? addWithdrawalFee = null,
+            CancellationToken ct = default)
+        {
+            var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
+            parameters.Add("symbol", asset);
+            parameters.Add("address", address);
+            parameters.Add("amount", quantity);
+            parameters.Add("paymentId", paymentId);
+            parameters.Add("addWithdrawalFee", addWithdrawalFee);
+
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "/v2/withdrawal", BitvavoExchange.RateLimiter.Bitvavo, 1, true);
+            return await _baseClient.SendAsync<BitvavoWithdrawalResult>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Withdraw Crypto
+
+        /// <inheritdoc />
+        public async Task<HttpResult<BitvavoCryptoWithdrawal>> WithdrawCryptoAsync(
+            string asset,
+            string network,
+            string address,
+            decimal quantity,
+            string? memo = null,
+            bool? deductFeeFromQuantity = null,
+            string? idempotencyKey = null,
+            CancellationToken ct = default)
+        {
+            var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
+            parameters.Add("asset", asset);
+            parameters.Add("network", network);
+            parameters.Add("address", address);
+            parameters.Add("amount", quantity);
+            parameters.Add("memo", memo);
+            parameters.Add("deductFeeFromAmount", deductFeeFromQuantity);
+            parameters.Add("idempotencyKey", idempotencyKey);
+
+            var request = _definitions.GetOrCreate(HttpMethod.Post, _baseClient.BaseAddress, "/v2/crypto/withdrawal", BitvavoExchange.RateLimiter.Bitvavo, 25, true);
+            return await _baseClient.SendAsync<BitvavoCryptoWithdrawal>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Get Withdrawal History
+
+        /// <inheritdoc />
+        public async Task<HttpResult<BitvavoWithdrawal[]>> GetWithdrawalHistoryAsync(
+            string? asset = null,
+            DateTime? startTime = null,
+            DateTime? endTime = null,
+            int? limit = null,
+            CancellationToken ct = default)
+        {
+            var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
+            parameters.Add("symbol", asset);
+            parameters.Add("start", startTime);
+            parameters.Add("end", endTime);
+            parameters.Add("limit", limit);
+
+            var request = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "/v2/withdrawalHistory", BitvavoExchange.RateLimiter.Bitvavo, 5, true);
+            return await _baseClient.SendAsync<BitvavoWithdrawal[]>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
     }
 }

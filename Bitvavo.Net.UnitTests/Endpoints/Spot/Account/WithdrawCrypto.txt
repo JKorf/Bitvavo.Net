@@ -1,0 +1,13 @@
+POST
+/v2/crypto/withdrawal
+true
+BodyParams: {"asset":"XRP","network":"XRP","address":"SampleWithdrawalAddress","amount":"12.5","memo":"10002653","deductFeeFromAmount":true,"idempotencyKey":"sample-withdrawal-1"}
+{
+  "id": "wd-sample123",
+  "asset": "XRP",
+  "network": "XRP",
+  "address": "SampleWithdrawalAddress",
+  "amount": "12.49",
+  "fee": "0.01",
+  "createdAt": "2025-01-01T01:00:00.000Z"
+}

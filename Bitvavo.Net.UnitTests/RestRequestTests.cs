@@ -58,6 +58,12 @@ namespace Bitvavo.Net.UnitTests
             await tester.ValidateAsync(client => client.ExchangeApi.Account.GetSymbolFeesAsync("BTC-EUR"), "GetSymbolFees");
             await tester.ValidateAsync(client => client.ExchangeApi.Account.GetSymbolFeesAsync(quoteAsset: FeeQuoteAsset.Usdc), "GetQuoteAssetFees");
             await tester.ValidateAsync(client => client.ExchangeApi.Account.GetTransactionHistoryAsync(TransactionType.FixedStaking, startTime, endTime, page: 2, pageSize: 5), "GetTransactionHistory");
+            await tester.ValidateAsync(client => client.ExchangeApi.Account.GetDepositDataAsync("XRP"), "GetDepositData");
+            await tester.ValidateAsync(client => client.ExchangeApi.Account.GetDepositDataAsync("EUR"), "GetFiatDepositData");
+            await tester.ValidateAsync(client => client.ExchangeApi.Account.GetDepositHistoryAsync(startTime: startTime, endTime: endTime, limit: 2), "GetDepositHistory");
+            await tester.ValidateAsync(client => client.ExchangeApi.Account.WithdrawAsync("XRP", "SampleWithdrawalAddress", 12.5m, paymentId: "10002653", addWithdrawalFee: true), "Withdraw");
+            await tester.ValidateAsync(client => client.ExchangeApi.Account.WithdrawCryptoAsync("XRP", "XRP", "SampleWithdrawalAddress", 12.5m, memo: "10002653", deductFeeFromQuantity: true, idempotencyKey: "sample-withdrawal-1"), "WithdrawCrypto");
+            await tester.ValidateAsync(client => client.ExchangeApi.Account.GetWithdrawalHistoryAsync("XRP", startTime, endTime, limit: 2), "GetWithdrawalHistory");
         }
 
         [Test]

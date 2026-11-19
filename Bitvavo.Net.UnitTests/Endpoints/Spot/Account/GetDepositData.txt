@@ -1,0 +1,8 @@
+GET
+/v2/deposit
+true
+UriParams: {"symbol":"XRP"}
+{
+  "address": "SampleDepositAddress",
+  "paymentid": "10002653"
+}
