@@ -28,10 +28,8 @@ namespace Bitvavo.Net.Clients.MessageHandlers
             if (error != null)
                 return error;
 
-#warning check
-
-            int? code = document!.RootElement.TryGetProperty("code", out var codeProp) ? codeProp.GetInt32() : null;
-            string? msg = document.RootElement.TryGetProperty("msg", out var msgProp) ? msgProp.GetString() : null;
+            int? code = document!.RootElement.TryGetProperty("errorCode", out var codeProp) && codeProp.TryGetInt32(out var errorCode) ? errorCode : null;
+            string? msg = document.RootElement.TryGetProperty("error", out var msgProp) ? msgProp.GetString() : null;
             if (msg == null)
                 return new ServerError(ErrorInfo.Unknown);
 

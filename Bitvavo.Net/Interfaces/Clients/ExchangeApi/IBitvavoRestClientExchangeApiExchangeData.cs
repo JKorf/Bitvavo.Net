@@ -13,6 +13,18 @@ namespace Bitvavo.Net.Interfaces.Clients.ExchangeApi
     public interface IBitvavoRestClientExchangeApiExchangeData
     {
         /// <summary>
+        /// Get the current Bitvavo server time
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/rest-api/get-server-time/" /><br />
+        /// Endpoint:<br />
+        /// GET /v2/time
+        /// </para>
+        /// </summary>
+        /// <param name="ct">Cancellation token</param>
+        Task<HttpResult<DateTime>> GetServerTimeAsync(CancellationToken ct = default);
+
+        /// <summary>
         /// Get trades for a period of up to 24 hours
         /// <para>
         /// Docs:<br />

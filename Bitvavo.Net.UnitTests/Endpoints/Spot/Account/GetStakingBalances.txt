@@ -1,0 +1,10 @@
+GET
+/v2/stakingBalance
+true
+UriParams: {"symbol":"BTC"}
+[
+  {
+    "symbol": "BTC",
+    "amount": "0.99"
+  }
+]

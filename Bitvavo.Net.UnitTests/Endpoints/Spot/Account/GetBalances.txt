@@ -1,0 +1,11 @@
+GET
+/v2/balance
+true
+UriParams: {"symbol":"BTC"}
+[
+  {
+    "symbol": "BTC",
+    "available": "1.5",
+    "inOrder": "0.25"
+  }
+]

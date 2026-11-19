@@ -36,6 +36,26 @@ namespace Bitvavo.Net.UnitTests
             await tester.ValidateAsync(client => client.ExchangeApi.ExchangeData.GetTickersAsync(), "GetTickers");
         }
 
+        [Test]
+        public async Task ValidateAccountCalls()
+        {
+            using var client = new BitvavoRestClient(opts =>
+            {
+                opts.AutoTimestamp = false;
+                opts.ApiCredentials = new BitvavoCredentials("123", "456");
+            });
+            var tester = new RestRequestValidator<BitvavoRestClient>(client, "Endpoints/Spot/Account", "https://api.bitvavo.com", IsAuthenticated);
+
+            var startTime = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var endTime = startTime.AddDays(1);
+            await tester.ValidateAsync(client => client.ExchangeApi.Account.GetAccountFeesAsync(), "GetAccountFees", nestedJsonProperty: "fees");
+            await tester.ValidateAsync(client => client.ExchangeApi.Account.GetBalancesAsync("BTC"), "GetBalances");
+            await tester.ValidateAsync(client => client.ExchangeApi.Account.GetStakingBalancesAsync("BTC"), "GetStakingBalances");
+            await tester.ValidateAsync(client => client.ExchangeApi.Account.GetSymbolFeesAsync("BTC-EUR"), "GetSymbolFees");
+            await tester.ValidateAsync(client => client.ExchangeApi.Account.GetSymbolFeesAsync(quoteAsset: FeeQuoteAsset.Usdc), "GetQuoteAssetFees");
+            await tester.ValidateAsync(client => client.ExchangeApi.Account.GetTransactionHistoryAsync(startTime, endTime, page: 2, pageSize: 5, type: TransactionType.FixedStaking), "GetTransactionHistory");
+        }
+
         private bool IsAuthenticated(IHttpResult result)
         {
             return result.RequestHeaders?.Contains("Bitvavo-Access-Signature") == true;

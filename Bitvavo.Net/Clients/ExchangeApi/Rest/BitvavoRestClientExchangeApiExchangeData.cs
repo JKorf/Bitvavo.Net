@@ -21,6 +21,21 @@ namespace Bitvavo.Net.Clients.ExchangeApi
             _baseClient = baseClient;
         }
 
+        #region Get Server Time
+
+        /// <inheritdoc />
+        public async Task<HttpResult<DateTime>> GetServerTimeAsync(CancellationToken ct = default)
+        {
+            var request = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "/v2/time", BitvavoExchange.RateLimiter.Bitvavo, 1, false, preventCaching: true);
+            var result = await _baseClient.SendAsync<BitvavoServerTime>(request, null, ct).ConfigureAwait(false);
+            if (!result.Success)
+                return HttpResult.Fail<DateTime>(result);
+
+            return HttpResult.Ok(result, result.Data.Time);
+        }
+
+        #endregion
+
         #region Get Trades
 
         /// <inheritdoc />

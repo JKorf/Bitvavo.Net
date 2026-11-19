@@ -77,7 +77,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
 
         /// <inheritdoc />
         protected override Task<HttpResult<DateTime>> GetServerTimestampAsync()
-            => throw new NotImplementedException();
+            => ExchangeData.GetServerTimeAsync();
 
         /// <inheritdoc />
         public override string FormatSymbol(string baseAsset, string quoteAsset, TradingMode tradingMode, DateTime? deliverDate = null) 

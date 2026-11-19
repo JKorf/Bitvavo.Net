@@ -1,0 +1,10 @@
+GET
+/v2/account
+true
+{
+  "fees": {
+    "maker": "0.0015",
+    "taker": "0.0025",
+    "volume": "10000.00"
+  }
+}
