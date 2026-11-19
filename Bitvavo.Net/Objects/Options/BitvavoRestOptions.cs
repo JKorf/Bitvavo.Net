@@ -34,7 +34,6 @@ namespace Bitvavo.Net.Objects.Options
         /// </summary>
         public RestApiOptions ExchangeOptions { get; private set; } = new RestApiOptions();
 
-
         internal BitvavoRestOptions Set(BitvavoRestOptions targetOptions)
         {
             targetOptions = base.Set<BitvavoRestOptions>(targetOptions);

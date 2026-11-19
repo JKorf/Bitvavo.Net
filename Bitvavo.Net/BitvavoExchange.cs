@@ -7,6 +7,8 @@ using Bitvavo.Net.Converters;
 using System.Text.Json;
 using CryptoExchange.Net.Converters.SystemTextJson;
 using CryptoExchange.Net.Converters;
+using CryptoExchange.Net.RateLimiting.Guards;
+using CryptoExchange.Net.RateLimiting.Filters;
 
 namespace Bitvavo.Net
 {
@@ -28,10 +30,9 @@ namespace Bitvavo.Net
         public static PlatformInfo Metadata { get; } = new PlatformInfo(
                 "Bitvavo",
                 "Bitvavo",
-                "",
-                "",
-                ["",
-                 ""],
+                "https://raw.githubusercontent.com/JKorf/Bitvavo.Net/main/Bitvavo.Net/Icon/icon.png",
+                "https://www.bitvavo.com/",
+                ["https://docs.bitvavo.com/docs/get-started/"],
                 PlatformType.CryptoCurrencyExchange,
                 CentralizationType.Centralized,
                 BitvavoEnvironment.All
@@ -43,7 +44,7 @@ namespace Bitvavo.Net
         public static AssetAliasConfiguration AssetAliases { get; } = new AssetAliasConfiguration
         {
             Aliases = [
-                new AssetAlias("USDT", SharedSymbol.UsdOrStable.ToUpperInvariant(), AliasType.OnlyToExchange)
+                new AssetAlias("USDC", SharedSymbol.UsdOrStable.ToUpperInvariant(), AliasType.OnlyToExchange)
             ]
         };
 
@@ -92,7 +93,9 @@ namespace Bitvavo.Net
 
         private void Initialize()
         {
-            Bitvavo = new RateLimitGate("Bitvavo");
+            Bitvavo = new RateLimitGate("Bitvavo")
+                .AddGuard(new RateLimitGuard(RateLimitGuard.PerApiKey, new AuthenticatedEndpointFilter(true), 1000, TimeSpan.FromMinutes(1), RateLimitWindowType.Fixed))
+                .AddGuard(new RateLimitGuard(RateLimitGuard.PerHost, new AuthenticatedEndpointFilter(false), 1000, TimeSpan.FromMinutes(1), RateLimitWindowType.Fixed));
             Bitvavo.RateLimitTriggered += (x) => RateLimitTriggered?.Invoke(x);
             Bitvavo.RateLimitUpdated += (x) => RateLimitUpdated?.Invoke(x);
         }

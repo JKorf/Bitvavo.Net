@@ -89,10 +89,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.RegisterSharedApiClient<
                 IBitvavoSharedApiClient,
-                BitvavoSharedApiClient>(sharedApis => { }//sharedApis
-#warning TODO
-                    //.Add(client => client.SpotRest)
-                    //.Add(client => client.SpotSocket)
+                BitvavoSharedApiClient>(sharedApis => sharedApis
+                    .Add(client => client.ExchangeRest)
+                    .Add(client => client.ExchangeSocket)
                     );
 
             return services;

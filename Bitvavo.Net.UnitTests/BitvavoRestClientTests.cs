@@ -1,8 +1,10 @@
 using System;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Objects.Errors;
 using NUnit.Framework;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using Bitvavo.Net.Clients;
 using Bitvavo.Net.Objects.Options;
 using Microsoft.Extensions.Options;
@@ -88,9 +90,9 @@ namespace Bitvavo.Net.UnitTests
             handler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync",
                 ItExpr.Is<HttpRequestMessage>(request => request.RequestUri.AbsolutePath == "/v2/balance" && request.Headers.Contains("Bitvavo-Access-Signature")),
                 ItExpr.IsAny<CancellationToken>())
-                .Returns(() => Task.FromResult(new HttpResponseMessage(HttpStatusCode.Unauthorized)
+                .Returns(() => Task.FromResult(new HttpResponseMessage(HttpStatusCode.Forbidden)
                 {
-                    Content = new StringContent("{\"errorCode\":302,\"error\":\"API key not found.\"}")
+                    Content = new StringContent("{\"errorCode\":309,\"error\":\"Invalid signature.\"}")
                 }));
             using var httpClient = new HttpClient(handler.Object, disposeHandler: false);
             using var client = new BitvavoRestClient(httpClient, null, Options.Create(new BitvavoRestOptions
@@ -104,8 +106,67 @@ namespace Bitvavo.Net.UnitTests
             handler.Protected().Verify("SendAsync", Times.AtLeastOnce(),
                 ItExpr.Is<HttpRequestMessage>(request => request.RequestUri.AbsolutePath == "/v2/time"), ItExpr.IsAny<CancellationToken>());
             Assert.That(result.Success, Is.False);
-            Assert.That(result.Error?.Code, Is.EqualTo(302));
-            Assert.That(result.Error?.Message, Is.EqualTo("API key not found."));
+            Assert.That(result.Error?.Code, Is.EqualTo(309));
+            Assert.That(result.Error?.Message, Is.EqualTo("Invalid signature."));
+            Assert.That(result.Error?.ErrorType, Is.EqualTo(ErrorType.Unauthorized));
+        }
+
+        [TestCase(HttpStatusCode.BadRequest, """{"errorCode":429,"error":"Too many decimals"}""", 429, ErrorType.InvalidParameter, "Too many decimals")]
+        [TestCase(HttpStatusCode.NotFound, """{"errorCode":240}""", 240, ErrorType.UnknownOrder, null)]
+        [TestCase(HttpStatusCode.BadRequest, """{"errorCode":999,"error":"New Bitvavo error"}""", 999, ErrorType.Unknown, "New Bitvavo error")]
+        [TestCase(HttpStatusCode.BadRequest, """{"errorCode":null,"error":"Invalid request"}""", null, ErrorType.Unknown, "Invalid request")]
+        [TestCase(HttpStatusCode.BadRequest, """{"errorCode":205,"error":{}}""", 205, ErrorType.InvalidParameter, null)]
+        [TestCase(HttpStatusCode.BadRequest, """[]""", null, ErrorType.Unknown, null)]
+        [TestCase(HttpStatusCode.ServiceUnavailable, "<html>Service unavailable</html>", null, ErrorType.DeserializationFailed, null)]
+        public async Task RestErrorResponsePreservesBitvavoDetails(
+            HttpStatusCode status, string body, int? code, ErrorType errorType, string? message)
+        {
+            using var httpClient = CreateErrorResponseClient(status, body);
+            using var client = new BitvavoRestClient(httpClient, null, Options.Create(new BitvavoRestOptions { RateLimiterEnabled = false }));
+            var result = await client.ExchangeApi.ExchangeData.GetSymbolsAsync();
+
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.Error?.ErrorCode, Is.EqualTo(code?.ToString()));
+            Assert.That(result.Error?.ErrorType, Is.EqualTo(errorType));
+            if (errorType != ErrorType.DeserializationFailed)
+                Assert.That(result.Error?.Message, Is.EqualTo(message));
+        }
+
+        [TestCase("1735689600123", true, 1735689600123L)]
+        [TestCase("999999999999999", true, 1735689600000L)]
+        [TestCase(null, false, null)]
+        public async Task RestRateLimitErrorUsesBitvavoResetOrRetryAfter(string? reset, bool includeRetryAfter, long? expected)
+        {
+            using var httpClient = CreateErrorResponseClient(HttpStatusCode.TooManyRequests,
+                """{"errorCode":105,"error":"Request weight limit exceeded"}""", response =>
+                {
+                    if (reset != null)
+                        response.Headers.Add("bitvavo-ratelimit-resetat", reset);
+                    if (includeRetryAfter)
+                        response.Headers.RetryAfter = new RetryConditionHeaderValue(DateTimeOffset.FromUnixTimeMilliseconds(1735689600000L));
+                });
+            using var client = new BitvavoRestClient(httpClient, null, Options.Create(new BitvavoRestOptions { RateLimiterEnabled = false }));
+
+            var result = await client.ExchangeApi.ExchangeData.GetSymbolsAsync();
+
+            Assert.That(result.Error, Is.TypeOf<ServerRateLimitError>());
+            var error = (ServerRateLimitError)result.Error!;
+            Assert.That(error.Code, Is.EqualTo(105));
+            Assert.That(error.Message, Is.EqualTo("Request weight limit exceeded"));
+            Assert.That(error.RetryAfter, Is.EqualTo(expected.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(expected.Value).UtcDateTime : (DateTime?)null));
+        }
+
+        private static HttpClient CreateErrorResponseClient(HttpStatusCode status, string body, Action<HttpResponseMessage>? configureResponse = null)
+        {
+            var handler = new Mock<HttpMessageHandler>();
+            handler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Returns(() =>
+                {
+                    var response = new HttpResponseMessage(status) { Content = new StringContent(body) };
+                    configureResponse?.Invoke(response);
+                    return Task.FromResult(response);
+                });
+            return new HttpClient(handler.Object);
         }
 
         [Test]

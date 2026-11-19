@@ -25,32 +25,23 @@ namespace Bitvavo.Net.SymbolOrderBooks
         {
             _serviceProvider = serviceProvider;
             
-                        Exchange = new OrderBookFactory<BitvavoOrderBookOptions>(CreateExchange, Create);
-
+            Exchange = new OrderBookFactory<BitvavoOrderBookOptions>(Create, Create);
         }
 
-                 /// <inheritdoc />
+        /// <inheritdoc />
         public IOrderBookFactory<BitvavoOrderBookOptions> Exchange { get; }
-
 
         /// <inheritdoc />
         public ISymbolOrderBook Create(SharedSymbol symbol, Action<BitvavoOrderBookOptions>? options = null)
         {
             var symbolName = symbol.GetSymbol(BitvavoExchange.FormatSymbol);
-            throw new NotImplementedException();
-
-#warning TODO
-            //if (symbol.TradingMode == TradingMode.Spot)
-            //    return CreateSpot(symbolName, options);
-
-            //return Create(symbolName, options);
+            return Create(symbolName, options);
         }
 
                  /// <inheritdoc />
-        public ISymbolOrderBook CreateExchange(string symbol, Action<BitvavoOrderBookOptions>? options = null)
-            => new BitvavoExchangeSymbolOrderBook(symbol, options, 
+        public ISymbolOrderBook Create(string symbol, Action<BitvavoOrderBookOptions>? options = null)
+            => new BitvavoSymbolOrderBook(symbol, options, 
                                                           _serviceProvider.GetRequiredService<ILoggerFactory>(),
-                                                          _serviceProvider.GetRequiredService<IBitvavoRestClient>(),
                                                           _serviceProvider.GetRequiredService<IBitvavoSocketClient>());
 
 

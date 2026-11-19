@@ -10,8 +10,6 @@ namespace Bitvavo.Net.Interfaces
     /// </summary>
     public interface IBitvavoTrackerFactory : ITrackerFactory
     {
-#warning TODO
-
         /// <summary>
         /// Create a new Spot user data tracker
         /// </summary>

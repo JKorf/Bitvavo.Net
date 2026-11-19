@@ -1,7 +1,10 @@
 using CryptoExchange.Net.Converters.SystemTextJson.MessageHandlers;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Objects.Errors;
+using System;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -28,16 +31,49 @@ namespace Bitvavo.Net.Clients.MessageHandlers
             if (error != null)
                 return error;
 
-            int? code = document!.RootElement.TryGetProperty("errorCode", out var codeProp) && codeProp.TryGetInt32(out var errorCode) ? errorCode : null;
-            string? msg = document.RootElement.TryGetProperty("error", out var msgProp) ? msgProp.GetString() : null;
-            if (msg == null)
+            using var response = document!;
+            var root = response.RootElement;
+            if (root.ValueKind != JsonValueKind.Object)
                 return new ServerError(ErrorInfo.Unknown);
 
-            if (code == null)
-                return new ServerError(new ErrorInfo(ErrorType.Unknown, false, msg));
+            var message = root.TryGetProperty("error", out var messageValue) && messageValue.ValueKind == JsonValueKind.String
+                ? messageValue.GetString()
+                : null;
+            if (!root.TryGetProperty("errorCode", out var codeValue) || codeValue.ValueKind != JsonValueKind.Number || !codeValue.TryGetInt32(out var code))
+                return new ServerError(ErrorInfo.Unknown with { Message = message });
 
-            var errorInfo = _errorMapping.GetErrorInfo(code.ToString()!, msg);
-            return new ServerError(code.Value.ToString(), errorInfo);
+            var errorCode = code.ToString(CultureInfo.InvariantCulture);
+            return new ServerError(errorCode, _errorMapping.GetErrorInfo(errorCode, message));
+        }
+
+        public override async ValueTask<ServerRateLimitError> ParseErrorRateLimitResponse(
+            int httpStatusCode,
+            HttpResponseHeaders responseHeaders,
+            Stream responseStream)
+        {
+            var error = await ParseErrorResponse(httpStatusCode, responseHeaders, responseStream).ConfigureAwait(false);
+            DateTime? retryAfter;
+            if (responseHeaders.TryGetValues("bitvavo-ratelimit-resetat", out var resetValues)
+                && long.TryParse(resetValues.FirstOrDefault(), NumberStyles.None, CultureInfo.InvariantCulture, out var reset)
+                && reset <= DateTimeOffset.MaxValue.ToUnixTimeMilliseconds())
+                retryAfter = DateTimeOffset.FromUnixTimeMilliseconds(reset).UtcDateTime;
+            else
+                retryAfter = (await base.ParseErrorRateLimitResponse(httpStatusCode, responseHeaders, responseStream).ConfigureAwait(false)).RetryAfter?.ToUniversalTime();
+
+            var rateLimitError = new ServerRateLimitError
+            {
+                ErrorCode = error.ErrorCode,
+                RetryAfter = retryAfter
+            };
+            if (error is ServerError)
+                rateLimitError.Message = error.Message;
+            if (error.ErrorType == ErrorType.RateLimitRequest)
+            {
+                rateLimitError.ErrorDescription = error.ErrorDescription;
+                rateLimitError.IsTransient = error.IsTransient;
+            }
+
+            return rateLimitError;
         }
     }
 }

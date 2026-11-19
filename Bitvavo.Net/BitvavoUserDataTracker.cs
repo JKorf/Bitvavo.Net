@@ -25,15 +25,14 @@ namespace Bitvavo.Net
             SpotUserDataTrackerConfig? config = null,
             ExchangeParameters? exchangeParameters = null) : base(
                 logger,
-#warning TODO
+                restClient.ExchangeApi.SharedApi,
+                restClient.ExchangeApi.SharedApi,
                 null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
+                restClient.ExchangeApi.SharedApi,
+                restClient.ExchangeApi.SharedApi,
+                socketClient.ExchangeApi.SharedApi,
+                restClient.ExchangeApi.SharedApi,
+                socketClient.ExchangeApi.SharedApi,
                 userIdentifier,
                 config ?? new SpotUserDataTrackerConfig(),
                 exchangeParameters)

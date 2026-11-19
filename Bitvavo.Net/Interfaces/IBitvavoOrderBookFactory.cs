@@ -10,11 +10,10 @@ namespace Bitvavo.Net.Interfaces
     /// </summary>
     public interface IBitvavoOrderBookFactory
     {
-                /// <summary>
+        /// <summary>
         /// Exchange order book factory methods
         /// </summary>
         IOrderBookFactory<BitvavoOrderBookOptions> Exchange { get; }
-
 
         /// <summary>
         /// Create a SymbolOrderBook for the symbol
@@ -24,10 +23,10 @@ namespace Bitvavo.Net.Interfaces
         /// <returns></returns>
         ISymbolOrderBook Create(SharedSymbol symbol, Action<BitvavoOrderBookOptions>? options = null);
 
-                /// <summary>
+        /// <summary>
         /// Create a new Exchange local order book instance
         /// </summary>
-        ISymbolOrderBook CreateExchange(string symbol, Action<BitvavoOrderBookOptions>? options = null);
+        ISymbolOrderBook Create(string symbol, Action<BitvavoOrderBookOptions>? options = null);
 
     }
 }

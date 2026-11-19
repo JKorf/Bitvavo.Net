@@ -39,8 +39,7 @@ namespace Bitvavo.Net
         public bool CanCreateKlineTracker(SharedSymbol symbol, SharedKlineInterval interval)
         {
             var client = _serviceProvider?.GetRequiredService<IBitvavoSocketClient>() ?? new BitvavoSocketClient();
-#warning TODO
-            SubscribeKlineOptions klineOptions = new SubscribeKlineOptions(BitvavoExchange.Metadata.Id, true);
+            SubscribeKlineOptions klineOptions = client.ExchangeApi.SharedApi.SubscribeKlineOptions;
             return klineOptions.IsSupported(interval); 
         }
 
@@ -53,31 +52,16 @@ namespace Bitvavo.Net
             var restClient = _serviceProvider?.GetRequiredService<IBitvavoRestClient>() ?? new BitvavoRestClient();
             var socketClient = _serviceProvider?.GetRequiredService<IBitvavoSocketClient>() ?? new BitvavoSocketClient();
 
-#warning todo
-            throw new NotImplementedException();
-            //IKlineRestClient sharedRestClient;
-            //IKlineSocketClient sharedSocketClient;
-            //if (symbol.TradingMode == TradingMode.Spot)
-            //{
-            //    sharedRestClient = restClient.SpotApi.SharedClient;
-            //    sharedSocketClient = socketClient.SpotApi.SharedClient;
-            //}
-            //else
-            //{
-            //    sharedRestClient = restClient.FuturesApi.SharedClient;
-            //    sharedSocketClient = socketClient.FuturesApi.SharedClient;
-            //}
-
-            //return new KlineTracker(
-            //    _serviceProvider?.GetRequiredService<ILoggerFactory>().CreateLogger(restClient.Exchange),
-            //    sharedRestClient,
-            //    sharedSocketClient,
-            //    symbol,
-            //    interval,
-            //    limit,
-            //    period,
-            //    exchangeParameters
-            //    );
+            return new KlineTracker(
+                _serviceProvider?.GetRequiredService<ILoggerFactory>().CreateLogger(restClient.Exchange),
+                restClient.ExchangeApi.SharedApi,
+                socketClient.ExchangeApi.SharedApi,
+                symbol,
+                interval,
+                limit,
+                period,
+                exchangeParameters
+                );
         }
         /// <inheritdoc />
         public ITradeTracker CreateTradeTracker(SharedSymbol symbol, int? limit = null, TimeSpan? period = null, ExchangeParameters? exchangeParameters = null)
@@ -85,34 +69,17 @@ namespace Bitvavo.Net
             var restClient = _serviceProvider?.GetRequiredService<IBitvavoRestClient>() ?? new BitvavoRestClient();
             var socketClient = _serviceProvider?.GetRequiredService<IBitvavoSocketClient>() ?? new BitvavoSocketClient();
 
-#warning todo
-            throw new NotImplementedException();
-
-            //IRecentTradeRestClient? sharedRestClient;
-            //ITradeSocketClient sharedSocketClient;
-            //if (symbol.TradingMode == TradingMode.Spot)
-            //{
-            //    sharedRestClient = restClient.SpotApi.SharedClient;
-            //    sharedSocketClient = socketClient.SpotApi.SharedClient;
-            //}
-            //else
-            //{
-            //    sharedRestClient = restClient.FuturesApi.SharedClient;
-            //    sharedSocketClient = socketClient.FuturesApi.SharedClient;
-            //}
-
-            //return new TradeTracker(
-            //    _serviceProvider?.GetRequiredService<ILoggerFactory>().CreateLogger(restClient.Exchange),
-            //    sharedRestClient,
-            //    null,
-            //    sharedSocketClient,
-            //    symbol,
-            //    limit,
-            //    period,
-            //#warning check
-            //    TradeQuantityType.BaseAsset,
-            //    exchangeParameters
-            //    );
+            return new TradeTracker(
+                _serviceProvider?.GetRequiredService<ILoggerFactory>().CreateLogger(restClient.Exchange),
+                restClient.ExchangeApi.SharedApi,
+                null,
+                socketClient.ExchangeApi.SharedApi,
+                symbol,
+                limit,
+                period,
+                TradeQuantityType.BaseAsset,
+                exchangeParameters
+                );
         }
 
         /// <inheritdoc />
