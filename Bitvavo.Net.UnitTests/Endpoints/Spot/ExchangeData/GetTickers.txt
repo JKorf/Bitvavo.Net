@@ -1,0 +1,22 @@
+GET
+/v2/ticker/24h
+false
+[
+  {
+    "market": "BTC-EUR",
+    "bid": "57989",
+    "bidSize": "0.15536423",
+    "ask": "57990",
+    "askSize": "0.15520204",
+    "startTimestamp": 1735603200000,
+    "timestamp": 1735689600000,
+    "open": "57000",
+    "openTimestamp": 1735603300000,
+    "high": "59000",
+    "low": "56000",
+    "last": "5.799E+4",
+    "closeTimestamp": 1735689599000,
+    "volume": "1022.66107808",
+    "volumeQuote": "58845301.79558776"
+  }
+]

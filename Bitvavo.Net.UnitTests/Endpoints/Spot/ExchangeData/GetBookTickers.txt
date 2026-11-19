@@ -1,0 +1,19 @@
+GET
+/v2/ticker/book
+false
+[
+  {
+    "market": "BTC-EUR",
+    "bid": "57989",
+    "bidSize": "0.15536423",
+    "ask": "57990",
+    "askSize": "0.15520204"
+  },
+  {
+    "market": "ETH-EUR",
+    "bid": null,
+    "bidSize": null,
+    "ask": "1750.25",
+    "askSize": "0.25"
+  }
+]

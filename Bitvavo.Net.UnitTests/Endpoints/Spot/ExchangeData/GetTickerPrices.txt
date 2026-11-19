@@ -1,0 +1,13 @@
+GET
+/v2/ticker/price
+false
+[
+  {
+    "market": "BTC-EUR",
+    "price": "58040.1"
+  },
+  {
+    "market": "ETH-EUR",
+    "price": "1750.25"
+  }
+]

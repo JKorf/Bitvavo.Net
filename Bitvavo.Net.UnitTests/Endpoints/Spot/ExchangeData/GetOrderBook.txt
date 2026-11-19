@@ -1,0 +1,21 @@
+GET
+/v2/BTC-EUR/book
+false
+UriParams: {"depth":"1"}
+{
+  "market": "BTC-EUR",
+  "nonce": 462357092,
+  "bids": [
+    [
+      "57989",
+      "0.15"
+    ]
+  ],
+  "asks": [
+    [
+      "57990",
+      "0.25"
+    ]
+  ],
+  "timestamp": 1735689600123456700
+}

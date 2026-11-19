@@ -1,0 +1,32 @@
+GET
+/v2/report/BTC-EUR/book
+false
+UriParams: {"depth":"1"}
+{
+  "assetCode": "V15WLZJMF",
+  "assetName": "Bitcoin",
+  "priceCurrency": "EUR",
+  "priceNotation": "MONE",
+  "quantityCurrency": "V15WLZJMF",
+  "quantityNotation": "CRYP",
+  "venue": "VAVO",
+  "publicationTimestamp": "2025-01-01T00:00:00.123456000Z",
+  "submissionTimestamp": "",
+  "bids": [
+    {
+      "side": "BUYI",
+      "price": "57989",
+      "size": "0.15",
+      "numOrders": 2
+    }
+  ],
+  "asks": [
+    {
+      "side": "SELL",
+      "price": "57990",
+      "size": "0.25",
+      "numOrders": 7
+    }
+  ],
+  "tradingSystem": "CLOB"
+}

@@ -1,0 +1,8 @@
+GET
+/v2/ticker/price
+false
+UriParams: {"market":"BTC-EUR"}
+{
+  "market": "BTC-EUR",
+  "price": "58040.1"
+}

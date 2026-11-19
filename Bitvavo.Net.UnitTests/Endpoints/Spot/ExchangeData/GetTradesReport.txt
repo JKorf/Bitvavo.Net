@@ -1,0 +1,38 @@
+GET
+/v2/report/BTC-EUR/trades
+false
+UriParams: {"start":"1735689600000","end":"1735693200000","tradeIdFrom":"00000000-0000-0431-0000-0000039c5ec6","tradeIdTo":"00000000-0000-0431-0000-0000039c5ec7","limit":"2"}
+[
+  {
+    "tradeId": "00000000-0000-0431-0000-0000039c5ec6",
+    "transactTimestamp": "2025-01-01T00:00:00.123456000Z",
+    "price": "57990",
+    "missingPrice": "",
+    "quantity": "0.001",
+    "assetCode": "V15WLZJMF",
+    "assetName": "Bitcoin",
+    "priceCurrency": "EUR",
+    "priceNotation": "MONE",
+    "quantityCurrency": "V15WLZJMF",
+    "quantityNotation": "CRYP",
+    "venue": "VAVO",
+    "publicationTimestamp": "2025-01-01T00:00:00.123456000Z",
+    "publicationVenue": "VAVO"
+  },
+  {
+    "tradeId": "00000000-0000-0431-0000-0000039c5ec7",
+    "transactTimestamp": "2025-01-01T00:00:00.123456000Z",
+    "price": "",
+    "missingPrice": "PNDG",
+    "quantity": "0.005",
+    "assetCode": "V15WLZJMF",
+    "assetName": "Bitcoin",
+    "priceCurrency": "EUR",
+    "priceNotation": "MONE",
+    "quantityCurrency": "V15WLZJMF",
+    "quantityNotation": "CRYP",
+    "venue": "VAVO",
+    "publicationTimestamp": "2025-01-01T00:00:00.123456000Z",
+    "publicationVenue": "VAVO"
+  }
+]

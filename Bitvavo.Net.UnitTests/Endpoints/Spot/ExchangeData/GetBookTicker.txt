@@ -1,0 +1,11 @@
+GET
+/v2/ticker/book
+false
+UriParams: {"market":"BTC-EUR"}
+{
+  "market": "BTC-EUR",
+  "bid": "57989",
+  "bidSize": "0.15536423",
+  "ask": "57990",
+  "askSize": "0.15520204"
+}
