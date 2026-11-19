@@ -1,28 +1,21 @@
-﻿using CryptoExchange.Net.Interfaces;
-using CryptoExchange.Net.OrderBook;
+using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.SharedApis;
-using Bitvavo.Net.Interfaces;
-using Bitvavo.Net.Interfaces.Clients;
-using Bitvavo.Net.Objects.Options;
+using CryptoExchange.Net.OrderBook;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using Bitvavo.Net.Interfaces;
+using Bitvavo.Net.Interfaces.Clients;
+using Bitvavo.Net.Objects.Options;
 
 namespace Bitvavo.Net.SymbolOrderBooks
 {
     /// <summary>
     /// Bitvavo order book factory
     /// </summary>
-    public class BitvavoOrderBookFactory// : IBitvavoOrderBookFactory
+    public class BitvavoOrderBookFactory : IBitvavoOrderBookFactory
     {
         private readonly IServiceProvider _serviceProvider;
-
-        /// <inheritdoc />
-        public string ExchangeName => BitvavoExchange.ExchangeName;
-
-        /// <inheritdoc />
-        public IOrderBookFactory<BitvavoOrderBookOptions> Spot { get; }
-
 
         /// <summary>
         /// ctor
@@ -31,28 +24,35 @@ namespace Bitvavo.Net.SymbolOrderBooks
         public BitvavoOrderBookFactory(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            
+                        Exchange = new OrderBookFactory<BitvavoOrderBookOptions>(CreateExchange, Create);
 
-            Spot = new OrderBookFactory<BitvavoOrderBookOptions>(CreateSpot, Create);
         }
+
+                 /// <inheritdoc />
+        public IOrderBookFactory<BitvavoOrderBookOptions> Exchange { get; }
+
 
         /// <inheritdoc />
         public ISymbolOrderBook Create(SharedSymbol symbol, Action<BitvavoOrderBookOptions>? options = null)
         {
             var symbolName = symbol.GetSymbol(BitvavoExchange.FormatSymbol);
-            return CreateSpot(symbolName, options);
+            throw new NotImplementedException();
+
+#warning TODO
+            //if (symbol.TradingMode == TradingMode.Spot)
+            //    return CreateSpot(symbolName, options);
+
+            //return Create(symbolName, options);
         }
 
-        /// <summary>
-        /// Create a spot SymbolOrderBook
-        /// </summary>
-        /// <param name="symbol">The symbol</param>
-        /// <param name="options">Book options</param>
-        /// <returns></returns>
-        public ISymbolOrderBook CreateSpot(string symbol, Action<BitvavoOrderBookOptions>? options = null)
-            => new BitvavoSpotSymbolOrderBook(symbol,
-                                             options,
-                                             _serviceProvider.GetRequiredService<ILoggerFactory>(),
-                                             _serviceProvider.GetRequiredService<IBitvavoRestClient>(),
-                                             _serviceProvider.GetRequiredService<IBitvavoSocketClient>());
+                 /// <inheritdoc />
+        public ISymbolOrderBook CreateExchange(string symbol, Action<BitvavoOrderBookOptions>? options = null)
+            => new BitvavoExchangeSymbolOrderBook(symbol, options, 
+                                                          _serviceProvider.GetRequiredService<ILoggerFactory>(),
+                                                          _serviceProvider.GetRequiredService<IBitvavoRestClient>(),
+                                                          _serviceProvider.GetRequiredService<IBitvavoSocketClient>());
+
+
     }
 }

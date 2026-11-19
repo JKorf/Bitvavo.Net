@@ -4,9 +4,10 @@ namespace Bitvavo.Net
 {
     internal static class BitvavoErrors
     {
-        public static ErrorMapping SpotErrors { get; } = new ErrorMapping(
+        public static ErrorMapping Errors { get; } = new ErrorMapping(
             [
+#warning TODO
             ]
-        );
+            );
     }
 }

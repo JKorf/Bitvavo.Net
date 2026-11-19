@@ -1,14 +1,12 @@
-using CryptoExchange.Net.Interfaces;
-
 namespace Bitvavo.Net.Interfaces.Clients
 {
     /// <summary>
     /// Provider for clients with credentials for specific users
     /// </summary>
-    public interface IBitvavoUserClientProvider : IExchangeService
+    public interface IBitvavoUserClientProvider
     {
         /// <summary>
-        /// Initialize a client for the specified user identifier. This can be used so to initialize a client for a user so ApiCredentials do not need to be passed later.
+        /// Initialize a client for the specified user identifier. This can be used so to initialize a client for a user so credentials do not need to be passed later.
         /// </summary>
         /// <param name="userIdentifier">The identifier for the user</param>
         /// <param name="credentials">The credentials for the user</param>
@@ -21,7 +19,7 @@ namespace Bitvavo.Net.Interfaces.Clients
         public void ClearUserClients(string userIdentifier);
 
         /// <summary>
-        /// Clear all client from the cache
+        /// Clear all clients from the cache
         /// </summary>
         void Clear();
 

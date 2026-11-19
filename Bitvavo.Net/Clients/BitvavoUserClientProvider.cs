@@ -1,8 +1,11 @@
 using Bitvavo.Net.Interfaces.Clients;
 using Bitvavo.Net.Objects.Options;
-using CryptoExchange.Net.Clients;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Concurrent;
+using System.Net.Http;
+using CryptoExchange.Net.Clients;
 
 namespace Bitvavo.Net.Clients
 {
@@ -17,7 +20,7 @@ namespace Bitvavo.Net.Clients
         >, IBitvavoUserClientProvider
     {
         /// <inheritdoc />
-        public override string ExchangeName => BitvavoExchange.ExchangeName;
+        public override string ExchangeName => BitvavoExchange.Metadata.Id;
 
         /// <summary>
         /// ctor
@@ -43,9 +46,8 @@ namespace Bitvavo.Net.Clients
         /// <inheritdoc />
         protected override IBitvavoRestClient ConstructRestClient(HttpClient client, ILoggerFactory? loggerFactory, IOptions<BitvavoRestOptions> options)
             => new BitvavoRestClient(client, loggerFactory, options);
-
         /// <inheritdoc />
         protected override IBitvavoSocketClient ConstructSocketClient(ILoggerFactory? loggerFactory, IOptions<BitvavoSocketOptions> options)
-            => new BitvavoSocketClient(loggerFactory, options);
+            => new BitvavoSocketClient(options, loggerFactory);
     }
 }

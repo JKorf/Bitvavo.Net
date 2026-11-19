@@ -1,44 +1,43 @@
 using CryptoExchange.Net.Objects.Options;
 
-namespace Bitvavo.Net.Objects.Options;
-
-/// <summary>
-/// Options for the <see cref="Bitvavo.Net.Clients.BitvavoSocketClient"/>. 
-/// </summary>
-public class BitvavoSocketOptions : SocketExchangeOptions<BitvavoEnvironment, BitvavoCredentials>
+namespace Bitvavo.Net.Objects.Options
 {
     /// <summary>
-    /// Default options applied to every new <see cref="Bitvavo.Net.Clients.BitvavoSocketClient"/>.
+    /// Options for the BitvavoSocketClient
     /// </summary>
-    internal static BitvavoSocketOptions Default { get; set; } = new()
+    public class BitvavoSocketOptions : SocketExchangeOptions<BitvavoEnvironment, BitvavoCredentials>
     {
-        Environment = BitvavoEnvironment.Live,
-        SocketSubscriptionsCombineTarget = 10,
-    };
+        /// <summary>
+        /// Default options for new clients
+        /// </summary>
+        internal static BitvavoSocketOptions Default { get; set; } = new BitvavoSocketOptions()
+        {
+            Environment = BitvavoEnvironment.Live,
+            SocketSubscriptionsCombineTarget = 10
+        };
 
-    /// <summary>
-    /// Construct with defaults applied (Bitvavo Live environment).
-    /// </summary>
-    public BitvavoSocketOptions()
-    {
-        Default?.Set(this);
-    }
 
-    /// <summary>
-    /// Spot-API specific configuration.
-    /// </summary>
-    public SocketApiOptions SpotOptions { get; private set; } = new SocketApiOptions();
+        /// <summary>
+        /// ctor
+        /// </summary>
+        public BitvavoSocketOptions()
+        {
+            Default?.Set(this);
+        }
 
-    /// <summary>
-    /// Receive window in milliseconds for signed requests. Default is 10 seconds.
-    /// </summary>
-    public int ReceiveWindowMs { get; set; } = 10_000;
 
-    internal BitvavoSocketOptions Set(BitvavoSocketOptions targetOptions)
-    {
-        targetOptions = base.Set(targetOptions);
-        targetOptions.SpotOptions = SpotOptions.Set(targetOptions.SpotOptions);
-        targetOptions.ReceiveWindowMs = ReceiveWindowMs;
-        return targetOptions;
+                 /// <summary>
+        /// Exchange API options
+        /// </summary>
+        public SocketApiOptions ExchangeOptions { get; private set; } = new SocketApiOptions();
+
+
+        internal BitvavoSocketOptions Set(BitvavoSocketOptions targetOptions)
+        {
+            targetOptions = base.Set<BitvavoSocketOptions>(targetOptions);
+                        targetOptions.ExchangeOptions = ExchangeOptions.Set(targetOptions.ExchangeOptions);
+
+            return targetOptions;
+        }
     }
 }

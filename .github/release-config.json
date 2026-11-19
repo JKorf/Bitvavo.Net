@@ -1,0 +1,18 @@
+{
+  "baseBranch": "main",
+  "sdk": "11.0.100",
+  "packages": [
+    {
+      "key": "Bitvavo",
+      "project": "Bitvavo.Net/Bitvavo.Net.csproj",
+      "testProjects": [
+        "Bitvavo.Net.UnitTests/Bitvavo.Net.UnitTests.csproj"
+      ],
+      "packageId": "Bitvavo.Net",
+      "readme": "README.md",
+      "tagPrefix": "Bitvavo.Net.",
+      "releaseIntegrationTests": false,
+      "publishToGitHubPackages": true
+    }
+  ]
+}

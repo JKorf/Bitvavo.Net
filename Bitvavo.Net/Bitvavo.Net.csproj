@@ -1,57 +1,69 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
-    <LangVersion>14</LangVersion>
+    <TargetFrameworks>net8.0;net9.0;net10.0;net11.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Bitvavo.Net</RootNamespace>
-    <AssemblyName>Bitvavo.Net</AssemblyName>
-
-    <!-- NuGet metadata — JKorf-conform, handoff-ready -->
-    <PackageId>Bitvavo.Net</PackageId>
-    <!-- Pre-1.0 track until the first JKorf release (0.x = API may change without warning per SemVer). -->
-    <Version>0.4.0</Version>
-    <Authors>H.P. Gansevoort</Authors>
-    <Description>A .NET client library for the Bitvavo REST and WebSocket APIs, built on the CryptoExchange.Net base library — strongly typed models, automatic WebSocket reconnection, client-side rate limiting, and seamless integration with other CryptoExchange.Net based clients (Binance.Net, Kraken.Net, etc.).</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/xkqg/Bitvavo.Net</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/xkqg/Bitvavo.Net</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>Bitvavo Bitvavo.Net Bitvavo Client Bitvavo API CryptoCurrency CryptoCurrency Exchange CryptoExchange.Net</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <!-- 128x128 PNG rasterised from the official Bitvavo rounded-square mark (blue #0051ff)
-         downloaded from bitvavo.com/en/press. icon.svg is kept alongside as the source asset. -->
-    <PackageIcon>icon.png</PackageIcon>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <!-- DebugType=embedded (Directory.Build.props) bakes symbols into the assembly,
-         so no separate .snupkg is needed (and pushing an empty .snupkg fails with
-         HTTP 400 "The package does not contain any symbol (.pdb) files"). -->
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="CryptoExchange.Net" Version="12.0.1" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(BuildAllFrameworks)' != 'true'">
+    <TargetFrameworks>netstandard2.0;net11.0</TargetFrameworks>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>Bitvavo.Net</PackageId>
+    <Authors>JKorf</Authors>
+    <PackageVersion>0.1.0</PackageVersion>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>0.1.0</FileVersion>
+    <Description>A high-performance .NET client library for the Bitvavo REST and WebSocket APIs, providing strongly typed models, automatic WebSocket reconnection, client-side rate limiting, local order book support, and seamless integration with other CryptoExchange.Net based clients.</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>Bitvavo;Bitvavo.Net;Bitvavo Client;Bitvavo API;CryptoCurrency;CryptoCurrency Exchange;CryptoExchange.Net</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/JKorf/Bitvavo.Net.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/JKorf/Bitvavo.Net</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <NeutralLanguage>en</NeutralLanguage>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReleaseNotes>https://github.com/JKorf/Bitvavo.Net?tab=readme-ov-file#release-notes</PackageReleaseNotes>
+    <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
+  </PropertyGroup>
+  <PropertyGroup Label="AOT" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+  <PropertyGroup Label="Deterministic Build" Condition="'$(Configuration)' == 'Release'">
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  <ItemGroup Label="Deterministic Build" Condition="'$(Configuration)' == 'Release'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
-
+  <PropertyGroup>
+    <DocumentationFile>Bitvavo.Net.xml</DocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
+    <None Include="Icon\icon.png" Pack="true" PackagePath="\" />
     <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\skills\**\*" Pack="true" PackagePath="skills\" />
   </ItemGroup>
-
-  <!-- Examples is a separate project tree (Examples/QuickStart/QuickStart.csproj); exclude
-       it from the library compile + pack so its top-level Program.cs doesn't collide. -->
   <ItemGroup>
-    <Compile Remove="Examples/**" />
-    <None Remove="Examples/**" />
-    <EmbeddedResource Remove="Examples/**" />
+    <PackageReference Include="ConfigureAwaitChecker.Analyzer" Version="5.0.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="CryptoExchange.Net" Version="13.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="11.0.100">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Bitvavo.Net.Tests</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
-    </AssemblyAttribute>
+    <Folder Include="Objects\Internal\" />
   </ItemGroup>
-
 </Project>

@@ -1,16 +1,17 @@
-using Bitvavo.Net.Interfaces.Clients.SpotApi;
+using Bitvavo.Net.Interfaces.Clients.ExchangeApi;
 using CryptoExchange.Net.Interfaces.Clients;
 
-namespace Bitvavo.Net.Interfaces.Clients;
-
-/// <summary>
-/// Top-level Bitvavo WebSocket client. Bitvavo only offers spot trading, so there's only
-/// <see cref="SpotApi"/>. Mirrors <c>IKrakenSocketClient</c> / <c>IBinanceSocketClient</c>.
-/// </summary>
-public interface IBitvavoSocketClient : ISocketClient<BitvavoCredentials>
+namespace Bitvavo.Net.Interfaces.Clients
 {
     /// <summary>
-    /// Spot WebSocket API endpoints.
+    /// Client for accessing the Bitvavo websocket API
     /// </summary>
-    IBitvavoSocketClientSpotApi SpotApi { get; }
+    public interface IBitvavoSocketClient : ISocketClient<BitvavoCredentials>
+    {
+        /// <summary>
+        /// Exchange API endpoints
+        /// </summary>
+        /// <see cref="IBitvavoSocketClientExchangeApi"/>
+        public IBitvavoSocketClientExchangeApi ExchangeApi { get; }
+    }
 }

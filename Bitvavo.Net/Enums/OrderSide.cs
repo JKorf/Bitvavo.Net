@@ -1,23 +1,24 @@
-// Copyright (c) Bitvavo.Net contributors. Licensed under the MIT License.
-
-using System.Text.Json.Serialization;
 using CryptoExchange.Net.Attributes;
 using CryptoExchange.Net.Converters.SystemTextJson;
+using System.Text.Json.Serialization;
 
-namespace Bitvavo.Net.Enums;
-
-/// <summary>
-/// Order Side.
-/// </summary>
-[JsonConverter(typeof(EnumConverter<OrderSide>))]
-public enum OrderSide
+namespace Bitvavo.Net.Enums
 {
     /// <summary>
-    /// ["<c>buy</c>"] Buy.
+    /// Order side
     /// </summary>
-    [Map("buy")] Buy = 0,
-    /// <summary>
-    /// ["<c>sell</c>"] Sell.
-    /// </summary>
-    [Map("sell")] Sell = 1,
+    [JsonConverter(typeof(EnumConverter<OrderSide>))]
+    public enum OrderSide
+    {
+        /// <summary>
+        /// ["<c>buy</c>"] Buy
+        /// </summary>
+        [Map("buy")]
+        Buy,
+        /// <summary>
+        /// ["<c>sell</c>"] Sell
+        /// </summary>
+        [Map("sell")]
+        Sell,
+    }
 }

@@ -1,177 +1,214 @@
-# Bitvavo.Net
+# ![Bitvavo.Net](https://raw.githubusercontent.com/JKorf/Bitvavo.Net/main/Bitvavo.Net/Icon/icon.png) Bitvavo.Net  
 
-[![NuGet version](https://img.shields.io/nuget/v/Bitvavo.Net?style=for-the-badge)](https://www.nuget.org/packages/Bitvavo.Net) [![NuGet downloads](https://img.shields.io/nuget/dt/Bitvavo.Net?style=for-the-badge)](https://www.nuget.org/packages/Bitvavo.Net) ![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)
+[![.NET](https://img.shields.io/github/actions/workflow/status/JKorf/Bitvavo.Net/dotnet.yml?style=for-the-badge)](https://github.com/JKorf/Bitvavo.Net/actions/workflows/dotnet.yml) ![License](https://img.shields.io/github/license/JKorf/Bitvavo.Net?style=for-the-badge)
+![Since](https://img.shields.io/badge/since-2026-brightgreen?style=for-the-badge)
 
-> The NuGet badges show "not found" until the first package publish — that is expected for this pre-release.
+[![Docs](https://img.shields.io/badge/Docs-Bitvavo.Net-1b7f50?style=for-the-badge)](https://cryptoexchange.jkorf.dev/docs/exchange-clients?library=Bitvavo.Net)
 
-A high-performance .NET client library for the [Bitvavo](https://bitvavo.com) REST and WebSocket APIs, built on the [CryptoExchange.Net](https://github.com/JKorf/CryptoExchange.Net) base library.
+Bitvavo.Net is a stronly typed client library for accessing the [Bitvavo REST and Websocket API](Bitvavo). 
 
-This package is a community contribution, intended for adoption into the JKorf exchange-clients ecosystem alongside `Binance.Net`, `Kraken.Net`, `Bybit.Net`, etc. — same API patterns, same `HttpResult<T>` discipline, same options shape, same DI extension surface.
+## Features
+* Response data is mapped to descriptive models
+* Input parameters and response values are mapped to discriptive enum values where possible
+* High performance
+* Automatic websocket (re)connection management 
+* Client side rate limiting 
+* Client side order book implementation
+* Support for managing different accounts
+* Extensive logging
+* Support for different environments
+* Easy integration with other exchange clients based on the CryptoExchange.Net base library
+* Native AOT support
 
-The package targets `net8.0;net9.0;net10.0` and is built on `CryptoExchange.Net 11.1.1`.
+## Documentation
 
-For information on the clients, dependency injection, response processing, and the shared interfaces, see the [CryptoExchange.Net documentation](https://cryptoexchange.jkorf.dev).
+The [Bitvavo.Net documentation](https://cryptoexchange.jkorf.dev/docs/exchange-clients?library=Bitvavo.Net) is the main resource for installing, configuring, and using the library.
 
-## Status
+| Resource | Description |
+|--|--|
+| [Client guide](https://cryptoexchange.jkorf.dev/docs/exchange-clients?library=Bitvavo.Net) | Installation, REST and WebSocket clients, authentication, dependency injection, error handling, and advanced features |
+| [Examples](https://cryptoexchange.jkorf.dev/docs/exchange-clients/examples?library=Bitvavo.Net) | Common REST and WebSocket operations |
+| [API reference](https://cryptoexchange.jkorf.dev/docs/exchange-clients/reference?library=Bitvavo.Net) | Client interfaces, methods, and properties |
+| [Shared API guide](https://cryptoexchange.jkorf.dev/docs/shared-api) | Common interfaces and models for working with multiple exchanges |
 
-`v0.3.0-preview`:
+## Supported Frameworks
+The library is targeting both `.NET Standard 2.0` and `.NET Standard 2.1` for optimal compatibility, as well as the latest dotnet versions to use the latest framework features.
 
-- ✅ Public REST: `GetMarketsAsync`, `GetKlinesAsync`, `GetServerTimeAsync`, `GetAssetsAsync`, `GetTickerPricesAsync`, `GetTickerBookAsync`, `GetTicker24hAsync`, `GetOrderBookAsync`, `GetPublicTradesAsync`
-- ✅ Public WebSocket: candles + trades subscriptions
-- ✅ Signed REST (HMAC-SHA256) — Account (info / balances / fees), Trading (place / update / get / cancel / batch-cancel / open / history / fills), Funding (deposit address + history, withdrawal history, **withdraw POST**)
-- ✅ Authenticated WebSocket: private `account` channel — subscribe to order-state + fill events
+|.NET implementation|Version Support|
+|--|--|
+|.NET Core|`2.0` and higher|
+|.NET Framework|`4.6.1` and higher|
+|Mono|`5.4` and higher|
+|Xamarin.iOS|`10.14` and higher|
+|Xamarin.Android|`8.0` and higher|
+|UWP|`10.0.16299` and higher|
+|Unity|`2018.1` and higher|
 
-## Supported features
+## Install the library
 
-### Spot REST
-|API|Supported|Location|
-|--|--:|--|
-|Public market data|✅|`restClient.SpotApi.ExchangeData`|
-|Account|✅|`restClient.SpotApi.Account`|
-|Trading|✅|`restClient.SpotApi.Trading`|
-|Funding|✅|`restClient.SpotApi.Account`|
-|Report (MiCA)|✅|`restClient.SpotApi.Report`|
-|Institutional / subaccounts|✅|`restClient.SpotApi.Institutional`|
+### NuGet 
+[![NuGet version](https://img.shields.io/nuget/v/Bitvavo.net.svg?style=for-the-badge)](https://www.nuget.org/packages/Bitvavo.Net)  [![Nuget downloads](https://img.shields.io/nuget/dt/Bitvavo.Net.svg?style=for-the-badge)](https://www.nuget.org/packages/Bitvavo.Net)
 
-### Spot WebSocket
-|API|Supported|Location|
-|--|--:|--|
-|Public streams|✅|`socketClient.SpotApi.ExchangeData`|
-|Private account channel|✅|`socketClient.SpotApi.Account`|
+	dotnet add package Bitvavo.Net
+	
+### GitHub packages
+Bitvavo.Net is available on [GitHub packages](https://github.com/JKorf/Bitvavo.Net/pkgs/nuget/Bitvavo.Net). You'll need to add `https://nuget.pkg.github.com/JKorf/index.json` as a NuGet package source.
 
-### CryptoExchange.Net Shared interfaces
-|API|Supported|Location|
-|--|--:|--|
-|Shared REST interfaces|✅|`restClient.SpotApi.SharedClient`|
-|Shared socket interfaces|✅|`socketClient.SpotApi.SharedClient`|
+### Download release
+[![GitHub Release](https://img.shields.io/github/v/release/JKorf/Bitvavo.Net?style=for-the-badge&label=GitHub)](https://github.com/JKorf/Bitvavo.Net/releases)
 
-The package implements the full CryptoExchange.Net Shared-interface layer — 14 REST
-shared interfaces and 4 socket shared interfaces — so Bitvavo can be driven through
-the same exchange-agnostic abstractions as every other CryptoExchange.Net client.
+The NuGet package files are added along side the source with the latest GitHub release which can found [here](https://github.com/JKorf/Bitvavo.Net/releases).
 
-## Install
-
-```bash
-dotnet add package Bitvavo.Net --prerelease
+## How to use
+*Basic request:* 
+```csharp
+// Get the ETH/USDT ticker via rest request
+var restClient = new BitvavoRestClient();
+var tickerResult = await restClient.SpotApi.ExchangeData.GetTickerAsync("ETHUSDT");
+var lastPrice = tickerResult.Data.LastPrice;
 ```
 
-## Quick start — REST
+*Place order:*
+```csharp
+var restClient = new BitvavoRestClient(opts => {
+	opts.ApiCredentials = new BitvavoCredentials("APIKEY", "APISECRET");
+});
+
+// Place Limit order to go long 0.1 for ETH at 2000
+var orderResult = await restClient.UsdtFuturesApi.Trading.PlaceOrderAsync(
+    "ETH_USDT",
+    OrderSide.Buy,
+    OrderType.Limit,
+    0.1m,
+    PositionSide.Long,
+    2000
+    );
+```
+
+*WebSocket subscription:* 
+```csharp
+// Subscribe to ETH/USDT ticker updates via the websocket API
+var socketClient = new BitvavoSocketClient();
+var tickerSubscriptionResult = socketClient.SpotApi.SubscribeToTickerUpdatesAsync("ETHUSDT", (update) => 
+{
+  var lastPrice = update.Data.LastPrice;
+});
+```
+
+For more examples and explanations, continue with the [Bitvavo.Net documentation](https://cryptoexchange.jkorf.dev/docs/exchange-clients?library=Bitvavo.Net) or browse the [compilable repository examples](https://github.com/JKorf/Bitvavo.Net/tree/main/Examples).
+
+## AI / LLM documentation
+
+- [Consumer skill](.claude/skills/Bitvavo-net/SKILL.md): library usage and API references.
+- [Repository development](AGENTS.md): implementation and validation instructions.
+- [Documentation index](llms.txt): local discovery links.
+- [Compilable examples](Examples/ai-friendly/): complete consumer programs.
+
+## Shared / unified API
+
+The CryptoExchange.Net [Shared API V2](https://cryptoexchange.jkorf.dev/docs/shared-api) provides exchange-agnostic interfaces and models for common operations such as retrieving tickers, order books and balances, placing orders, and subscribing to market updates.
+
+V2 uses a strict interface per capability. The `SharedApi` property on each Bitvavo API surface therefore exposes only the operations or subscriptions that surface actually supports. `IBitvavoSharedApiClient` groups the `SpotRest`, `FuturesRest`, `SpotSocket`, and `FuturesSocket` surfaces for dependency injection and runtime capability lookup.
+
+### Access a strict capability
 
 ```csharp
+using CryptoExchange.Net.SharedApis;
 using Bitvavo.Net.Clients;
 
-using var client = new BitvavoRestClient();
+using var restClient = new TP_TP_EXCHANGERestClient();
+IGetTickerRest tickerClient = restClient.SpotApi.SharedApi;
 
-var markets = await client.SpotApi.ExchangeData.GetMarketsAsync();
-if (!markets.Success)
+var symbol = new SharedSymbol(TradingMode.Spot, "ETH", "USDT");
+var result = await tickerClient.GetTickerAsync(
+    new GetTickerRequest(symbol));
+
+if (!result.Success)
 {
-    Console.WriteLine($"Failed: {markets.Error}");
+    Console.WriteLine(result.Error);
     return;
 }
 
-foreach (var m in markets.Data.Take(5))
-{
-    Console.WriteLine($"{m.Market}  status={m.Status}  pricePrecision={m.PricePrecision}");
-}
+Console.WriteLine(result.Data.LastPrice);
 ```
 
-Output:
-```
-ETH-EUR  status=trading  pricePrecision=5
-BTC-EUR  status=trading  pricePrecision=2
-...
-```
+The request and response models belong to `CryptoExchange.Net.SharedApis`, so the same operation can accept another exchange's `IGetTickerRest` implementation. When using dependency injection, inject `IBitvavoSharedApiClient` to access all Bitvavo Shared API surfaces or inject a capability such as `IGetTickerRest` directly. Use `GetCapability` on the aggregate when the operation, transport, or trading mode is selected at runtime.
 
-## Quick start — WebSocket
 
-```csharp
-using var socketClient = new BitvavoSocketClient();
-var sub = await socketClient.SpotApi.ExchangeData.SubscribeToKlineUpdatesAsync(
-    "ETH-EUR", KlineInterval.OneMinute,
-    update => Console.WriteLine($"{update.Data.Market}  close={update.Data.ClosePrice}"));
-```
+### Supported shared interfaces
 
-## Quick start — signed REST
+| API | Type | Supported interfaces |
+|--|--|--|
+| TODO | REST | `IAssetsRestClient`,.. 
 
-```csharp
-using Bitvavo.Net;
-using Bitvavo.Net.Clients;
-using Bitvavo.Net.Enums;
-using Bitvavo.Net.Objects.Models.Spot;
+## CryptoExchange.Net
+Bitvavo.Net is based on the [CryptoExchange.Net](https://github.com/JKorf/CryptoExchange.Net) base library. Other exchange API implementations based on the CryptoExchange.Net base library are available and follow the same logic.
 
-using var client = new BitvavoRestClient(opts =>
-    opts.ApiCredentials = new BitvavoCredentials(apiKey, apiSecret));
+CryptoExchange.Net also provides [shared access to different exchange APIs](https://cryptoexchange.jkorf.dev/docs/shared-api).
 
-// Account info + balances
-var info = await client.SpotApi.Account.GetAccountInfoAsync();
-var balances = await client.SpotApi.Account.GetBalancesAsync();
+|Exchange|Repository|Nuget|
+|--|--|--|
+|Aster|[JKorf/Aster.Net](https://github.com/JKorf/Aster.Net)|[![Nuget version](https://img.shields.io/nuget/v/JKorf.Aster.net.svg?style=flat-square)](https://www.nuget.org/packages/JKorf.Aster.Net)|
+|Binance|[JKorf/Binance.Net](https://github.com/JKorf/Binance.Net)|[![Nuget version](https://img.shields.io/nuget/v/Binance.net.svg?style=flat-square)](https://www.nuget.org/packages/Binance.Net)|
+|BingX|[JKorf/BingX.Net](https://github.com/JKorf/BingX.Net)|[![Nuget version](https://img.shields.io/nuget/v/JK.BingX.net.svg?style=flat-square)](https://www.nuget.org/packages/JK.BingX.Net)|
+|Bitfinex|[JKorf/Bitfinex.Net](https://github.com/JKorf/Bitfinex.Net)|[![Nuget version](https://img.shields.io/nuget/v/Bitfinex.net.svg?style=flat-square)](https://www.nuget.org/packages/Bitfinex.Net)|
+|Bitget|[JKorf/Bitget.Net](https://github.com/JKorf/Bitget.Net)|[![Nuget version](https://img.shields.io/nuget/v/JK.Bitget.net.svg?style=flat-square)](https://www.nuget.org/packages/JK.Bitget.Net)|
+|BitMart|[JKorf/BitMart.Net](https://github.com/JKorf/BitMart.Net)|[![Nuget version](https://img.shields.io/nuget/v/BitMart.net.svg?style=flat-square)](https://www.nuget.org/packages/BitMart.Net)|
+|BitMEX|[JKorf/BitMEX.Net](https://github.com/JKorf/BitMEX.Net)|[![Nuget version](https://img.shields.io/nuget/v/JKorf.BitMEX.net.svg?style=flat-square)](https://www.nuget.org/packages/JKorf.BitMEX.Net)|
+|Bitstamp|[JKorf/Bitstamp.Net](https://github.com/JKorf/Bitstamp.Net)|[![Nuget version](https://img.shields.io/nuget/v/Bitstamp.Net.svg?style=flat-square)](https://www.nuget.org/packages/Bitstamp.Net)|
+|Bitunix|[JKorf/Bitunix.Net](https://github.com/JKorf/Bitunix.Net)|[![Nuget version](https://img.shields.io/nuget/v/Bitunix.Net.svg?style=flat-square)](https://www.nuget.org/packages/Bitunix.Net)|
+|BloFin|[JKorf/BloFin.Net](https://github.com/JKorf/BloFin.Net)|[![Nuget version](https://img.shields.io/nuget/v/BloFin.net.svg?style=flat-square)](https://www.nuget.org/packages/BloFin.Net)|
+|Bybit|[JKorf/Bybit.Net](https://github.com/JKorf/Bybit.Net)|[![Nuget version](https://img.shields.io/nuget/v/Bybit.net.svg?style=flat-square)](https://www.nuget.org/packages/Bybit.Net)|
+|Coinbase|[JKorf/Coinbase.Net](https://github.com/JKorf/Coinbase.Net)|[![Nuget version](https://img.shields.io/nuget/v/JKorf.Coinbase.net.svg?style=flat-square)](https://www.nuget.org/packages/JKorf.Coinbase.Net)|
+|CoinEx|[JKorf/CoinEx.Net](https://github.com/JKorf/CoinEx.Net)|[![Nuget version](https://img.shields.io/nuget/v/CoinEx.net.svg?style=flat-square)](https://www.nuget.org/packages/CoinEx.Net)|
+|CoinGecko|[JKorf/CoinGecko.Net](https://github.com/JKorf/CoinGecko.Net)|[![Nuget version](https://img.shields.io/nuget/v/CoinGecko.net.svg?style=flat-square)](https://www.nuget.org/packages/CoinGecko.Net)|
+|CoinW|[JKorf/CoinW.Net](https://github.com/JKorf/CoinW.Net)|[![Nuget version](https://img.shields.io/nuget/v/CoinW.net.svg?style=flat-square)](https://www.nuget.org/packages/CoinW.Net)|
+|Crypto.com|[JKorf/CryptoCom.Net](https://github.com/JKorf/CryptoCom.Net)|[![Nuget version](https://img.shields.io/nuget/v/CryptoCom.net.svg?style=flat-square)](https://www.nuget.org/packages/CryptoCom.Net)|
+|DeepCoin|[JKorf/DeepCoin.Net](https://github.com/JKorf/DeepCoin.Net)|[![Nuget version](https://img.shields.io/nuget/v/DeepCoin.net.svg?style=flat-square)](https://www.nuget.org/packages/DeepCoin.Net)|
+|Gate.io|[JKorf/GateIo.Net](https://github.com/JKorf/GateIo.Net)|[![Nuget version](https://img.shields.io/nuget/v/GateIo.net.svg?style=flat-square)](https://www.nuget.org/packages/GateIo.Net)|
+|HTX|[JKorf/HTX.Net](https://github.com/JKorf/HTX.Net)|[![Nuget version](https://img.shields.io/nuget/v/JKorf.HTX.net.svg?style=flat-square)](https://www.nuget.org/packages/Jkorf.HTX.Net)|
+|HyperLiquid|[JKorf/HyperLiquid.Net](https://github.com/JKorf/HyperLiquid.Net)|[![Nuget version](https://img.shields.io/nuget/v/HyperLiquid.Net.svg?style=flat-square)](https://www.nuget.org/packages/HyperLiquid.Net)|
+|Kraken|[JKorf/Kraken.Net](https://github.com/JKorf/Kraken.Net)|[![Nuget version](https://img.shields.io/nuget/v/KrakenExchange.net.svg?style=flat-square)](https://www.nuget.org/packages/KrakenExchange.Net)|
+|Kucoin|[JKorf/Kucoin.Net](https://github.com/JKorf/Kucoin.Net)|[![Nuget version](https://img.shields.io/nuget/v/Kucoin.net.svg?style=flat-square)](https://www.nuget.org/packages/Kucoin.Net)|
+|LBank|[JKorf/LBank.Net](https://github.com/JKorf/LBank.Net)|[![Nuget version](https://img.shields.io/nuget/v/LBank.net.svg?style=flat-square)](https://www.nuget.org/packages/LBank.Net)|
+|Lighter|[JKorf/Lighter.Net](https://github.com/JKorf/Lighter.Net)|[![Nuget version](https://img.shields.io/nuget/v/JKorf.Lighter.net.svg?style=flat-square)](https://www.nuget.org/packages/JKorf.Lighter.Net)|
+|Mexc|[JKorf/Mexc.Net](https://github.com/JKorf/Mexc.Net)|[![Nuget version](https://img.shields.io/nuget/v/JK.Mexc.net.svg?style=flat-square)](https://www.nuget.org/packages/JK.Mexc.Net)|
+|OKX|[JKorf/OKX.Net](https://github.com/JKorf/OKX.Net)|[![Nuget version](https://img.shields.io/nuget/v/JK.OKX.net.svg?style=flat-square)](https://www.nuget.org/packages/JK.OKX.Net)|
+|Pionex|[JKorf/Pionex.Net](https://github.com/JKorf/Pionex.Net)|[![Nuget version](https://img.shields.io/nuget/v/Pionex.net.svg?style=flat-square)](https://www.nuget.org/packages/Pionex.Net)|
+|Polymarket|[JKorf/Polymarket.Net](https://github.com/JKorf/Polymarket.Net)|[![Nuget version](https://img.shields.io/nuget/v/Polymarket.net.svg?style=flat-square)](https://www.nuget.org/packages/Polymarket.Net)|
+|Tapbit|[JKorf/Tapbit.Net](https://github.com/JKorf/Tapbit.Net)|[![Nuget version](https://img.shields.io/nuget/v/Tapbit.net.svg?style=flat-square)](https://www.nuget.org/packages/Tapbit.Net)|
+|Toobit|[JKorf/Toobit.Net](https://github.com/JKorf/Toobit.Net)|[![Nuget version](https://img.shields.io/nuget/v/Toobit.net.svg?style=flat-square)](https://www.nuget.org/packages/Toobit.Net)|
+|Upbit|[JKorf/Upbit.Net](https://github.com/JKorf/Upbit.Net)|[![Nuget version](https://img.shields.io/nuget/v/JKorf.Upbit.net.svg?style=flat-square)](https://www.nuget.org/packages/JKorf.Upbit.Net)|
+|Weex|[JKorf/Weex.Net](https://github.com/JKorf/Weex.Net)|[![Nuget version](https://img.shields.io/nuget/v/Weex.net.svg?style=flat-square)](https://www.nuget.org/packages/Weex.Net)|
+|WhiteBit|[JKorf/WhiteBit.Net](https://github.com/JKorf/WhiteBit.Net)|[![Nuget version](https://img.shields.io/nuget/v/WhiteBit.net.svg?style=flat-square)](https://www.nuget.org/packages/WhiteBit.Net)|
+|XT|[JKorf/XT.Net](https://github.com/JKorf/XT.Net)|[![Nuget version](https://img.shields.io/nuget/v/XT.net.svg?style=flat-square)](https://www.nuget.org/packages/XT.Net)|
 
-// Place a limit buy order
-var order = await client.SpotApi.Trading.PlaceOrderAsync(
-    new BitvavoPlaceOrderRequest(
-        "ETH-EUR", OrderSide.Buy, OrderType.Limit, OperatorId: 1,
-        Amount: 0.5m, Price: 1500m, TimeInForce: TimeInForce.GoodTillCanceled));
-```
+When using multiple of these API's the [CryptoClients.Net](https://github.com/JKorf/CryptoClients.Net) package can be used which combines this and the other packages and allows easy access to all exchange API's.
 
-## Quick start — authenticated WebSocket
+## Discord
+[![Nuget version](https://img.shields.io/discord/847020490588422145?style=for-the-badge)](https://discord.gg/MSpeEtSY8t)  
+A Discord server is available [here](https://discord.gg/MSpeEtSY8t). For discussion and/or questions around the CryptoExchange.Net and implementation libraries, feel free to join.
 
-```csharp
-using var client = new BitvavoSocketClient(opts =>
-    opts.ApiCredentials = new BitvavoCredentials(apiKey, apiSecret));
+## Supported functionality
 
-var sub = await client.SpotApi.Account.SubscribeToOrderUpdatesAsync(
-    new[] { "ETH-EUR" },
-    evt => Console.WriteLine($"order {evt.Data.OrderId} → {evt.Data.Status}"));
-```
+### Spot
+|API|Supported|Location|
+|--|--:|--|
+|TODO|✓|`restClient.SpotApi.Account`|
+### Futures
+|API|Supported|Location|
+|--|--:|--|
+|TODO|✓|`restClient.FuturesApi.ExchangeData`|
 
-The framework runs Bitvavo's HMAC-SHA256 auth handshake automatically before
-dispatching the first authenticated subscription on the connection.
+## Support the project
+Any support is greatly appreciated.
 
-## Smoke testing
+### Donate
+Make a one time donation in a crypto currency of your choice. If you prefer to donate in a different currency or network send me a message.
+   
+**USDT (TRX)**  TKigKeJPXZYyMVDgMyXxMf17MWYia92Rjd 
 
-The `BitvavoSmoke` exe (in `Application/BitvavoSmoke`) exercises every layer of the
-package out-of-the-box:
+### Sponsor
+Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
-```bash
-dotnet run --project Application/BitvavoSmoke                    # REST (markets + candles)
-dotnet run --project Application/BitvavoSmoke -- --socket        # + public WebSocket subs
-dotnet run --project Application/BitvavoSmoke -- --signed        # + signed REST: account / balances / order history
-dotnet run --project Application/BitvavoSmoke -- --signed-ws     # + signed WebSocket: ETH-EUR private order/fill stream
-```
-
-The `--signed` and `--signed-ws` paths expect `BITVAVO_API_KEY` +
-`BITVAVO_API_SECRET` environment variables. The API key only needs the `view`
-capability for the smoke; trading + withdraw scopes are NOT exercised. **Never
-check credentials into git.**
-
-## Conventions
-
-This library follows JKorf's exchange-client conventions exactly:
-
-- **Result type**: every public method returns `Task<HttpResult<T>>` (or `Task<CallResult<UpdateSubscription>>` for sockets) — never throws on protocol errors.
-- **Options**: configure via `new BitvavoRestClient(opts => { opts.RequestTimeout = ...; })`.
-- **DI**: register via `services.AddBitvavo()` — pooled `HttpClient`, transient REST client, singleton WebSocket client. Optional `Action<BitvavoRestOptions>` / `Action<BitvavoSocketOptions>` configurators.
-- **Naming**: `Bitvavo*RestClient*SpotApi*ExchangeData/Trading/Account` mirrors `Binance.Net` etc.
-
-## Bitvavo API
-
-- Bitvavo REST docs: https://docs.bitvavo.com/
-- Bitvavo WebSocket docs: https://docs.bitvavo.com/#tag/WebSocket-Channels
-- Public REST base URL: `https://api.bitvavo.com`
-- Public WebSocket: `wss://ws.bitvavo.com/v2/`
-- Rate limit (public): 1000 weight / minute / IP
-
-## Building
-
-```bash
-dotnet build Bitvavo.Net.csproj
-dotnet test  Bitvavo.Net.Tests
-```
-
-## Contributing
-
-Issues + PRs welcome. The eventual home for this package is `JKorf/Bitvavo.Net` — once the read-only surface is feature-complete and battle-tested, it will be submitted for adoption into JKorf's organisation.
-
-## License
-
-MIT
+## Release notes
