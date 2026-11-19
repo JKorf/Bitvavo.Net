@@ -1,0 +1,19 @@
+> {"action":"authenticate","key":"123","requestId":"|authId|"}
+< {"event":"authenticate","requestId":|authId|}
+> {"action":"privateGetWithdrawalHistory","requestId":"|id|","symbol":"XRP","start":1735689600000,"end":1735776000000,"limit":2}
+= 
+{
+  "action": "privateGetWithdrawalHistory",
+  "requestId": |id|,
+  "response": [
+    {
+      "timestamp": 1735693200000,
+      "symbol": "XRP",
+      "amount": "12.49",
+      "address": "SampleWithdrawalAddress",
+      "paymentId": "10002653",
+      "fee": "0.01",
+      "status": "awaiting_processing"
+    }
+  ]
+}

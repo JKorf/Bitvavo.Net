@@ -1,0 +1,9 @@
+> {"action":"getTime","requestId":"|id|"}
+= 
+{
+  "action": "getTime",
+  "requestId": |id|,
+  "response": {
+    "time": 1735689600000
+  }
+}

@@ -1,0 +1,15 @@
+> {"action":"authenticate","key":"123","requestId":"|authId|"}
+< {"event":"authenticate","requestId":|authId|}
+> {"action":"privateGetBalance","requestId":"|id|","symbol":"BTC"}
+= 
+{
+  "action": "privateGetBalance",
+  "requestId": |id|,
+  "response": [
+    {
+      "symbol": "BTC",
+      "available": "1.5",
+      "inOrder": "0.25"
+    }
+  ]
+}

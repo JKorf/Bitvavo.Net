@@ -26,7 +26,12 @@ namespace Bitvavo.Net.Objects.Options
         }
 
 
-                 /// <summary>
+        /// <summary>
+        /// Default operator identifier for trading requests that require one
+        /// </summary>
+        public long OperatorId { get; set; }
+
+        /// <summary>
         /// Exchange API options
         /// </summary>
         public SocketApiOptions ExchangeOptions { get; private set; } = new SocketApiOptions();
@@ -35,7 +40,8 @@ namespace Bitvavo.Net.Objects.Options
         internal BitvavoSocketOptions Set(BitvavoSocketOptions targetOptions)
         {
             targetOptions = base.Set<BitvavoSocketOptions>(targetOptions);
-                        targetOptions.ExchangeOptions = ExchangeOptions.Set(targetOptions.ExchangeOptions);
+            targetOptions.ExchangeOptions = ExchangeOptions.Set(targetOptions.ExchangeOptions);
+            targetOptions.OperatorId = OperatorId;
 
             return targetOptions;
         }

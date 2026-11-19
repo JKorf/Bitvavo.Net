@@ -1,0 +1,15 @@
+> {"action":"authenticate","key":"123","requestId":"|authId|"}
+< {"event":"authenticate","requestId":|authId|}
+> {"action":"privateGetAccount","requestId":"|id|"}
+= 
+{
+  "action": "privateGetAccount",
+  "requestId": |id|,
+  "response": {
+    "fees": {
+      "maker": "0.0015",
+      "taker": "0.0025",
+      "volume": "10000.00"
+    }
+  }
+}

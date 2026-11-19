@@ -15,6 +15,68 @@ namespace Bitvavo.Net.Interfaces.Clients.ExchangeApi
     public interface IBitvavoSocketClientExchangeApiExchangeData
     {
         /// <summary>
+        /// Get the current Bitvavo server time
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/get-server-time/" /><br />
+        /// Endpoint:<br />
+        /// getTime
+        /// </para>
+        /// </summary>
+        /// <param name="ct">Cancellation token</param>
+        Task<QueryResult<DateTime>> GetServerTimeAsync(CancellationToken ct = default);
+
+        /// <summary>
+        /// Get trading rules and status for a symbol
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/get-markets/" /><br />
+        /// Endpoint:<br />
+        /// getMarkets
+        /// </para>
+        /// </summary>
+        /// <param name="symbol">["<c>market</c>"] Trading symbol</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<QueryResult<BitvavoSymbol>> GetSymbolAsync(string symbol, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get trading rules and status for all symbols
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/get-markets/" /><br />
+        /// Endpoint:<br />
+        /// getMarkets
+        /// </para>
+        /// </summary>
+        /// <param name="ct">Cancellation token</param>
+        Task<QueryResult<BitvavoSymbol[]>> GetSymbolsAsync(CancellationToken ct = default);
+
+        /// <summary>
+        /// Get deposit and withdrawal information for an asset
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/get-asset-data/" /><br />
+        /// Endpoint:<br />
+        /// getAssets
+        /// </para>
+        /// </summary>
+        /// <param name="asset">["<c>symbol</c>"] Asset symbol</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<QueryResult<BitvavoAsset>> GetAssetAsync(string asset, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get deposit and withdrawal information for all assets
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/get-asset-data/" /><br />
+        /// Endpoint:<br />
+        /// getAssets
+        /// </para>
+        /// </summary>
+        /// <param name="ct">Cancellation token</param>
+        Task<QueryResult<BitvavoAsset[]>> GetAssetsAsync(CancellationToken ct = default);
+
+        /// <summary>
         /// Get the order book for a symbol
         /// <para>
         /// Docs:<br />

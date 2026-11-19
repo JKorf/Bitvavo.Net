@@ -1,0 +1,30 @@
+> {"action":"getMarkets","requestId":"|id|","market":"BTC-EUR"}
+= 
+{
+  "action": "getMarkets",
+  "requestId": |id|,
+  "response": {
+    "market": "BTC-EUR",
+    "status": "trading",
+    "base": "BTC",
+    "quote": "EUR",
+    "pricePrecision": null,
+    "minOrderInBaseAsset": "0.00008493",
+    "minOrderInQuoteAsset": "5.00",
+    "maxOrderInBaseAsset": "16985.41514115",
+    "maxOrderInQuoteAsset": "1000000000.00",
+    "quantityDecimals": 8,
+    "notionalDecimals": 2,
+    "tickSize": "1.00",
+    "maxOpenOrders": 400,
+    "feeCategory": "A",
+    "orderTypes": [
+      "market",
+      "limit",
+      "stopLoss",
+      "stopLossLimit",
+      "takeProfit",
+      "takeProfitLimit"
+    ]
+  }
+}

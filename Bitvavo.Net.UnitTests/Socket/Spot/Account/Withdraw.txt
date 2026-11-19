@@ -1,0 +1,13 @@
+> {"action":"authenticate","key":"123","requestId":"|authId|"}
+< {"event":"authenticate","requestId":|authId|}
+> {"action":"privateWithdrawAssets","requestId":"|id|","symbol":"XRP","address":"SampleWithdrawalAddress","amount":"12.5","paymentId":"10002653","addWithdrawalFee":true}
+= 
+{
+  "action": "privateWithdrawAssets",
+  "requestId": |id|,
+  "response": {
+    "success": true,
+    "symbol": "XRP",
+    "amount": "12.51"
+  }
+}

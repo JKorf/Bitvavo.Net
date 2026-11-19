@@ -1,0 +1,29 @@
+> {"action":"authenticate","key":"123","requestId":"|authId|"}
+< {"event":"authenticate","requestId":|authId|}
+> {"action":"privateGetTransactionHistory","requestId":"|id|","fromDate":1735689600000,"toDate":1735776000000,"page":2,"maxItems":5,"type":"fixed_staking"}
+= 
+{
+  "action": "privateGetTransactionHistory",
+  "requestId": |id|,
+  "response": {
+    "items": [
+      {
+        "transactionId": "sample-id",
+        "executedAt": "2025-01-01T01:00:00Z",
+        "type": "fixed_staking",
+        "priceCurrency": "EUR",
+        "priceAmount": "0.25",
+        "sentCurrency": null,
+        "sentAmount": null,
+        "receivedCurrency": "BTC",
+        "receivedAmount": "0.0001",
+        "feesCurrency": null,
+        "feesAmount": null,
+        "address": null
+      }
+    ],
+    "currentPage": 2,
+    "totalPages": 3,
+    "maxItems": 5
+  }
+}

@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Bitvavo.Net.Objects.Internal
 {
-    internal class BitvavoSubscriptionResponse
+    internal class BitvavoSocketEventResponse
     {
         [JsonPropertyName("event")]
         public string? Event { get; set; }

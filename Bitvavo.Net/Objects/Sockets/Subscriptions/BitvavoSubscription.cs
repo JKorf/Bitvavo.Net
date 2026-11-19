@@ -46,7 +46,7 @@ namespace Bitvavo.Net.Objects.Sockets.Subscriptions
             var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
             parameters.Add("action", action);
             parameters.Add("channels", new[] { _channel });
-            return new BitvavoSubscriptionQuery(_client, parameters, expectedEvent);
+            return new BitvavoSocketEventQuery(_client, parameters, expectedEvent);
         }
 
         private CallResult HandleMessage(SocketConnection connection, DateTime receiveTime, string? originalData, T message)

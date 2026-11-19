@@ -26,6 +26,62 @@ namespace Bitvavo.Net.Clients.ExchangeApi
             _baseClient = baseClient;
         }
 
+        #region Get Server Time
+
+        /// <inheritdoc />
+        public async Task<QueryResult<DateTime>> GetServerTimeAsync(CancellationToken ct = default)
+        {
+            var result = await _baseClient.SendAsync<BitvavoServerTime>("getTime", null, ct).ConfigureAwait(false);
+            if (!result.Success)
+                return QueryResult.Fail<DateTime>(result);
+
+            return QueryResult.Ok(result, result.Data.Time);
+        }
+
+        #endregion
+
+        #region Get Symbol
+
+        /// <inheritdoc />
+        public Task<QueryResult<BitvavoSymbol>> GetSymbolAsync(string symbol, CancellationToken ct = default)
+        {
+            var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
+            parameters.Add("market", symbol);
+
+            return _baseClient.SendAsync<BitvavoSymbol>("getMarkets", parameters, ct);
+        }
+
+        #endregion
+
+        #region Get Symbols
+
+        /// <inheritdoc />
+        public Task<QueryResult<BitvavoSymbol[]>> GetSymbolsAsync(CancellationToken ct = default)
+            => _baseClient.SendAsync<BitvavoSymbol[]>("getMarkets", null, ct);
+
+        #endregion
+
+        #region Get Asset
+
+        /// <inheritdoc />
+        public Task<QueryResult<BitvavoAsset>> GetAssetAsync(string asset, CancellationToken ct = default)
+        {
+            var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
+            parameters.Add("symbol", asset);
+
+            return _baseClient.SendAsync<BitvavoAsset>("getAssets", parameters, ct);
+        }
+
+        #endregion
+
+        #region Get Assets
+
+        /// <inheritdoc />
+        public Task<QueryResult<BitvavoAsset[]>> GetAssetsAsync(CancellationToken ct = default)
+            => _baseClient.SendAsync<BitvavoAsset[]>("getAssets", null, ct);
+
+        #endregion
+
         #region Get Order Book
 
         /// <inheritdoc />

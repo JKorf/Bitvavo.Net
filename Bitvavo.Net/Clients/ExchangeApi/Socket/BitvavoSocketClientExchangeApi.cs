@@ -51,9 +51,9 @@ namespace Bitvavo.Net.Clients.ExchangeApi
             base(loggerFactory, BitvavoExchange.Metadata.Id, options.Environment.SocketClientAddress, options, options.ExchangeOptions)
         {
             RateLimiter = BitvavoExchange.RateLimiter.Bitvavo;
-            Account = new BitvavoSocketClientExchangeApiAccount();
+            Account = new BitvavoSocketClientExchangeApiAccount(this);
             ExchangeData = new BitvavoSocketClientExchangeApiExchangeData(_logger, this);
-            Trading = new BitvavoSocketClientExchangeApiTrading();
+            Trading = new BitvavoSocketClientExchangeApiTrading(this, options.OperatorId);
             _sharedApi = new BitvavoSocketClientExchangeSharedApi(this);
         }
         #endregion
@@ -91,10 +91,16 @@ namespace Bitvavo.Net.Clients.ExchangeApi
         internal Task<WebSocketResult<UpdateSubscription>> SubscribeToUpdatesAsync(Subscription subscription, CancellationToken ct)
             => SubscribeAsync(BaseAddress.AppendPath("/v2"), subscription, ct);
 
-        internal Task<QueryResult<T>> SendAsync<T>(string action, Parameters? parameters, CancellationToken ct, int weight = 1)
+        internal Task<QueryResult<T>> SendPrivateAsync<T>(string action, Parameters? parameters, CancellationToken ct, int weight = 1)
+            => SendAsync<T>(action, parameters, ct, weight, authenticated: true);
+
+        internal Task<QueryResult<T>> SendAsync<T>(string action, Parameters? parameters, CancellationToken ct, int weight = 1, bool authenticated = false)
         {
+            if (authenticated && AuthenticationProvider == null)
+                return Task.FromResult(QueryResult.Fail<T>(Exchange, new NoApiCredentialsError()));
+
             parameters ??= new Parameters(BitvavoExchange._parameterSerializationSettings);
-            var query = new BitvavoQuery<T>(this, action, parameters, false, weight);
+            var query = new BitvavoQuery<T>(this, action, parameters, authenticated, weight);
             return QueryAsync(BaseAddress.AppendPath("/v2"), query, ct);
         }
 

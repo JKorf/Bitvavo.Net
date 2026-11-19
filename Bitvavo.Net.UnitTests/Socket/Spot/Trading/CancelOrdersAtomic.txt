@@ -1,0 +1,14 @@
+> {"action":"authenticate","key":"123","requestId":"|authId|"}
+< {"event":"authenticate","requestId":|authId|}
+> {"action":"privateAtomicCancelOrders","requestId":"|id|","market":"BTC-EUR","side":"sell","operatorId":765432}
+= 
+{
+  "action": "privateAtomicCancelOrders",
+  "requestId": |id|,
+  "response": [
+    {
+      "orderId": "1be6d0df-d5dc-4b53-a250-3376f3b393e6",
+      "operatorId": 765432
+    }
+  ]
+}

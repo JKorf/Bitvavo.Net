@@ -1,0 +1,12 @@
+> {"action":"authenticate","key":"123","requestId":"|authId|"}
+< {"event":"authenticate","requestId":|authId|}
+> {"action":"privateCancelOrdersAfter","requestId":"|id|","codGroupId":2,"expiryAfterSeconds":30}
+= 
+{
+  "action": "privateCancelOrdersAfter",
+  "requestId": |id|,
+  "response": {
+    "codGroupId": 2,
+    "timeOfExpirySeconds": 1735689630
+  }
+}

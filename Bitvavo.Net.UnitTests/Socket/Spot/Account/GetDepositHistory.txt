@@ -1,0 +1,27 @@
+> {"action":"authenticate","key":"123","requestId":"|authId|"}
+< {"event":"authenticate","requestId":|authId|}
+> {"action":"privateGetDepositHistory","requestId":"|id|","start":1735689600000,"end":1735776000000,"limit":2}
+= 
+{
+  "action": "privateGetDepositHistory",
+  "requestId": |id|,
+  "response": [
+    {
+      "timestamp": 1735693200000,
+      "symbol": "XRP",
+      "amount": "12.5",
+      "address": "SampleDepositAddress",
+      "paymentId": "10002653",
+      "txId": "sample-deposit-tx-id",
+      "fee": "0.000063"
+    },
+    {
+      "timestamp": 1735693200000,
+      "symbol": "EUR",
+      "amount": "500",
+      "fee": "0",
+      "status": "completed",
+      "address": "NL00TEST0123456789"
+    }
+  ]
+}

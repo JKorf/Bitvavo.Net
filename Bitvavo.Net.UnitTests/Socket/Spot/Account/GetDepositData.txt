@@ -1,0 +1,12 @@
+> {"action":"authenticate","key":"123","requestId":"|authId|"}
+< {"event":"authenticate","requestId":|authId|}
+> {"action":"privateDepositAssets","requestId":"|id|","symbol":"XRP"}
+= 
+{
+  "action": "privateDepositAssets",
+  "requestId": |id|,
+  "response": {
+    "address": "SampleDepositAddress",
+    "paymentId": "10002653"
+  }
+}

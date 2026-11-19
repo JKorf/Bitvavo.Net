@@ -1,3 +1,4 @@
+using Bitvavo.Net.Objects.Sockets;
 using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Converters.SystemTextJson;
@@ -5,6 +6,7 @@ using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 using CryptoExchange.Net.Sockets.Default;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 
 namespace Bitvavo.Net
@@ -45,7 +47,16 @@ namespace Bitvavo.Net
 
         public override Query? GetAuthenticationQuery(SocketApiClient apiClient, SocketConnection connection, Dictionary<string, object?>? context = null)
         {
-            return null;
+            var timestamp = GetMillisecondTimestampLong(apiClient);
+            var signature = SignHMACSHA256(timestamp.ToString(CultureInfo.InvariantCulture) + "GET/v2/websocket", SignOutputType.Hex).ToLowerInvariant();
+
+            var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
+            parameters.Add("action", "authenticate");
+            parameters.Add("key", Credential.Key);
+            parameters.Add("signature", signature);
+            parameters.Add("timestamp", timestamp);
+
+            return new BitvavoSocketEventQuery(apiClient, parameters, "authenticate", matchByEvent: true);
         }
     }
 }
