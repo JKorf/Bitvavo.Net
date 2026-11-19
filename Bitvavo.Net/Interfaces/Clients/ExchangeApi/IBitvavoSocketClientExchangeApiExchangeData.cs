@@ -1,7 +1,9 @@
 using Bitvavo.Net.Enums;
 using Bitvavo.Net.Objects.Models;
 using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Objects.Sockets;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -148,5 +150,179 @@ namespace Bitvavo.Net.Interfaces.Clients.ExchangeApi
         /// </summary>
         /// <param name="ct">Cancellation token</param>
         Task<QueryResult<BitvavoTicker[]>> GetTickersAsync(CancellationToken ct = default);
+
+        /// <summary>
+        /// Receive changes to the best bid, best ask, and latest trade price
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/ticker-subscription/" /><br />
+        /// Channel:<br />
+        /// ticker
+        /// </para>
+        /// </summary>
+        /// <param name="symbol">["<c>markets</c>"] Symbol</param>
+        /// <param name="onMessage">Update handler</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToTickerUpdatesAsync(
+            string symbol,
+            Action<DataEvent<BitvavoTickerUpdate>> onMessage,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Receive changes to the best bid, best ask, and latest trade price
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/ticker-subscription/" /><br />
+        /// Channel:<br />
+        /// ticker
+        /// </para>
+        /// </summary>
+        /// <param name="symbols">["<c>markets</c>"] Symbols</param>
+        /// <param name="onMessage">Update handler</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToTickerUpdatesAsync(
+            IEnumerable<string> symbols,
+            Action<DataEvent<BitvavoTickerUpdate>> onMessage,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Receive 24-hour ticker updates
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/ticker-24-hour-subscription/" /><br />
+        /// Channel:<br />
+        /// ticker24h
+        /// </para>
+        /// </summary>
+        /// <param name="symbol">["<c>markets</c>"] Symbol</param>
+        /// <param name="onMessage">Update handler</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToTicker24hUpdatesAsync(
+            string symbol,
+            Action<DataEvent<BitvavoTicker>> onMessage,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Receive 24-hour ticker updates
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/ticker-24-hour-subscription/" /><br />
+        /// Channel:<br />
+        /// ticker24h
+        /// </para>
+        /// </summary>
+        /// <param name="symbols">["<c>markets</c>"] Symbols</param>
+        /// <param name="onMessage">Update handler</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToTicker24hUpdatesAsync(
+            IEnumerable<string> symbols,
+            Action<DataEvent<BitvavoTicker>> onMessage,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Receive candlestick updates
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/candles-subscription/" /><br />
+        /// Channel:<br />
+        /// candles
+        /// </para>
+        /// </summary>
+        /// <param name="symbol">["<c>markets</c>"] Symbol</param>
+        /// <param name="interval">["<c>interval</c>"] Candlestick interval from one minute to one day</param>
+        /// <param name="onMessage">Update handler</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToKlineUpdatesAsync(
+            string symbol,
+            KlineInterval interval,
+            Action<DataEvent<BitvavoKlineUpdate>> onMessage,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Receive candlestick updates
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/candles-subscription/" /><br />
+        /// Channel:<br />
+        /// candles
+        /// </para>
+        /// </summary>
+        /// <param name="symbols">["<c>markets</c>"] Symbols</param>
+        /// <param name="interval">["<c>interval</c>"] Candlestick interval from one minute to one day</param>
+        /// <param name="onMessage">Update handler</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToKlineUpdatesAsync(
+            IEnumerable<string> symbols,
+            KlineInterval interval,
+            Action<DataEvent<BitvavoKlineUpdate>> onMessage,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Receive public trade updates
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/trades-subscription/" /><br />
+        /// Channel:<br />
+        /// trades
+        /// </para>
+        /// </summary>
+        /// <param name="symbol">["<c>markets</c>"] Symbol</param>
+        /// <param name="onMessage">Update handler</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(
+            string symbol,
+            Action<DataEvent<BitvavoTradeUpdate>> onMessage,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Receive public trade updates
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/trades-subscription/" /><br />
+        /// Channel:<br />
+        /// trades
+        /// </para>
+        /// </summary>
+        /// <param name="symbols">["<c>markets</c>"] Symbols</param>
+        /// <param name="onMessage">Update handler</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToTradeUpdatesAsync(
+            IEnumerable<string> symbols,
+            Action<DataEvent<BitvavoTradeUpdate>> onMessage,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Receive incremental order book updates. A level with zero quantity is removed
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/book-subscription/" /><br />
+        /// Channel:<br />
+        /// book
+        /// </para>
+        /// </summary>
+        /// <param name="symbol">["<c>markets</c>"] Symbol</param>
+        /// <param name="onMessage">Update handler</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(
+            string symbol,
+            Action<DataEvent<BitvavoOrderBook>> onMessage,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Receive incremental order book updates. A level with zero quantity is removed
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/book-subscription/" /><br />
+        /// Channel:<br />
+        /// book
+        /// </para>
+        /// </summary>
+        /// <param name="symbols">["<c>markets</c>"] Symbols</param>
+        /// <param name="onMessage">Update handler</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToOrderBookUpdatesAsync(
+            IEnumerable<string> symbols,
+            Action<DataEvent<BitvavoOrderBook>> onMessage,
+            CancellationToken ct = default);
     }
 }

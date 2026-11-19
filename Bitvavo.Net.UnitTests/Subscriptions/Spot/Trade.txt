@@ -1,0 +1,13 @@
+> {"action":"subscribe","requestId":"|id|","channels":[{"name":"trades","markets":["BTC-EUR"]}]}
+< {"event":"subscribed","requestId":|id|,"subscriptions":{"trades":["BTC-EUR"]}}
+= 
+{
+  "event": "trade",
+  "market": "BTC-EUR",
+  "id": "sample-trade-id",
+  "amount": "0.02",
+  "price": "10400",
+  "timestamp": 1735689600000,
+  "side": "buy",
+  "timestampNs": 1735689600000000000
+}

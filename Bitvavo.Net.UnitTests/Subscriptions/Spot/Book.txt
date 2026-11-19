@@ -1,0 +1,21 @@
+> {"action":"subscribe","requestId":"|id|","channels":[{"name":"book","markets":["BTC-EUR"]}]}
+< {"event":"subscribed","requestId":|id|,"subscriptions":{"book":["BTC-EUR"]}}
+= 
+{
+  "event": "book",
+  "market": "BTC-EUR",
+  "nonce": 123,
+  "bids": [
+    [
+      "10400",
+      "0"
+    ]
+  ],
+  "asks": [
+    [
+      "10400.1",
+      "0.02"
+    ]
+  ],
+  "timestamp": 1735689600000000000
+}

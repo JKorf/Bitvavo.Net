@@ -1,0 +1,20 @@
+> {"action":"subscribe","requestId":"|id|","channels":[{"name":"ticker24h","markets":["BTC-EUR"]}]}
+< {"event":"subscribed","requestId":|id|,"subscriptions":{"ticker24h":["BTC-EUR"]}}
+= 
+{
+  "event": "ticker24h",
+  "data": {
+    "market": "BTC-EUR",
+    "timestamp": 1735689600000,
+    "open": "10300",
+    "high": "10600",
+    "low": "10200",
+    "last": "10400",
+    "bid": "10400",
+    "bidSize": "0.01",
+    "ask": "10400.1",
+    "askSize": "0.02",
+    "volume": "15",
+    "volumeQuote": "156000"
+  }
+}

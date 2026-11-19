@@ -1,0 +1,12 @@
+> {"action":"subscribe","requestId":"|id|","channels":[{"name":"ticker","markets":["BTC-EUR"]}]}
+< {"event":"subscribed","requestId":|id|,"subscriptions":{"ticker":["BTC-EUR"]}}
+= 
+{
+  "event": "ticker",
+  "market": "BTC-EUR",
+  "bestBid": "10400",
+  "bestBidSize": "0.01",
+  "bestAsk": "10400.1",
+  "bestAskSize": "0.02",
+  "lastPrice": "10400"
+}
