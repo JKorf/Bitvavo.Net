@@ -1,0 +1,10 @@
+DELETE
+/v2/orders
+true
+UriParams: {"operatorId":"543462"}
+[
+  {
+    "orderId": "1be6d0df-d5dc-4b53-a250-3376f3b393e6",
+    "operatorId": 543462
+  }
+]

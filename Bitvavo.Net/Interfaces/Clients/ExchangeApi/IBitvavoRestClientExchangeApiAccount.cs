@@ -73,18 +73,18 @@ namespace Bitvavo.Net.Interfaces.Clients.ExchangeApi
         /// GET /v2/account/history
         /// </para>
         /// </summary>
+        /// <param name="type">["<c>type</c>"] Transaction type filter. ManuallyAssignedBitvavo is only returned in responses</param>
         /// <param name="startTime">["<c>fromDate</c>"] Start time</param>
         /// <param name="endTime">["<c>toDate</c>"] End time</param>
         /// <param name="page">["<c>page</c>"] Page number, starting at 1</param>
         /// <param name="pageSize">["<c>maxItems</c>"] Maximum transactions per page, up to 100</param>
-        /// <param name="type">["<c>type</c>"] Transaction type filter. ManuallyAssignedBitvavo is only returned in responses</param>
         /// <param name="ct">Cancellation token</param>
         Task<HttpResult<BitvavoTransactionHistory>> GetTransactionHistoryAsync(
+            TransactionType? type = null,
             DateTime? startTime = null,
             DateTime? endTime = null,
             int? page = null,
             int? pageSize = null,
-            TransactionType? type = null,
             CancellationToken ct = default);
     }
 }

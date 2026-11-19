@@ -1,0 +1,10 @@
+DELETE
+/v2/atomic/orders
+true
+BodyParams: {"market":"BTC-EUR","side":"sell","operatorId":765432}
+[
+  {
+    "orderId": "1be6d0df-d5dc-4b53-a250-3376f3b393e6",
+    "operatorId": 765432
+  }
+]

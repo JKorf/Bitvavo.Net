@@ -36,6 +36,56 @@ namespace Bitvavo.Net.Clients.ExchangeApi
 
         #endregion
 
+        #region Get Symbol
+
+        /// <inheritdoc />
+        public async Task<HttpResult<BitvavoSymbol>> GetSymbolAsync(string symbol, CancellationToken ct = default)
+        {
+            var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
+            parameters.Add("market", symbol);
+
+            var request = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "/v2/markets", BitvavoExchange.RateLimiter.Bitvavo, 1, false);
+            return await _baseClient.SendAsync<BitvavoSymbol>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Get Symbols
+
+        /// <inheritdoc />
+        public async Task<HttpResult<BitvavoSymbol[]>> GetSymbolsAsync(CancellationToken ct = default)
+        {
+            var request = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "/v2/markets", BitvavoExchange.RateLimiter.Bitvavo, 1, false);
+            return await _baseClient.SendAsync<BitvavoSymbol[]>(request, null, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Get Asset
+
+        /// <inheritdoc />
+        public async Task<HttpResult<BitvavoAsset>> GetAssetAsync(string asset, CancellationToken ct = default)
+        {
+            var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
+            parameters.Add("symbol", asset);
+
+            var request = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "/v2/assets", BitvavoExchange.RateLimiter.Bitvavo, 1, false);
+            return await _baseClient.SendAsync<BitvavoAsset>(request, parameters, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Get Assets
+
+        /// <inheritdoc />
+        public async Task<HttpResult<BitvavoAsset[]>> GetAssetsAsync(CancellationToken ct = default)
+        {
+            var request = _definitions.GetOrCreate(HttpMethod.Get, _baseClient.BaseAddress, "/v2/assets", BitvavoExchange.RateLimiter.Bitvavo, 1, false);
+            return await _baseClient.SendAsync<BitvavoAsset[]>(request, null, ct).ConfigureAwait(false);
+        }
+
+        #endregion
+
         #region Get Trades
 
         /// <inheritdoc />

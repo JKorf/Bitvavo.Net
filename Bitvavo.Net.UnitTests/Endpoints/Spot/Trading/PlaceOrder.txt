@@ -1,0 +1,43 @@
+POST
+/v2/order
+true
+BodyParams: {"market":"BTC-EUR","side":"sell","orderType":"limit","operatorId":543462,"clientOrderId":"2be7d0df-d8dc-7b93-a550-8876f3b393e9","amount":"0.01","price":"56000","timeInForce":"GTC","selfTradePrevention":"cancelOldest","postOnly":true,"codGroupId":2}
+{
+  "orderId": "1be6d0df-d5dc-4b53-a250-3376f3b393e6",
+  "clientOrderId": "2be7d0df-d8dc-7b93-a550-8876f3b393e9",
+  "market": "BTC-EUR",
+  "created": 1735689600000,
+  "updated": 1735689600000,
+  "status": "partiallyFilled",
+  "side": "sell",
+  "orderType": "limit",
+  "amount": "0.01",
+  "amountRemaining": "0.008",
+  "price": "56000",
+  "onHold": "0.008",
+  "onHoldCurrency": "BTC",
+  "filledAmount": "0.002",
+  "filledAmountQuote": "112",
+  "feePaid": "-0.02",
+  "feeCurrency": "EUR",
+  "fills": [
+    {
+      "id": "108c3633-0276-4480-a902-17a01829deae",
+      "timestamp": 1735689600000,
+      "amount": "0.002",
+      "price": "56000",
+      "taker": false,
+      "fee": "-0.02",
+      "feeCurrency": "EUR",
+      "settled": true
+    }
+  ],
+  "selfTradePrevention": "cancelOldest",
+  "timeInForce": "GTC",
+  "visible": true,
+  "postOnly": true,
+  "disableMarketProtection": false,
+  "operatorId": 543462,
+  "restatementReason": "decrementOnSelfTradePrevention",
+  "codGroupId": 2
+}

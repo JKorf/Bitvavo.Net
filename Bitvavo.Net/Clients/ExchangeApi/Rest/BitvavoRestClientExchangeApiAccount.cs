@@ -82,11 +82,11 @@ namespace Bitvavo.Net.Clients.ExchangeApi
 
         /// <inheritdoc />
         public async Task<HttpResult<BitvavoTransactionHistory>> GetTransactionHistoryAsync(
+            TransactionType? type = null,
             DateTime? startTime = null,
             DateTime? endTime = null,
             int? page = null,
             int? pageSize = null,
-            TransactionType? type = null,
             CancellationToken ct = default)
         {
             var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);

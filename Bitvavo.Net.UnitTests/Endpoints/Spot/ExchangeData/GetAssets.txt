@@ -1,0 +1,20 @@
+GET
+/v2/assets
+false
+[
+  {
+    "symbol": "BTC",
+    "name": "Bitcoin",
+    "decimals": 8,
+    "depositFee": "0",
+    "depositConfirmations": 2,
+    "depositStatus": "OK",
+    "withdrawalFee": "0.000022",
+    "withdrawalMinAmount": "0.000022",
+    "withdrawalStatus": "OK",
+    "networks": [
+      "BTC"
+    ],
+    "message": ""
+  }
+]

@@ -19,6 +19,8 @@ namespace Bitvavo.Net.Clients
         BitvavoEnvironment
         >, IBitvavoUserClientProvider
     {
+        private readonly IOptions<BitvavoRestOptions> _restOptions;
+
         /// <inheritdoc />
         public override string ExchangeName => BitvavoExchange.Metadata.Id;
 
@@ -41,11 +43,17 @@ namespace Bitvavo.Net.Clients
             IOptions<BitvavoSocketOptions> socketOptions)
             : base(httpClient, loggerFactory, restOptions, socketOptions)
         {
+            _restOptions = restOptions;
         }
 
         /// <inheritdoc />
         protected override IBitvavoRestClient ConstructRestClient(HttpClient client, ILoggerFactory? loggerFactory, IOptions<BitvavoRestOptions> options)
-            => new BitvavoRestClient(client, loggerFactory, options);
+        {
+            if (!ReferenceEquals(options, _restOptions))
+                options.Value.OperatorId = _restOptions.Value.OperatorId;
+
+            return new BitvavoRestClient(client, loggerFactory, options);
+        }
         /// <inheritdoc />
         protected override IBitvavoSocketClient ConstructSocketClient(ILoggerFactory? loggerFactory, IOptions<BitvavoSocketOptions> options)
             => new BitvavoSocketClient(options, loggerFactory);

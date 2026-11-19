@@ -51,6 +51,30 @@ namespace Bitvavo.Net.UnitTests
         }
 
         [Test]
+        public void CheckAtomicCancelSignature()
+        {
+            const string secret = "bitvavo";
+            const string path = "/v2/atomic/orders";
+            const string expectedBody = "{\"market\":\"BTC-EUR\",\"operatorId\":543462,\"side\":\"sell\"}";
+            using var client = new BitvavoRestClient();
+            var authProvider = new BitvavoAuthenticationProvider(new BitvavoCredentials("key", secret));
+            var definition = new RequestDefinition("https://api.bitvavo.com", path, HttpMethod.Delete) { Authenticated = true };
+            var parameters = new Parameters(BitvavoExchange._parameterSerializationSettings);
+            parameters.Add("side", "sell");
+            parameters.Add("market", "BTC-EUR");
+            parameters.Add("operatorId", 543462L);
+            var request = new RestRequestConfiguration(definition, null, parameters, null, HttpMethodParameterPosition.InBody, RequestBodyFormat.Json);
+
+            authProvider.ProcessRequest((RestApiClient)client.ExchangeApi, request);
+
+            var headers = request.Headers!;
+            var payload = headers["Bitvavo-Access-Timestamp"] + "DELETE" + path + expectedBody;
+            var signature = Convert.ToHexString(HMACSHA256.HashData(Encoding.UTF8.GetBytes(secret), Encoding.UTF8.GetBytes(payload))).ToLowerInvariant();
+            Assert.That(request.GetBodyContent(), Is.EqualTo(expectedBody));
+            Assert.That(headers["Bitvavo-Access-Signature"], Is.EqualTo(signature));
+        }
+
+        [Test]
         public async Task AccountRequestUsesServerTimeAndReturnsBitvavoError()
         {
             var handler = new Mock<HttpMessageHandler>(MockBehavior.Strict);

@@ -1,4 +1,5 @@
 using Bitvavo.Net.Objects.Models;
+using CryptoExchange.Net.Objects;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -23,7 +24,16 @@ namespace Bitvavo.Net.Converters
     [JsonSerializable(typeof(BitvavoSymbolFees))]
     [JsonSerializable(typeof(BitvavoTransactionHistory))]
     [JsonSerializable(typeof(BitvavoServerTime))]
+    [JsonSerializable(typeof(BitvavoSymbol[]))]
+    [JsonSerializable(typeof(BitvavoAsset[]))]
+    [JsonSerializable(typeof(BitvavoOrder))]
+    [JsonSerializable(typeof(BitvavoOrder[]))]
+    [JsonSerializable(typeof(BitvavoUserTrade[]))]
+    [JsonSerializable(typeof(BitvavoCanceledOrder))]
+    [JsonSerializable(typeof(BitvavoCanceledOrder[]))]
+    [JsonSerializable(typeof(BitvavoCancelOrdersAfter))]
     [JsonSerializable(typeof(IDictionary<string, object>))]
+    [JsonSerializable(typeof(Parameters))]
     [JsonSerializable(typeof(string))]
     [JsonSerializable(typeof(int?))]
     [JsonSerializable(typeof(int))]

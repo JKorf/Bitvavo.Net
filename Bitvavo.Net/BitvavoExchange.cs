@@ -18,7 +18,7 @@ namespace Bitvavo.Net
         internal static JsonSerializerOptions _serializerContext = SerializerOptions.WithConverters(JsonSerializerContextCache.GetOrCreate<BitvavoSourceGenerationContext>());
         internal static ParameterSerializationSettings _parameterSerializationSettings = new ParameterSerializationSettings
         {
-
+            Decimal = DecimalSerialization.String
         };
 
         /// <summary>

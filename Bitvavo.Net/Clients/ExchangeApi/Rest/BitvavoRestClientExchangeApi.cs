@@ -45,7 +45,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
         {
             Account = new BitvavoRestClientExchangeApiAccount(this);
             ExchangeData = new BitvavoRestClientExchangeApiExchangeData(_logger, this);
-            Trading = new BitvavoRestClientExchangeApiTrading(_logger, this);
+            Trading = new BitvavoRestClientExchangeApiTrading(_logger, this, options.OperatorId);
 
             _sharedApi = new BitvavoRestClientExchangeSharedApi(this);
         }

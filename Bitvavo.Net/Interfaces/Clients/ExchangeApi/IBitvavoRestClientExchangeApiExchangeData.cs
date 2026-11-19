@@ -25,6 +25,56 @@ namespace Bitvavo.Net.Interfaces.Clients.ExchangeApi
         Task<HttpResult<DateTime>> GetServerTimeAsync(CancellationToken ct = default);
 
         /// <summary>
+        /// Get trading rules and status for a symbol
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/rest-api/get-markets/" /><br />
+        /// Endpoint:<br />
+        /// GET /v2/markets
+        /// </para>
+        /// </summary>
+        /// <param name="symbol">["<c>market</c>"] Trading symbol</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<HttpResult<BitvavoSymbol>> GetSymbolAsync(string symbol, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get trading rules and status for all symbols
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/rest-api/get-markets/" /><br />
+        /// Endpoint:<br />
+        /// GET /v2/markets
+        /// </para>
+        /// </summary>
+        /// <param name="ct">Cancellation token</param>
+        Task<HttpResult<BitvavoSymbol[]>> GetSymbolsAsync(CancellationToken ct = default);
+
+        /// <summary>
+        /// Get deposit and withdrawal information for an asset
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/rest-api/get-asset-data/" /><br />
+        /// Endpoint:<br />
+        /// GET /v2/assets
+        /// </para>
+        /// </summary>
+        /// <param name="asset">["<c>symbol</c>"] Asset symbol</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<HttpResult<BitvavoAsset>> GetAssetAsync(string asset, CancellationToken ct = default);
+
+        /// <summary>
+        /// Get deposit and withdrawal information for all assets
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/rest-api/get-asset-data/" /><br />
+        /// Endpoint:<br />
+        /// GET /v2/assets
+        /// </para>
+        /// </summary>
+        /// <param name="ct">Cancellation token</param>
+        Task<HttpResult<BitvavoAsset[]>> GetAssetsAsync(CancellationToken ct = default);
+
+        /// <summary>
         /// Get trades for a period of up to 24 hours
         /// <para>
         /// Docs:<br />
