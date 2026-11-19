@@ -69,6 +69,9 @@ namespace Bitvavo.Net.Converters
     [JsonSerializable(typeof(BitvavoSocketResponse<BitvavoAsset>))]
     [JsonSerializable(typeof(BitvavoSocketResponse<BitvavoAsset[]>))]
 
+    [JsonSerializable(typeof(BitvavoOrderUpdate))]
+    [JsonSerializable(typeof(BitvavoUserTradeUpdate))]
+    [JsonSerializable(typeof(string[]))]
     [JsonSerializable(typeof(BitvavoSocketChannel[]))]
     [JsonSerializable(typeof(BitvavoSocketEventResponse))]
     [JsonSerializable(typeof(BitvavoTickerUpdate))]

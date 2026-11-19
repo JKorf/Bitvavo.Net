@@ -19,6 +19,7 @@ using Bitvavo.Net.Clients.MessageHandlers;
 using Bitvavo.Net.Interfaces.Clients.ExchangeApi;
 using Bitvavo.Net.Objects.Options;
 using Bitvavo.Net.Objects.Sockets;
+using Bitvavo.Net.Objects.Sockets.Subscriptions;
 
 namespace Bitvavo.Net.Clients.ExchangeApi
 {
@@ -53,7 +54,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
             RateLimiter = BitvavoExchange.RateLimiter.Bitvavo;
             Account = new BitvavoSocketClientExchangeApiAccount(this);
             ExchangeData = new BitvavoSocketClientExchangeApiExchangeData(_logger, this);
-            Trading = new BitvavoSocketClientExchangeApiTrading(this, options.OperatorId);
+            Trading = new BitvavoSocketClientExchangeApiTrading(_logger, this, options.OperatorId);
             _sharedApi = new BitvavoSocketClientExchangeSharedApi(this);
         }
         #endregion
@@ -83,6 +84,10 @@ namespace Bitvavo.Net.Clients.ExchangeApi
                 var incomingRouter = subscription.MessageRouter;
                 if (existingRoutes.Length == incomingRouter.Routes.Length && existingRoutes.All(incomingRouter.ContainsCheck))
                     return false;
+
+                if (existing is BitvavoTradingSubscription current && subscription is BitvavoTradingSubscription incoming
+                    && (current.AllSymbols || incoming.AllSymbols))
+                    return true;
 
                 return existingRoutes.Any(route => route.TopicFilter != null && incomingRouter.ContainsCheck(route));
             });

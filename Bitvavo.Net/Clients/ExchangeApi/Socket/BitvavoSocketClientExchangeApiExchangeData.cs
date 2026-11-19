@@ -334,14 +334,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
             if (subscribedSymbols.Count == 0)
                 return Task.FromResult(WebSocketResult.Fail<UpdateSubscription>(BitvavoExchange.Metadata.Id, ArgumentError.Missing(nameof(symbols))));
 
-            var request = new BitvavoSocketChannel
-            {
-                Name = channel,
-                Symbols = subscribedSymbols.ToArray(),
-                Intervals = interval.HasValue ? [interval.Value] : null
-            };
-
-            var subscription = new BitvavoSubscription<T>(_baseClient, _logger, request, eventName, (receiveTime, originalData, update) =>
+            var subscription = new BitvavoSubscription<T>(_baseClient, _logger, channel, eventName, subscribedSymbols.ToArray(), interval, (receiveTime, originalData, update) =>
                 handler(subscribedSymbols, receiveTime, originalData, update));
             return _baseClient.SubscribeToUpdatesAsync(subscription, ct);
         }

@@ -6,14 +6,21 @@ namespace Bitvavo.Net.Objects.Internal
     internal class BitvavoSocketChannel
     {
         [JsonPropertyName("name")]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; }
 
         [JsonPropertyName("markets")]
-        public string[] Symbols { get; set; } = [];
+        public object Markets { get; }
 
         [JsonPropertyName("interval")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public KlineInterval[]? Intervals { get; set; }
+        public KlineInterval[]? Intervals { get; }
+
+        public BitvavoSocketChannel(string name, object markets, KlineInterval[]? intervals = null)
+        {
+            Name = name;
+            Markets = markets;
+            Intervals = intervals;
+        }
 
         public static string GetTopicFilter(string symbol, KlineInterval interval) => $"{symbol}:{(int)interval}";
     }

@@ -1,7 +1,9 @@
 using Bitvavo.Net.Enums;
 using Bitvavo.Net.Objects.Models;
 using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Objects.Sockets;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -249,5 +251,60 @@ namespace Bitvavo.Net.Interfaces.Clients.ExchangeApi
         /// <param name="expiryAfterSeconds">["<c>expiryAfterSeconds</c>"] Countdown in seconds, from 10 to 300</param>
         /// <param name="ct">Cancellation token</param>
         Task<QueryResult<BitvavoCancelOrdersAfter>> CancelOrdersAfterAsync(int cancelGroupId, int expiryAfterSeconds, CancellationToken ct = default);
+
+        /// <summary>
+        /// Subscribe to order and user trade updates for a symbol
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/track-your-orders/" /><br />
+        /// Channel:<br />
+        /// account
+        /// </para>
+        /// </summary>
+        /// <param name="symbol">["<c>markets</c>"] Symbol</param>
+        /// <param name="onOrderMessage">Order update handler. Pass null to ignore order updates</param>
+        /// <param name="onTradeMessage">User trade update handler. Pass null to ignore user trade updates</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToUserDataUpdatesAsync(
+            string symbol,
+            Action<DataEvent<BitvavoOrderUpdate>>? onOrderMessage,
+            Action<DataEvent<BitvavoUserTradeUpdate>>? onTradeMessage,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Subscribe to order and user trade updates for multiple symbols
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/track-your-orders/" /><br />
+        /// Channel:<br />
+        /// account
+        /// </para>
+        /// </summary>
+        /// <param name="symbols">["<c>markets</c>"] Symbols</param>
+        /// <param name="onOrderMessage">Order update handler. Pass null to ignore order updates</param>
+        /// <param name="onTradeMessage">User trade update handler. Pass null to ignore user trade updates</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToUserDataUpdatesAsync(
+            IEnumerable<string> symbols,
+            Action<DataEvent<BitvavoOrderUpdate>>? onOrderMessage,
+            Action<DataEvent<BitvavoUserTradeUpdate>>? onTradeMessage,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Subscribe to order and user trade updates for all currently listed symbols
+        /// <para>
+        /// Docs:<br />
+        /// <a href="https://docs.bitvavo.com/docs/websocket-api/track-your-orders/" /><br />
+        /// Channel:<br />
+        /// account
+        /// </para>
+        /// </summary>
+        /// <param name="onOrderMessage">Order update handler. Pass null to ignore order updates</param>
+        /// <param name="onTradeMessage">User trade update handler. Pass null to ignore user trade updates</param>
+        /// <param name="ct">Cancellation token</param>
+        Task<WebSocketResult<UpdateSubscription>> SubscribeToUserDataUpdatesAsync(
+            Action<DataEvent<BitvavoOrderUpdate>>? onOrderMessage,
+            Action<DataEvent<BitvavoUserTradeUpdate>>? onTradeMessage,
+            CancellationToken ct = default);
     }
 }

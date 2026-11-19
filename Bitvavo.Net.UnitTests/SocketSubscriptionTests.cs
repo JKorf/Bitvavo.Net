@@ -32,6 +32,72 @@ namespace Bitvavo.Net.UnitTests
             await tester.ValidateAsync<BitvavoOrderBook>((c, handler) => c.ExchangeApi.ExchangeData.SubscribeToOrderBookUpdatesAsync("BTC-EUR", handler), "Book", ignoreProperties: ignored);
         }
 
+        [Test]
+        public async Task ValidateTradingSubscriptions()
+        {
+            using var client = new BitvavoSocketClient(opts => opts.ApiCredentials = new BitvavoCredentials("123", "456"));
+            var tester = new SocketSubscriptionValidator<BitvavoSocketClient>(client, "Subscriptions/Spot", "wss://ws.bitvavo.com/v2");
+            var ignored = new List<string> { "event" };
+
+            await tester.ValidateAsync<BitvavoOrderUpdate>((c, handler) =>
+                c.ExchangeApi.Trading.SubscribeToUserDataUpdatesAsync("BTC-EUR", handler, null), "UserOrder", ignoreProperties: ignored);
+            await tester.ValidateAsync<BitvavoUserTradeUpdate>((c, handler) =>
+                c.ExchangeApi.Trading.SubscribeToUserDataUpdatesAsync(null, handler), "UserTrade", ignoreProperties: ignored);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public async Task TradingSubscriptionRoutesOrderAndFillEvents(bool allSymbols)
+        {
+            using var client = new BitvavoSocketClient(opts => opts.ApiCredentials = new BitvavoCredentials("123", "456"));
+            using var ct = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            var socket = TestHelpers.ConfigureSocketClient(client, "wss://ws.bitvavo.com/v2");
+            var requests = Channel.CreateUnbounded<string>();
+            socket.OnMessageSend += request => requests.Writer.TryWrite(request);
+
+            var orders = new List<BitvavoOrderUpdate>();
+            var trades = new List<BitvavoUserTradeUpdate>();
+            var trading = client.ExchangeApi.Trading;
+            var subscription = allSymbols
+                ? trading.SubscribeToUserDataUpdatesAsync(order => orders.Add(order.Data), trade => trades.Add(trade.Data), ct.Token)
+                : trading.SubscribeToUserDataUpdatesAsync(["BTC-EUR", "ETH-EUR"], order => orders.Add(order.Data), trade => trades.Add(trade.Data), ct.Token);
+
+            using var auth = JsonDocument.Parse(await requests.Reader.ReadAsync(ct.Token));
+            Assert.That(auth.RootElement.GetProperty("action").GetString(), Is.EqualTo("authenticate"));
+            socket.InvokeMessage("""{"event":"authenticate"}""");
+
+            using var request = JsonDocument.Parse(await requests.Reader.ReadAsync(ct.Token));
+            Assert.That(request.RootElement.GetProperty("action").GetString(), Is.EqualTo("subscribe"));
+            var channel = request.RootElement.GetProperty("channels")[0];
+            Assert.That(channel.GetProperty("name").GetString(), Is.EqualTo("account"));
+            var markets = channel.GetProperty("markets");
+            if (allSymbols)
+                Assert.That(markets.GetString(), Is.EqualTo("*"));
+            else
+                Assert.That(markets.Deserialize<string[]>(), Is.EquivalentTo(new[] { "BTC-EUR", "ETH-EUR" }));
+
+            var id = request.RootElement.GetProperty("requestId").GetInt32();
+            socket.InvokeMessage(JsonSerializer.Serialize(new { @event = "subscribed", requestId = id }));
+            var result = await subscription.WaitAsync(ct.Token);
+            Assert.That(result.Success, Is.True);
+            Assert.That(requests.Reader.TryRead(out _), Is.False);
+
+            socket.InvokeMessage("""{"event":"order","market":"BTC-EUR","orderId":"order-id","executionType":"updated"}""");
+            socket.InvokeMessage("""{"event":"fill","market":"ETH-EUR","orderId":"filled-order-id","fillId":"fill-id","amount":"0.005","timestamp":1735689600000}""");
+            socket.InvokeMessage("""{"event":"order","market":"XRP-EUR","orderId":"other-order","executionType":"new"}""");
+            socket.InvokeMessage("""{"event":"fill","market":"XRP-EUR","orderId":"other-fill-order","fillId":"other-fill","timestamp":1735689600000}""");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(orders.Count, Is.EqualTo(allSymbols ? 2 : 1));
+                Assert.That(trades.Count, Is.EqualTo(allSymbols ? 2 : 1));
+                if (orders.Count > 0)
+                    Assert.That(orders[0].ExecutionType, Is.EqualTo(OrderExecutionType.Updated));
+                if (trades.Count > 0)
+                    Assert.That(trades[0].Id, Is.EqualTo("fill-id"));
+            });
+        }
+
         [TestCase("ticker", false)]
         [TestCase("ticker", true)]
         [TestCase("ticker24h", false)]

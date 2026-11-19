@@ -15,6 +15,8 @@ namespace Bitvavo.Net.Clients.MessageHandlers
             AddTopicMapping<BitvavoTickerUpdate>(update => update.Symbol);
             AddTopicMapping<BitvavoTradeUpdate>(update => update.Symbol);
             AddTopicMapping<BitvavoOrderBook>(update => update.Symbol);
+            AddTopicMapping<BitvavoOrderUpdate>(update => update.Symbol);
+            AddTopicMapping<BitvavoUserTradeUpdate>(update => update.Symbol);
             AddTopicMapping<BitvavoKlineUpdate>(update => BitvavoSocketChannel.GetTopicFilter(update.Symbol, update.Interval));
         }
 

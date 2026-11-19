@@ -1,8 +1,13 @@
 using Bitvavo.Net.Enums;
 using Bitvavo.Net.Interfaces.Clients.ExchangeApi;
 using Bitvavo.Net.Objects.Models;
+using Bitvavo.Net.Objects.Sockets.Subscriptions;
 using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Objects.Sockets;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,11 +16,13 @@ namespace Bitvavo.Net.Clients.ExchangeApi
     /// <inheritdoc />
     internal class BitvavoSocketClientExchangeApiTrading : IBitvavoSocketClientExchangeApiTrading
     {
+        private readonly ILogger _logger;
         private readonly BitvavoSocketClientExchangeApi _baseClient;
         private readonly long _defaultOperatorId;
 
-        internal BitvavoSocketClientExchangeApiTrading(BitvavoSocketClientExchangeApi baseClient, long defaultOperatorId)
+        internal BitvavoSocketClientExchangeApiTrading(ILogger logger, BitvavoSocketClientExchangeApi baseClient, long defaultOperatorId)
         {
+            _logger = logger;
             _baseClient = baseClient;
             _defaultOperatorId = defaultOperatorId;
         }
@@ -251,6 +258,49 @@ namespace Bitvavo.Net.Clients.ExchangeApi
             parameters.Add("expiryAfterSeconds", expiryAfterSeconds);
 
             return _baseClient.SendPrivateAsync<BitvavoCancelOrdersAfter>("privateCancelOrdersAfter", parameters, ct, weight: 5);
+        }
+
+        #endregion
+
+        #region Subscribe To User Data Updates
+
+        /// <inheritdoc />
+        public Task<WebSocketResult<UpdateSubscription>> SubscribeToUserDataUpdatesAsync(
+            string symbol,
+            Action<DataEvent<BitvavoOrderUpdate>>? onOrderMessage,
+            Action<DataEvent<BitvavoUserTradeUpdate>>? onTradeMessage,
+            CancellationToken ct = default)
+            => SubscribeToUserDataUpdatesAsync([symbol], onOrderMessage, onTradeMessage, ct);
+
+        /// <inheritdoc />
+        public Task<WebSocketResult<UpdateSubscription>> SubscribeToUserDataUpdatesAsync(
+            IEnumerable<string> symbols,
+            Action<DataEvent<BitvavoOrderUpdate>>? onOrderMessage,
+            Action<DataEvent<BitvavoUserTradeUpdate>>? onTradeMessage,
+            CancellationToken ct = default)
+        {
+            var subscribedSymbols = symbols.Distinct(StringComparer.Ordinal).ToArray();
+            if (subscribedSymbols.Length == 0)
+                return Task.FromResult(WebSocketResult.Fail<UpdateSubscription>(BitvavoExchange.Metadata.Id, ArgumentError.Missing(nameof(symbols))));
+
+            return SubscribeToUserDataAsync(subscribedSymbols, onOrderMessage, onTradeMessage, ct);
+        }
+
+        /// <inheritdoc />
+        public Task<WebSocketResult<UpdateSubscription>> SubscribeToUserDataUpdatesAsync(
+            Action<DataEvent<BitvavoOrderUpdate>>? onOrderMessage,
+            Action<DataEvent<BitvavoUserTradeUpdate>>? onTradeMessage,
+            CancellationToken ct = default)
+            => SubscribeToUserDataAsync(null, onOrderMessage, onTradeMessage, ct);
+
+        private Task<WebSocketResult<UpdateSubscription>> SubscribeToUserDataAsync(
+            string[]? symbols,
+            Action<DataEvent<BitvavoOrderUpdate>>? onOrderMessage,
+            Action<DataEvent<BitvavoUserTradeUpdate>>? onTradeMessage,
+            CancellationToken ct)
+        {
+            var subscription = new BitvavoTradingSubscription(_baseClient, _logger, symbols, onOrderMessage, onTradeMessage);
+            return _baseClient.SubscribeToUpdatesAsync(subscription, ct);
         }
 
         #endregion

@@ -12,7 +12,7 @@ namespace Bitvavo.Net.Objects.Models
         /// ["<c>id</c>"] Fill ID
         /// </summary>
         [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
+        public virtual string Id { get; set; } = string.Empty;
         /// <summary>
         /// ["<c>timestamp</c>"] Execution time
         /// </summary>

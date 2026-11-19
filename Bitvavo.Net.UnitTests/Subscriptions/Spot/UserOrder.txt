@@ -1,0 +1,36 @@
+> {"action":"authenticate","key":"123","requestId":"|authId|"}
+< {"event":"authenticate","requestId":|authId|}
+> {"action":"subscribe","requestId":"|id|","channels":[{"name":"account","markets":["BTC-EUR"]}]}
+< {"event":"subscribed","requestId":|id|,"subscriptions":{"account":["BTC-EUR"]}}
+= 
+{
+  "event": "order",
+  "orderId": "80b5f04d-21fc-4ebe-9c5f-6d34f78ee477",
+  "clientOrderId": "2be7d0df-d8dc-7b93-a550-8876f3b393e9",
+  "operatorId": 543462,
+  "market": "BTC-EUR",
+  "created": 1735689600000,
+  "updated": 1735689600000,
+  "status": "new",
+  "side": "buy",
+  "orderType": "limit",
+  "amount": "0.01",
+  "amountRemaining": "0.01",
+  "price": "95000",
+  "onHold": "950",
+  "onHoldCurrency": "EUR",
+  "triggerPrice": "90000",
+  "triggerAmount": "90000",
+  "triggerType": "price",
+  "triggerReference": "lastTrade",
+  "timeInForce": "GTC",
+  "postOnly": true,
+  "selfTradePrevention": "decrementAndCancel",
+  "visible": true,
+  "filledAmount": "0",
+  "filledAmountQuote": "0",
+  "executionType": "new",
+  "createdNs": 1735689600000000000,
+  "updatedNs": 1735689600000000000,
+  "codGroupId": 1
+}

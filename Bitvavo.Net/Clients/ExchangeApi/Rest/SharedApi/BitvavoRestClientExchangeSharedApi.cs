@@ -18,8 +18,7 @@ namespace Bitvavo.Net.Clients.ExchangeApi
             : base(
                   SharedTransport.Rest,
                   api,
-#warning TODO
-                  new[] { TradingMode.Spot, TradingMode.PerpetualLinear, TradingMode.PerpetualInverse, TradingMode.DeliveryLinear, TradingMode.DeliveryInverse },
+                  new[] { TradingMode.Spot },
                   () => api.Authenticated,
                   api.FormatSymbol)
         {
