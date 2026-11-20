@@ -1,1 +1,18 @@
-TODO
+# Bitvavo.Net
+
+> A .NET client library for Bitvavo spot REST and WebSocket APIs, with CryptoExchange.Net Shared API V2 support.
+
+## Library usage
+
+- [Bitvavo.Net skill](.claude/skills/Bitvavo-net/SKILL.md): Consumer conventions and task-specific guidance.
+- [API surfaces](.claude/skills/Bitvavo-net/references/api-surfaces.md): Client topics, endpoint selection, and Shared API capabilities.
+- [Usage examples](.claude/skills/Bitvavo-net/references/usage.md): REST, authentication, orders, WebSockets, and dependency injection.
+- [Operational considerations](.claude/skills/Bitvavo-net/references/safety.md): Credentials, withdrawals, order handling, and retries.
+
+## Repository and reference
+
+- [README](README.md): Overview, installation, and links to the documentation site.
+- [Repository instructions](AGENTS.md): Development workflow and documentation ownership.
+- [Client interfaces](Bitvavo.Net/Interfaces/Clients/): Exact signatures, overloads, and XML documentation.
+- [Library project](Bitvavo.Net/Bitvavo.Net.csproj): Package ID, dependencies, and target frameworks.
+- [AI-friendly examples](Examples/ai-friendly/): Standalone programs compiled by the documentation test.

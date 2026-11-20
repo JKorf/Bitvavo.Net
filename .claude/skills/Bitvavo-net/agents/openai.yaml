@@ -1,1 +1,4 @@
-TODO
+interface:
+  display_name: "Bitvavo.Net"
+  short_description: "Build C# Bitvavo integrations with Bitvavo.Net."
+  default_prompt: "Use $bitvavo-net to implement a Bitvavo.Net REST or WebSocket workflow."
