@@ -117,7 +117,7 @@ using CryptoExchange.Net.SharedApis;
 using Bitvavo.Net.Clients;
 
 using var restClient = new BitvavoRestClient();
-IGetTickerRest tickerClient = restClient.SpotApi.SharedApi;
+IGetTickerRest tickerClient = restClient.ExchangeApi.SharedApi;
 
 var symbol = new SharedSymbol(TradingMode.Spot, "ETH", "EUR");
 var result = await tickerClient.GetTickerAsync(
