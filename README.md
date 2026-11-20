@@ -5,7 +5,7 @@
 
 [![Docs](https://img.shields.io/badge/Docs-Bitvavo.Net-1b7f50?style=for-the-badge)](https://cryptoexchange.jkorf.dev/docs/exchange-clients?library=Bitvavo.Net)
 
-Bitvavo.Net is a stronly typed client library for accessing the [Bitvavo REST and Websocket API](Bitvavo). 
+Bitvavo.Net is a stronly typed client library for accessing the [Bitvavo REST and Websocket API](https://docs.bitvavo.com/docs/overview/). 
 
 ## Features
 * Response data is mapped to descriptive models
@@ -47,12 +47,12 @@ The library is targeting both `.NET Standard 2.0` and `.NET Standard 2.1` for op
 ## Install the library
 
 ### NuGet 
-[![NuGet version](https://img.shields.io/nuget/v/Bitvavo.net.svg?style=for-the-badge)](https://www.nuget.org/packages/Bitvavo.Net)  [![Nuget downloads](https://img.shields.io/nuget/dt/Bitvavo.Net.svg?style=for-the-badge)](https://www.nuget.org/packages/Bitvavo.Net)
+[![NuGet version](https://img.shields.io/nuget/v/JKorf.Bitvavo.net.svg?style=for-the-badge)](https://www.nuget.org/packages/JKorf.Bitvavo.Net)  [![Nuget downloads](https://img.shields.io/nuget/dt/JKorf.Bitvavo.Net.svg?style=for-the-badge)](https://www.nuget.org/packages/JKorf.Bitvavo.Net)
 
-	dotnet add package Bitvavo.Net
+	dotnet add package JKorf.Bitvavo.Net
 	
 ### GitHub packages
-Bitvavo.Net is available on [GitHub packages](https://github.com/JKorf/Bitvavo.Net/pkgs/nuget/Bitvavo.Net). You'll need to add `https://nuget.pkg.github.com/JKorf/index.json` as a NuGet package source.
+Bitvavo.Net is available on [GitHub packages](https://github.com/JKorf/Bitvavo.Net/pkgs/nuget/JKorf.Bitvavo.Net). You'll need to add `https://nuget.pkg.github.com/JKorf/index.json` as a NuGet package source.
 
 ### Download release
 [![GitHub Release](https://img.shields.io/github/v/release/JKorf/Bitvavo.Net?style=for-the-badge&label=GitHub)](https://github.com/JKorf/Bitvavo.Net/releases)
@@ -62,36 +62,36 @@ The NuGet package files are added along side the source with the latest GitHub r
 ## How to use
 *Basic request:* 
 ```csharp
-// Get the ETH/USDT ticker via rest request
+// Get the ETH/EUR ticker via rest request
 var restClient = new BitvavoRestClient();
-var tickerResult = await restClient.SpotApi.ExchangeData.GetTickerAsync("ETHUSDT");
+var tickerResult = await restClient.ExchangeApi.ExchangeData.GetTickerAsync("ETH-EUR");
 var lastPrice = tickerResult.Data.LastPrice;
 ```
 
 *Place order:*
 ```csharp
 var restClient = new BitvavoRestClient(opts => {
-	opts.ApiCredentials = new BitvavoCredentials("APIKEY", "APISECRET");
+    opts.ApiCredentials = new BitvavoCredentials("APIKEY", "APISECRET");
 });
 
-// Place Limit order to go long 0.1 for ETH at 2000
-var orderResult = await restClient.UsdtFuturesApi.Trading.PlaceOrderAsync(
-    "ETH_USDT",
+// Place Limit order to buy 0.1 ETH at 2000
+var orderResult = await restClient.ExchangeApi.Trading.PlaceOrderAsync(
+    "ETH_EUR",
     OrderSide.Buy,
     OrderType.Limit,
     0.1m,
-    PositionSide.Long,
-    2000
+    price: 2000
     );
+
 ```
 
 *WebSocket subscription:* 
 ```csharp
-// Subscribe to ETH/USDT ticker updates via the websocket API
+// Subscribe to ETH/EUR ticker updates via the websocket API
 var socketClient = new BitvavoSocketClient();
-var tickerSubscriptionResult = socketClient.SpotApi.SubscribeToTickerUpdatesAsync("ETHUSDT", (update) => 
+var tickerSubscriptionResult = socketClient.ExchangeApi.ExchangeData.SubscribeToTickerUpdatesAsync("ETH-EUR", (update) =>
 {
-  var lastPrice = update.Data.LastPrice;
+    var lastPrice = update.Data.LastPrice;
 });
 ```
 
@@ -108,7 +108,7 @@ For more examples and explanations, continue with the [Bitvavo.Net documentation
 
 The CryptoExchange.Net [Shared API V2](https://cryptoexchange.jkorf.dev/docs/shared-api) provides exchange-agnostic interfaces and models for common operations such as retrieving tickers, order books and balances, placing orders, and subscribing to market updates.
 
-V2 uses a strict interface per capability. The `SharedApi` property on each Bitvavo API surface therefore exposes only the operations or subscriptions that surface actually supports. `IBitvavoSharedApiClient` groups the `SpotRest`, `FuturesRest`, `SpotSocket`, and `FuturesSocket` surfaces for dependency injection and runtime capability lookup.
+V2 uses a strict interface per capability. The `SharedApi` property on each Bitvavo API surface therefore exposes only the operations or subscriptions that surface actually supports. `IBitvavoSharedApiClient` groups the `Rest` and `Socket` surfaces for dependency injection and runtime capability lookup.
 
 ### Access a strict capability
 
@@ -116,10 +116,10 @@ V2 uses a strict interface per capability. The `SharedApi` property on each Bitv
 using CryptoExchange.Net.SharedApis;
 using Bitvavo.Net.Clients;
 
-using var restClient = new TP_TP_EXCHANGERestClient();
+using var restClient = new BitvavoRestClient();
 IGetTickerRest tickerClient = restClient.SpotApi.SharedApi;
 
-var symbol = new SharedSymbol(TradingMode.Spot, "ETH", "USDT");
+var symbol = new SharedSymbol(TradingMode.Spot, "ETH", "EUR");
 var result = await tickerClient.GetTickerAsync(
     new GetTickerRequest(symbol));
 
@@ -133,13 +133,6 @@ Console.WriteLine(result.Data.LastPrice);
 ```
 
 The request and response models belong to `CryptoExchange.Net.SharedApis`, so the same operation can accept another exchange's `IGetTickerRest` implementation. When using dependency injection, inject `IBitvavoSharedApiClient` to access all Bitvavo Shared API surfaces or inject a capability such as `IGetTickerRest` directly. Use `GetCapability` on the aggregate when the operation, transport, or trading mode is selected at runtime.
-
-
-### Supported shared interfaces
-
-| API | Type | Supported interfaces |
-|--|--|--|
-| TODO | REST | `IAssetsRestClient`,.. 
 
 ## CryptoExchange.Net
 Bitvavo.Net is based on the [CryptoExchange.Net](https://github.com/JKorf/CryptoExchange.Net) base library. Other exchange API implementations based on the CryptoExchange.Net base library are available and follow the same logic.
@@ -191,14 +184,25 @@ A Discord server is available [here](https://discord.gg/MSpeEtSY8t). For discuss
 
 ## Supported functionality
 
-### Spot
+### REST
 |API|Supported|Location|
 |--|--:|--|
-|TODO|✓|`restClient.SpotApi.Account`|
-### Futures
+|Market data|✓|`restClient.ExchangeApi.ExchangeData`|
+|Trading|✓|`restClient.ExchangeApi.Trading`|
+|Transfer|✓|`restClient.ExchangeApi.Account`|
+|Account|✓|`restClient.ExchangeApi.Account`|
+|Synchronization|✓|`restClient.ExchangeApi.ExchangeData`|
+
+### WebSocket
 |API|Supported|Location|
 |--|--:|--|
-|TODO|✓|`restClient.FuturesApi.ExchangeData`|
+|Market data|✓|`socketClient.ExchangeApi.ExchangeData`|
+|Trading|✓|`socketClient.ExchangeApi.Trading`|
+|Transfer|✓|`socketClient.ExchangeApi.Account`|
+|Account|✓|`socketClient.ExchangeApi.Account`|
+|Synchronization|✓|`socketClient.ExchangeApi.ExchangeData`|
+|Market data channel|✓|`socketClient.ExchangeApi.ExchangeData`|
+|Trading channel|✓|`socketClient.ExchangeApi.Trading`|
 
 ## Support the project
 Any support is greatly appreciated.
