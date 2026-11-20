@@ -176,8 +176,6 @@ namespace Bitvavo.Net.UnitTests
             CryptoExchange.Net.Testing.TestHelpers.CheckForMissingSocketInterfaces<BitvavoSocketClient>();
         }
 
-#warning TODO
-
         [Test]
         public void TestRestSpotSharedApiDiscoveryMatchesAggregate()
         {
