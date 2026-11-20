@@ -3,7 +3,7 @@
   "sdk": "11.0.100",
   "packages": [
     {
-      "key": "Bitvavo",
+      "key": "bitvavo",
       "project": "Bitvavo.Net/Bitvavo.Net.csproj",
       "testProjects": [
         "Bitvavo.Net.UnitTests/Bitvavo.Net.UnitTests.csproj"
