@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bitvavo.Net.Interfaces.Clients.ExchangeApi;
+using Bitvavo.Net.Utils;
 
 namespace Bitvavo.Net.Clients.ExchangeApi
 {

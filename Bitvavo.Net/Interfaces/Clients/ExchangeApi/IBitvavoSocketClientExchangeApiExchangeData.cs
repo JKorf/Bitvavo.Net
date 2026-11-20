@@ -214,7 +214,7 @@ namespace Bitvavo.Net.Interfaces.Clients.ExchangeApi
         Task<QueryResult<BitvavoTicker[]>> GetTickersAsync(CancellationToken ct = default);
 
         /// <summary>
-        /// Receive changes to the best bid, best ask, and latest trade price
+        /// Receive changes to the best bid, best ask, and latest trade price. Only changed fields are sent in the update
         /// <para>
         /// Docs:<br />
         /// <a href="https://docs.bitvavo.com/docs/websocket-api/ticker-subscription/" /><br />
@@ -231,7 +231,7 @@ namespace Bitvavo.Net.Interfaces.Clients.ExchangeApi
             CancellationToken ct = default);
 
         /// <summary>
-        /// Receive changes to the best bid, best ask, and latest trade price
+        /// Receive changes to the best bid, best ask, and latest trade price. Only changed fields are sent in the update
         /// <para>
         /// Docs:<br />
         /// <a href="https://docs.bitvavo.com/docs/websocket-api/ticker-subscription/" /><br />

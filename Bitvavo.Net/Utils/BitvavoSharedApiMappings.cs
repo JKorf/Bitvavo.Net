@@ -3,7 +3,7 @@ using Bitvavo.Net.Objects.Models;
 using CryptoExchange.Net;
 using CryptoExchange.Net.SharedApis;
 
-namespace Bitvavo.Net.Clients.ExchangeApi
+namespace Bitvavo.Net.Utils
 {
     internal static class BitvavoSharedApiMappings
     {

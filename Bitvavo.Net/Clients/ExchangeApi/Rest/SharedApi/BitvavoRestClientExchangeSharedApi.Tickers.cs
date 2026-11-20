@@ -3,7 +3,7 @@ using CryptoExchange.Net.SharedApis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
-using static Bitvavo.Net.Clients.ExchangeApi.BitvavoSharedApiMappings;
+using static Bitvavo.Net.Utils.BitvavoSharedApiMappings;
 
 namespace Bitvavo.Net.Clients.ExchangeApi
 {

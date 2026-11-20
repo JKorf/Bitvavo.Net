@@ -86,7 +86,7 @@ namespace Bitvavo.Net.UnitTests
             var startTime = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var endTime = startTime.AddHours(1);
 
-            await tester.ValidateAsync(client => client.ExchangeApi.Trading.PlaceOrderAsync("BTC-EUR", OrderSide.Sell, OrderType.Limit, clientOrderId, quantity: 0.01m, price: 56000m, timeInForce: TimeInForce.GoodTillCanceled, postOnly: true, selfTradePrevention: SelfTradePrevention.CancelOldest, cancelGroupId: 2), "PlaceOrder");
+            await tester.ValidateAsync(client => client.ExchangeApi.Trading.PlaceOrderAsync("BTC-EUR", OrderSide.Sell, OrderType.Limit, clientOrderId: clientOrderId, quantity: 0.01m, price: 56000m, timeInForce: TimeInForce.GoodTillCanceled, postOnly: true, selfTradePrevention: SelfTradePrevention.CancelOldest, cancelGroupId: 2), "PlaceOrder");
             await tester.ValidateAsync(client => client.ExchangeApi.Trading.UpdateOrderAsync("BTC-EUR", clientOrderId: clientOrderId, remainingQuantity: 0.02m, price: 57000m, responseRequired: false), "UpdateOrder");
             await tester.ValidateAsync(client => client.ExchangeApi.Trading.GetOrderAsync("BTC-EUR", orderId), "GetOrder");
             await tester.ValidateAsync(client => client.ExchangeApi.Trading.CancelOrderAsync("BTC-EUR", clientOrderId: clientOrderId), "CancelOrder");

@@ -9,7 +9,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageId>Bitvavo.Net</PackageId>
+    <PackageId>JKorf.Bitvavo.Net</PackageId>
     <Authors>JKorf</Authors>
     <PackageVersion>0.1.0</PackageVersion>
     <AssemblyVersion>0.1.0</AssemblyVersion>

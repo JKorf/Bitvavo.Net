@@ -8,7 +8,7 @@
       "testProjects": [
         "Bitvavo.Net.UnitTests/Bitvavo.Net.UnitTests.csproj"
       ],
-      "packageId": "Bitvavo.Net",
+      "packageId": "JKorf.Bitvavo.Net",
       "readme": "README.md",
       "tagPrefix": "Bitvavo.Net.",
       "releaseIntegrationTests": false,

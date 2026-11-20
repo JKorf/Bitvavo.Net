@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using Bitvavo.Net.Utils;
 
 namespace Bitvavo.Net.Clients.ExchangeApi
 {
