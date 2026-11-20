@@ -119,7 +119,7 @@ namespace Bitvavo.Net.UnitTests
         [TestCase(HttpStatusCode.BadRequest, """[]""", null, ErrorType.Unknown, null)]
         [TestCase(HttpStatusCode.ServiceUnavailable, "<html>Service unavailable</html>", null, ErrorType.DeserializationFailed, null)]
         public async Task RestErrorResponsePreservesBitvavoDetails(
-            HttpStatusCode status, string body, int? code, ErrorType errorType, string? message)
+            HttpStatusCode status, string body, int? code, ErrorType errorType, string message)
         {
             using var httpClient = CreateErrorResponseClient(status, body);
             using var client = new BitvavoRestClient(httpClient, null, Options.Create(new BitvavoRestOptions { RateLimiterEnabled = false }));
@@ -135,7 +135,7 @@ namespace Bitvavo.Net.UnitTests
         [TestCase("1735689600123", true, 1735689600123L)]
         [TestCase("999999999999999", true, 1735689600000L)]
         [TestCase(null, false, null)]
-        public async Task RestRateLimitErrorUsesBitvavoResetOrRetryAfter(string? reset, bool includeRetryAfter, long? expected)
+        public async Task RestRateLimitErrorUsesBitvavoResetOrRetryAfter(string reset, bool includeRetryAfter, long? expected)
         {
             using var httpClient = CreateErrorResponseClient(HttpStatusCode.TooManyRequests,
                 """{"errorCode":105,"error":"Request weight limit exceeded"}""", response =>
@@ -156,7 +156,7 @@ namespace Bitvavo.Net.UnitTests
             Assert.That(error.RetryAfter, Is.EqualTo(expected.HasValue ? DateTimeOffset.FromUnixTimeMilliseconds(expected.Value).UtcDateTime : (DateTime?)null));
         }
 
-        private static HttpClient CreateErrorResponseClient(HttpStatusCode status, string body, Action<HttpResponseMessage>? configureResponse = null)
+        private static HttpClient CreateErrorResponseClient(HttpStatusCode status, string body, Action<HttpResponseMessage> configureResponse = null)
         {
             var handler = new Mock<HttpMessageHandler>();
             handler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())

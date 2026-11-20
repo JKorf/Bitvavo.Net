@@ -26,7 +26,6 @@ namespace Bitvavo.Net
         /// <summary>
         /// Platform metadata
         /// </summary>
-#warning TODO
         public static PlatformInfo Metadata { get; } = new PlatformInfo(
                 "Bitvavo",
                 "Bitvavo",

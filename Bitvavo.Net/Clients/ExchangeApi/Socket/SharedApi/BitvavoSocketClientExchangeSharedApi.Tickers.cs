@@ -67,7 +67,9 @@ namespace Bitvavo.Net.Clients.ExchangeApi
                 var ticker = update.Data;
                 if (!ticker.BestAskPrice.HasValue && !ticker.BestAskQuantity.HasValue
                     && !ticker.BestBidPrice.HasValue && !ticker.BestBidQuantity.HasValue)
+                {
                     return;
+                }
 
                 // A ticker event can contain only the side that changed.
                 var quote = quotes.AddOrUpdate(ticker.Symbol, ticker, (_, previous) => ticker with
@@ -79,9 +81,11 @@ namespace Bitvavo.Net.Clients.ExchangeApi
                 });
 
                 if (quote.BestAskPrice.HasValue && quote.BestBidPrice.HasValue)
+                {
                     handler(update.ToType(new SharedBookTicker(
                         symbols[ticker.Symbol], ticker.Symbol, quote.BestAskPrice.Value, new SharedOrderQuantity(quote.BestAskQuantity),
                         quote.BestBidPrice.Value, new SharedOrderQuantity(quote.BestBidQuantity))));
+                }
             }, ct).ConfigureAwait(false);
 
             if (result.Success)

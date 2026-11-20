@@ -56,9 +56,13 @@ namespace Bitvavo.Net.Clients.MessageHandlers
             if (responseHeaders.TryGetValues("bitvavo-ratelimit-resetat", out var resetValues)
                 && long.TryParse(resetValues.FirstOrDefault(), NumberStyles.None, CultureInfo.InvariantCulture, out var reset)
                 && reset <= DateTimeOffset.MaxValue.ToUnixTimeMilliseconds())
+            {
                 retryAfter = DateTimeOffset.FromUnixTimeMilliseconds(reset).UtcDateTime;
+            }
             else
+            {
                 retryAfter = (await base.ParseErrorRateLimitResponse(httpStatusCode, responseHeaders, responseStream).ConfigureAwait(false)).RetryAfter?.ToUniversalTime();
+            }
 
             var rateLimitError = new ServerRateLimitError
             {
