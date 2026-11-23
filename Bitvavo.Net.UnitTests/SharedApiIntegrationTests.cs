@@ -33,9 +33,12 @@ namespace Bitvavo.Net.UnitTests
             return provider.GetRequiredService<IBitvavoSharedApiClient>();
         }
 
-        protected override SharedApiTestConfig GetConfig(ISharedRest client)
+        protected override SharedApiTestConfig GetConfig(ISharedRest client, CapabilityOptions options)
         {
-            return new SharedApiTestConfig(new SharedSymbol(TradingMode.Spot, "ETH", "EUR"), "ETH");
+            if (options.SupportedTradingModes.Contains(TradingMode.Spot))
+                return new SharedApiTestConfig(new SharedSymbol(TradingMode.Spot, "ETH", "EUR"), "ETH");
+
+            return new SharedApiTestConfig(new SharedSymbol(TradingMode.PerpetualLinear, "ETH", "EUR"), "ETH");
         }
     }
 
@@ -60,9 +63,12 @@ namespace Bitvavo.Net.UnitTests
             return provider.GetRequiredService<IBitvavoSharedApiClient>();
         }
 
-        protected override SharedApiTestConfig GetConfig(ISharedSocket client)
+        protected override SharedApiTestConfig GetConfig(ISharedSocket client, CapabilityOptions options)
         {
-            return new SharedApiTestConfig(new SharedSymbol(TradingMode.Spot, "ETH", "EUR"), "ETH");
+            if (options.SupportedTradingModes.Contains(TradingMode.Spot))
+                return new SharedApiTestConfig(new SharedSymbol(TradingMode.Spot, "ETH", "EUR"), "ETH");
+
+            return new SharedApiTestConfig(new SharedSymbol(TradingMode.PerpetualLinear, "ETH", "EUR"), "ETH");
         }
     }
 }
