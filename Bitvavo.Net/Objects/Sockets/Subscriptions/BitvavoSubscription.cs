@@ -15,6 +15,9 @@ namespace Bitvavo.Net.Objects.Sockets.Subscriptions
     {
         private readonly SocketApiClient _client;
         private readonly BitvavoSocketChannel _channel;
+        private readonly string[]? _ticker24hSubscriptionIdentifiers;
+
+        public override string[] SubscriptionIdentifiers => _ticker24hSubscriptionIdentifiers ?? base.SubscriptionIdentifiers;
 
         public BitvavoSubscription(
             SocketApiClient client,
@@ -36,10 +39,12 @@ namespace Bitvavo.Net.Objects.Sockets.Subscriptions
                 : symbols;
             var routes = topicFilters.Select(filter => MessageRoute.CreateForEvent<T>(eventName, filter, HandleMessage));
 
-            // A 24-hour ticker message can contain several symbols, so filter its items in the callback.
-            // Keep per-symbol routes so the framework can distinguish subscriptions on the same connection.
             if (typeof(T) == typeof(BitvavoTicker24hMessage))
+            {
+                // Batch messages need an unfiltered route. The wire subscription is scoped to its markets.
+                _ticker24hSubscriptionIdentifiers = symbols.Select(symbol => $"{channel}:{symbol}").ToArray();
                 routes = routes.Append(MessageRoute.CreateForEvent<T>(eventName, HandleMessage));
+            }
 
             MessageRouter = MessageRouter.Create(routes.ToArray());
 
